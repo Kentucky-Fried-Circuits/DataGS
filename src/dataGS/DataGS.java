@@ -98,15 +98,30 @@ public class DataGS implements ChannelData {
 
 	private void dataMaintenanceTimer() {
 		System.err.println("######### dataMaintenanceTimer() #########");
-		
+
 		synchronized (dataCh) {
 			for ( int i=0 ; i<dataCh.length ; i++ ) {
 				if ( null == dataCh[i] )
 					continue;
+
 				
-				System.err.println("# Channel " + i);
-				System.err.println(dataCh[i].toString());
-				
+				/* put into MySQL table */
+				String table = "adc_" + i;
+				String sql = String.format("INSERT INTO %s VALUES(now(), %d, %f, %f, %f, %f)",
+						table,
+						dataCh[i].getN(),
+						dataCh[i].getMean(),
+						dataCh[i].getMin(),
+						dataCh[i].getMax(),
+						dataCh[i].getStandardDeviation()
+						);
+				log.queryAutoCreate(sql, "dataGSProto.analogDoubleSummarized", table);
+
+
+				//System.err.println("# Channel " + i);
+				//System.err.println(dataCh[i].toString());
+				//System.err.println("# SQL: " + sql);
+
 				/* clear statistics now for next pass */
 				dataCh[i].clear();								
 			}
@@ -118,14 +133,14 @@ public class DataGS implements ChannelData {
 			System.err.println("# Channel " + channel + " is out of range. dataCh.length is " + dataCh.length);
 			return;
 		}
-		
+
 		/* initialize the channel if it hasn't be already */
 		if ( null == dataCh[channel] ) {
 			System.err.println("# Channel " + channel + " not initialized");
 			dataCh[channel] = new SynchronizedSummaryStatistics();
 		}
-		
-		
+
+
 
 		dataCh[channel].addValue(value);
 	}
@@ -259,6 +274,10 @@ public class DataGS implements ChannelData {
 			System.exit(-1);
 		}
 
+
+		
+		
+		
 		/* timer to periodically clear thread listing */
 		threadMaintenanceTimer = new javax.swing.Timer(5000, new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -298,6 +317,9 @@ public class DataGS implements ChannelData {
 				memcache=null;
 			}
 		}
+		
+		HTTPServerJSON httpd = new HTTPServerJSON();
+		httpd.start();
 
 		/* spin through and accept new connections as quickly as we can */
 		while ( listening ) {
@@ -349,6 +371,7 @@ public class DataGS implements ChannelData {
 		if ( null != dataTimer && dataTimer.isRunning() ) {
 			dataTimer.stop();
 		}
+		
 
 		System.err.println("done");
 	}
