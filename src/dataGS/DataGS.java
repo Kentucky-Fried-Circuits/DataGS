@@ -1,14 +1,13 @@
 package dataGS;
 import java.net.*;
 import javax.swing.Timer;
-//import java.awt.event.ActionEvent;
-//import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.Map.Entry;
 /* Command line parsing from Apache */
 import org.apache.commons.cli.*;
 /* Memcache client for logging */
@@ -24,7 +23,7 @@ import com.google.gson.GsonBuilder;
  * cd /home/world/planet
  * rsync -ave ssh DataGS/ aprsworld.com:DataGS/
  */
-public class DataGS implements ChannelData {
+public class DataGS implements ChannelData, lastDataJSON {
 	private Log log, threadLog;
 	private Timer threadMaintenanceTimer;
 
@@ -35,13 +34,19 @@ public class DataGS implements ChannelData {
 
 	/* data to summarize and send */
 	protected SynchronizedSummaryStatistics[] dataCh;
+	protected Map<Integer, adcDouble> dataLast;
 	protected int intervalSummary;
 	protected Timer dataTimer;
+	protected String dataLastJSON;
 
 	/* supported databases */
 	public static final int DATABASE_TYPE_MYSQL = 0;
 	public static final int DATABASE_TYPE_SQLITE = 1;
 
+	
+	public String getLastDataJSON() {
+		return dataLastJSON;
+	}
 
 	@SuppressWarnings("unused")
 	private void memcacheLog(String s) {
@@ -107,33 +112,39 @@ public class DataGS implements ChannelData {
 				if ( null == dataCh[i] )
 					continue;
 
-				
-				/* put into MySQL table */
-				String table = "adc_" + i;
-				String sql = String.format("INSERT INTO %s VALUES(now(), %d, %f, %f, %f, %f)",
-						table,
-						dataCh[i].getN(),
-						dataCh[i].getMean(),
-						dataCh[i].getMin(),
-						dataCh[i].getMax(),
-						dataCh[i].getStandardDeviation()
-						);
-				log.queryAutoCreate(sql, "dataGSProto.analogDoubleSummarized", table);
-
-
-				//System.err.println("# Channel " + i);
-
-				
-				Gson gson = new GsonBuilder().serializeSpecialFloatingPointValues().create();
-				System.err.println(gson.toJson(new adcDouble(i,dataCh[i])));
-				
-				//System.err.println(dataCh[i].toString());
-				//System.err.println("# SQL: " + sql);
+				adcDouble a = new adcDouble(dataCh[i]);
+				dataLast.put(new Integer(i), a);
 
 				/* clear statistics now for next pass */
-				dataCh[i].clear();								
+				dataCh[i].clear();
 			}
 		}
+
+
+		Gson gson = new GsonBuilder().serializeSpecialFloatingPointValues().create();
+		dataLastJSON = gson.toJson(dataLast);
+		
+
+		Iterator<Entry<Integer, adcDouble>> it = dataLast.entrySet().iterator();
+		while (it.hasNext()) {
+			Map.Entry<Integer, adcDouble> pairs = (Map.Entry<Integer, adcDouble>)it.next();
+			System.out.println(pairs.getKey() + " = " + pairs.getValue());
+
+			/* insert into MySQL */
+			String table = "adc_" + pairs.getKey();
+			adcDouble a = pairs.getValue();
+			String sql = String.format("INSERT INTO %s VALUES(now(), %d, %f, %f, %f, %f)",
+					table,
+					a.n,
+					a.avg,
+					a.min,
+					a.max,
+					a.stddev
+					);
+			log.queryAutoCreate(sql, "dataGSProto.analogDoubleSummarized", table);
+		}
+
+
 	}
 
 	public void ingest(int channel, double value) {
@@ -147,7 +158,6 @@ public class DataGS implements ChannelData {
 			System.err.println("# Channel " + channel + " not initialized");
 			dataCh[channel] = new SynchronizedSummaryStatistics();
 		}
-
 
 
 		dataCh[channel].addValue(value);
@@ -184,6 +194,7 @@ public class DataGS implements ChannelData {
 
 		dataCh = new SynchronizedSummaryStatistics[256];
 		intervalSummary = 1000;
+		dataLast = new HashMap<Integer, adcDouble>();
 
 		/* MySQL options */
 		options.addOption("d", "database", true, "MySQL database");
@@ -283,9 +294,9 @@ public class DataGS implements ChannelData {
 		}
 
 
-		
-		
-		
+
+
+
 		/* timer to periodically clear thread listing */
 		threadMaintenanceTimer = new javax.swing.Timer(5000, new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -325,8 +336,8 @@ public class DataGS implements ChannelData {
 				memcache=null;
 			}
 		}
-		
-		HTTPServerJSON httpd = new HTTPServerJSON(9000);
+
+		HTTPServerJSON httpd = new HTTPServerJSON(9000, this);
 		httpd.start();
 
 		/* spin through and accept new connections as quickly as we can */
@@ -379,7 +390,7 @@ public class DataGS implements ChannelData {
 		if ( null != dataTimer && dataTimer.isRunning() ) {
 			dataTimer.stop();
 		}
-		
+
 
 		System.err.println("done");
 	}

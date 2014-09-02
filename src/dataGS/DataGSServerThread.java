@@ -14,7 +14,6 @@ public class DataGSServerThread extends Thread {
 	protected OutputStream outputStream;
 	private int[] rawBuffer;
 	private Log log, threadLog;
-	private int nPacketsTotal;
 
 	private final static boolean debug=false;
 
@@ -62,7 +61,6 @@ public class DataGSServerThread extends Thread {
 		log=l;
 		threadLog=l;
 		rawBuffer = new int[1024];
-		nPacketsTotal=0;
 
 		memcache=mem;
 
