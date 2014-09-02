@@ -33,8 +33,8 @@ public class DataGS implements ChannelData, lastDataJSON {
 
 
 	/* data to summarize and send */
-	protected SynchronizedSummaryStatistics[] dataCh;
-	//protected Map<Integer, SynchronizedSummaryStatistics>
+	//	protected SynchronizedSummaryStatistics[] dataCh;
+	protected Map<Integer, SynchronizedSummaryStatistics> data;
 	protected Map<Integer, adcDouble> dataLast;
 	protected int intervalSummary;
 	protected Timer dataTimer;
@@ -44,7 +44,7 @@ public class DataGS implements ChannelData, lastDataJSON {
 	public static final int DATABASE_TYPE_MYSQL = 0;
 	public static final int DATABASE_TYPE_SQLITE = 1;
 
-	
+
 	public String getLastDataJSON() {
 		return dataLastJSON;
 	}
@@ -106,25 +106,31 @@ public class DataGS implements ChannelData, lastDataJSON {
 	}
 
 	private void dataMaintenanceTimer() {
-		System.err.println("######### dataMaintenanceTimer() #########");
+		long now = System.currentTimeMillis();
+		
+//		System.err.println("######### dataMaintenanceTimer() #########");
 
-		synchronized (dataCh) {
-			for ( int i=0 ; i<dataCh.length ; i++ ) {
-				if ( null == dataCh[i] )
-					continue;
+		synchronized (data) {
+			dataLast.clear();
+			
+			/* iterate through and export summary */
+			Iterator<Entry<Integer, SynchronizedSummaryStatistics>> it = data.entrySet().iterator();
+			while (it.hasNext()) {
+				Map.Entry<Integer, SynchronizedSummaryStatistics> pairs = (Map.Entry<Integer, SynchronizedSummaryStatistics>)it.next();
 
-				adcDouble a = new adcDouble(dataCh[i]);
-				dataLast.put(new Integer(i), a);
-
-				/* clear statistics now for next pass */
-				dataCh[i].clear();
+				dataLast.put(pairs.getKey(),new adcDouble(pairs.getKey(),now,pairs.getValue()));
 			}
+
+			/* clear statistics for next pass */
+			data.clear();
 		}
 
 
+		/* export latest statistics to JSON */
 		Gson gson = new GsonBuilder().serializeSpecialFloatingPointValues().create();
-		dataLastJSON = gson.toJson(dataLast);
-		
+		dataLastJSON = gson.toJson(dataLast.get(new Integer(65)));
+		dataLastJSON += "," + gson.toJson(dataLast.get(new Integer(66)));
+
 
 		Iterator<Entry<Integer, adcDouble>> it = dataLast.entrySet().iterator();
 		while (it.hasNext()) {
@@ -144,24 +150,18 @@ public class DataGS implements ChannelData, lastDataJSON {
 					);
 			log.queryAutoCreate(sql, "dataGSProto.analogDoubleSummarized", table);
 		}
-
-
 	}
 
 	public void ingest(int channel, double value) {
-		if ( channel > dataCh.length || channel < 0 ) {
-			System.err.println("# Channel " + channel + " is out of range. dataCh.length is " + dataCh.length);
-			return;
-		}
+		Integer ch = new Integer(channel);
 
 		/* initialize the channel if it hasn't be already */
-		if ( null == dataCh[channel] ) {
-			System.err.println("# Channel " + channel + " not initialized");
-			dataCh[channel] = new SynchronizedSummaryStatistics();
+		if ( false == data.containsKey(ch) ) {
+			data.put(ch, new SynchronizedSummaryStatistics());
 		}
 
 
-		dataCh[channel].addValue(value);
+		data.get(ch).addValue(value);
 	}
 
 
@@ -194,8 +194,9 @@ public class DataGS implements ChannelData, lastDataJSON {
 		int databaseType=DATABASE_TYPE_MYSQL;
 
 
-		dataCh = new SynchronizedSummaryStatistics[256];
+
 		intervalSummary = 1000;
+		data = new HashMap<Integer, SynchronizedSummaryStatistics>();
 		dataLast = new HashMap<Integer, adcDouble>();
 
 		/* MySQL options */
@@ -218,7 +219,7 @@ public class DataGS implements ChannelData, lastDataJSON {
 
 		/* built-in web server options */
 		options.addOption("j", "http-port", true, "webserver port, 0 to disable");
-		
+
 		/* parse command line */
 		CommandLineParser parser = new PosixParser();
 		try {
@@ -240,7 +241,7 @@ public class DataGS implements ChannelData, lastDataJSON {
 			if ( line.hasOption("http-port") ) {
 				httpPort = Integer.parseInt(line.getOptionValue("http-port"));
 			}
-			
+
 			/* DataGSCollector */
 			if ( line.hasOption("interval") ) {
 				intervalSummary = Integer.parseInt(line.getOptionValue("interval"));
@@ -256,8 +257,8 @@ public class DataGS implements ChannelData, lastDataJSON {
 			}
 
 			if ( line.hasOption("memcacheDebug") ) memcachedDebug=true;
-			
-			
+
+
 
 
 		} catch (ParseException e) {

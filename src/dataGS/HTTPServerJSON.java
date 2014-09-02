@@ -1,6 +1,6 @@
 package dataGS;
 
-import java.util.Map;
+//import java.util.Map;
 
 
 public class HTTPServerJSON extends NanoHTTPD {
@@ -40,7 +40,12 @@ public class HTTPServerJSON extends NanoHTTPD {
 		msg += "</body></html>\n";
 		*/
 		
-		return new NanoHTTPD.Response( Response.Status.OK,mime_type,lastData.getLastDataJSON());
+		Response response = new NanoHTTPD.Response( Response.Status.OK,MIME_JSON,"{\"data\": [" + lastData.getLastDataJSON() + "]}");
+		response.addHeader("Access-Control-Allow-Origin", "http://192.168.30.238");
+		
+		return response;
+		
+//		return new NanoHTTPD.Response( Response.Status.OK,MIME_JSON,lastData.getLastDataJSON());
 		//return new NanoHTTPD.Response( Response.Status.OK,mime_type,msg);
 		//return new NanoHTTPD.Response(msg);
 	}

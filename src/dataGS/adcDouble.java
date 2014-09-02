@@ -3,21 +3,26 @@ package dataGS;
 import org.apache.commons.math3.stat.descriptive.SynchronizedSummaryStatistics;
 
 public class adcDouble {
+	public int channel;
+	public long time;
 	public long n;
 	public double avg;
 	public double min;
 	public double max;
 	public double stddev;
 	
-	public adcDouble(SynchronizedSummaryStatistics s) {
+	public adcDouble(int ch, long t, SynchronizedSummaryStatistics s) {
+		channel=ch;
+		time=t;
 		n=s.getN();
 		avg=s.getMean();
 		min=s.getMin();
 		max=s.getMax();
 		stddev=s.getStandardDeviation();
+		
 	}
 	
 	public String toString() {
-		return "n=" + n + " avg=" + avg + " min=" + min + " max=" + max + " stddev=" + stddev;
+		return "time=" + time + " n=" + n + " avg=" + avg + " min=" + min + " max=" + max + " stddev=" + stddev;
 	}
 }
