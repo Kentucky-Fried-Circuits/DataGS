@@ -1,50 +1,43 @@
 package dataGS;
 
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.util.Map;
 
 
-public class HTTPServerJSON extends Thread{
-	ServerSocket serverSocket;
-
-	public void run() {
-		boolean listening=true;
-		int portNumber=9000;
-
-
-		System.err.println("# Listening on port " + portNumber);
-		try {
-			serverSocket = new ServerSocket(portNumber);
-		} catch (IOException e) {
-			System.err.println("# Could not listen on port: " + portNumber);
-			System.exit(-1);
-		}
-
-
-		/* spin through and accept new connections as quickly as we can */
-		while ( listening ) {
-			try {
-				Socket socket=serverSocket.accept();
-				/* setup our sockets to send RST as soon as close() is called ... this is the default action */
-				socket.setSoLinger (false, 0);
-
-
-				HTTPServerThreadJSON conn = new HTTPServerThreadJSON(socket);
-				conn.start();
-			} catch ( Exception e ) {
-				System.err.println("# Caught exception while accepingt socket connection." + e);
-			}
-		}
-
-
-		try {
-			serverSocket.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+public class HTTPServerJSON extends NanoHTTPD {
+    public static final String MIME_JAVASCRIPT = "text/javascript";
+    public static final String MIME_CSS = "text/css";
+    public static final String MIME_JPEG = "image/jpeg";
+    public static final String MIME_PNG = "image/png";
+    public static final String MIME_SVG = "image/svg+xml";
+    public static final String MIME_JSON = "application/json";
+	
+	
+	public HTTPServerJSON(int port) {
+		super(port);
 
 	}
+
+	@Override public Response serve(IHTTPSession session) {
+		Method method = session.getMethod();
+		String uri = session.getUri();
+		String mime_type = NanoHTTPD.MIME_PLAINTEXT;
+		System.out.println(method + " '" + uri + "' ");
+
+		String msg = "<html><body><h1>Hello server</h1>\n";
+		Map<String, String> parms = session.getParms();
+		if (parms.get("username") == null)
+			msg +=
+			"<form action='?' method='get'>\n" +
+					"  <p>Your name: <input type='text' name='username'></p>\n" +
+					"</form>\n";
+		else
+			msg += "<p>Hello, " + parms.get("username") + "!</p>";
+
+		msg += "</body></html>\n";
+
+		return new NanoHTTPD.Response( Response.Status.OK,mime_type,msg);
+		//return new NanoHTTPD.Response(msg);
+	}
+
 
 }

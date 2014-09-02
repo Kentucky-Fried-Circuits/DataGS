@@ -17,6 +17,9 @@ import net.spy.memcached.MemcachedClient;
 /* statistics */
 import org.apache.commons.math3.stat.descriptive.*;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 /* to upload this to data.aprsworld.com use:
  * cd /home/world/planet
  * rsync -ave ssh DataGS/ aprsworld.com:DataGS/
@@ -119,6 +122,11 @@ public class DataGS implements ChannelData {
 
 
 				//System.err.println("# Channel " + i);
+
+				
+				Gson gson = new GsonBuilder().serializeSpecialFloatingPointValues().create();
+				System.err.println(gson.toJson(new adcDouble(i,dataCh[i])));
+				
 				//System.err.println(dataCh[i].toString());
 				//System.err.println("# SQL: " + sql);
 
@@ -318,7 +326,7 @@ public class DataGS implements ChannelData {
 			}
 		}
 		
-		HTTPServerJSON httpd = new HTTPServerJSON();
+		HTTPServerJSON httpd = new HTTPServerJSON(9000);
 		httpd.start();
 
 		/* spin through and accept new connections as quickly as we can */

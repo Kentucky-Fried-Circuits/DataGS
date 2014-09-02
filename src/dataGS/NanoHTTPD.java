@@ -767,7 +767,8 @@ public abstract class NanoHTTPD {
         }
     }
 
-    public static final class ResponseException extends Exception {
+    @SuppressWarnings("serial")
+	public static final class ResponseException extends Exception {
 
         private final Response.Status status;
 
