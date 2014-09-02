@@ -34,6 +34,7 @@ public class DataGS implements ChannelData, lastDataJSON {
 
 	/* data to summarize and send */
 	protected SynchronizedSummaryStatistics[] dataCh;
+	//protected Map<Integer, SynchronizedSummaryStatistics>
 	protected Map<Integer, adcDouble> dataLast;
 	protected int intervalSummary;
 	protected Timer dataTimer;
@@ -185,6 +186,7 @@ public class DataGS implements ChannelData, lastDataJSON {
 		/* Data GS parameters */
 		boolean oneMySQLPerThread=false;
 		portNumber=4010;
+		int httpPort=0;
 		int socketTimeout=62;
 		int stationTimeout=121;
 		boolean logConnection=false;
@@ -214,6 +216,9 @@ public class DataGS implements ChannelData, lastDataJSON {
 		options.addOption("T", "station-timeout",true, "DataGSCollector station history timeout");
 		options.addOption("m", "memcacheDebug", false, "Debug messages written to memcached per station");
 
+		/* built-in web server options */
+		options.addOption("j", "http-port", true, "webserver port, 0 to disable");
+		
 		/* parse command line */
 		CommandLineParser parser = new PosixParser();
 		try {
@@ -230,6 +235,12 @@ public class DataGS implements ChannelData, lastDataJSON {
 			if ( line.hasOption("SQLite-URL") ) sqliteURL= line.getOptionValue("SQLite-URL");
 			if ( line.hasOption("SQLite-proto-URL") ) sqliteProtoURL= line.getOptionValue("SQLite-proto-URL");
 
+			/* web server */
+			options.addOption("j", "http-port", true, "webserver port, 0 to disable");
+			if ( line.hasOption("http-port") ) {
+				httpPort = Integer.parseInt(line.getOptionValue("http-port"));
+			}
+			
 			/* DataGSCollector */
 			if ( line.hasOption("interval") ) {
 				intervalSummary = Integer.parseInt(line.getOptionValue("interval"));
@@ -245,6 +256,8 @@ public class DataGS implements ChannelData, lastDataJSON {
 			}
 
 			if ( line.hasOption("memcacheDebug") ) memcachedDebug=true;
+			
+			
 
 
 		} catch (ParseException e) {
@@ -337,8 +350,13 @@ public class DataGS implements ChannelData, lastDataJSON {
 			}
 		}
 
-		HTTPServerJSON httpd = new HTTPServerJSON(9000, this);
-		httpd.start();
+		if ( 0 != httpPort ) {
+			System.err.println("# HTTP server listening on port " + httpPort);
+			HTTPServerJSON httpd = new HTTPServerJSON(httpPort, this);
+			httpd.start();
+		} else {
+			System.err.println("# HTTP server disabled.");
+		}
 
 		/* spin through and accept new connections as quickly as we can */
 		while ( listening ) {
