@@ -1,5 +1,7 @@
 package dataGS;
 
+import java.util.Map;
+
 //import java.util.Map;
 
 
@@ -22,9 +24,14 @@ public class HTTPServerJSON extends NanoHTTPD {
 	@Override public Response serve(IHTTPSession session) {
 		Method method = session.getMethod();
 		String uri = session.getUri();
-		String mime_type = NanoHTTPD.MIME_PLAINTEXT;
-		System.out.println(method + " '" + uri + "' ");
+		// String mime_type = NanoHTTPD.MIME_PLAINTEXT;
+		//System.out.println(method + " '" + uri + "' ");
 
+//		Map<String, String> parms = session.getParms();
+//	System.err.println("parms: " + session.getHeaders());
+		
+//		String origin = session.getHeaders().get("origin");
+		
 		/*
 		String msg = "<html><body><h1>Hello server</h1>\n";
 		Map<String, String> parms = session.getParms();
@@ -40,8 +47,12 @@ public class HTTPServerJSON extends NanoHTTPD {
 		msg += "</body></html>\n";
 		*/
 		
+
+		
 		Response response = new NanoHTTPD.Response( Response.Status.OK,MIME_JSON,"{\"data\": [" + lastData.getLastDataJSON() + "]}");
-		response.addHeader("Access-Control-Allow-Origin", "http://192.168.30.238");
+		
+		/* this allows the website with the AJAX page to be on a different server than us */ 
+		response.addHeader("Access-Control-Allow-Origin",session.getHeaders().get("origin")); // "http://192.168.30.240");
 		
 		return response;
 		

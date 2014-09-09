@@ -23,7 +23,7 @@ public class LogSQLite implements Log {
 		}
 	}
 
-	private void missingTable(String sql, String proto, String table) {
+	protected void missingTable(String sql, String proto, String table) {
 		/* create the time like the prototype table in worldDataProto */
 		String sqlNewTable="CREATE TABLE " + table + " LIKE " + proto;
 		query(sqlNewTable);

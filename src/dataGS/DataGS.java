@@ -107,12 +107,12 @@ public class DataGS implements ChannelData, lastDataJSON {
 
 	private void dataMaintenanceTimer() {
 		long now = System.currentTimeMillis();
-		
-//		System.err.println("######### dataMaintenanceTimer() #########");
+
+		//		System.err.println("######### dataMaintenanceTimer() #########");
 
 		synchronized (data) {
 			dataLast.clear();
-			
+
 			/* iterate through and export summary */
 			Iterator<Entry<Integer, SynchronizedSummaryStatistics>> it = data.entrySet().iterator();
 			while (it.hasNext()) {
@@ -128,27 +128,42 @@ public class DataGS implements ChannelData, lastDataJSON {
 
 		/* export latest statistics to JSON */
 		Gson gson = new GsonBuilder().serializeSpecialFloatingPointValues().create();
-		dataLastJSON = gson.toJson(dataLast.get(new Integer(65)));
-		dataLastJSON += "," + gson.toJson(dataLast.get(new Integer(66)));
+		/* ugly kludge ... we should automatically do this */
 
 
-		Iterator<Entry<Integer, adcDouble>> it = dataLast.entrySet().iterator();
-		while (it.hasNext()) {
-			Map.Entry<Integer, adcDouble> pairs = (Map.Entry<Integer, adcDouble>)it.next();
-			System.out.println(pairs.getKey() + " = " + pairs.getValue());
+		//		dataLastJSON = gson.toJson(dataLast.get(new Integer(65)));
+		//		dataLastJSON += "," + gson.toJson(dataLast.get(new Integer(69)));
+		//		dataLastJSON += "," + gson.toJson(dataLast.get(new Integer('W')));
 
-			/* insert into MySQL */
-			String table = "adc_" + pairs.getKey();
-			adcDouble a = pairs.getValue();
-			String sql = String.format("INSERT INTO %s VALUES(now(), %d, %f, %f, %f, %f)",
-					table,
-					a.n,
-					a.avg,
-					a.min,
-					a.max,
-					a.stddev
-					);
-			log.queryAutoCreate(sql, "dataGSProto.analogDoubleSummarized", table);
+		
+		synchronized ( dataLastJSON ) {
+			dataLastJSON="";
+
+			Iterator<Entry<Integer, adcDouble>> it = dataLast.entrySet().iterator();
+			while (it.hasNext()) {
+				Map.Entry<Integer, adcDouble> pairs = (Map.Entry<Integer, adcDouble>)it.next();
+				System.out.println(pairs.getKey() + " = " + pairs.getValue());
+
+				dataLastJSON += gson.toJson(pairs.getValue()) + ", ";
+
+				/* insert into MySQL */
+				String table = "adc_" + pairs.getKey();
+				adcDouble a = pairs.getValue();
+				String sql = String.format("INSERT INTO %s VALUES(now(), %d, %f, %f, %f, %f)",
+						table,
+						a.n,
+						a.avg,
+						a.min,
+						a.max,
+						a.stddev
+						);
+				log.queryAutoCreate(sql, "dataGSProto.analogDoubleSummarized", table);
+			}
+			
+			/* remove last comma */
+			if ( dataLastJSON.length() >= 2 ) {
+				dataLastJSON = dataLastJSON.substring(0, dataLastJSON.length()-2);
+			}
 		}
 	}
 
@@ -331,6 +346,7 @@ public class DataGS implements ChannelData, lastDataJSON {
 
 
 		/* start status update thread */
+		dataLastJSON="";
 		DataGSStatus status = new DataGSStatus(log,portNumber);
 		status.start();
 		status.updateStatus();
@@ -415,7 +431,7 @@ public class DataGS implements ChannelData, lastDataJSON {
 	}
 
 	public static void main(String[] args) throws IOException {
-		System.err.println("# Major version: 2014-09-01 (precision)");
+		System.err.println("# Major version: 2014-09-06 (precision)");
 
 		DataGS d=new DataGS();
 
