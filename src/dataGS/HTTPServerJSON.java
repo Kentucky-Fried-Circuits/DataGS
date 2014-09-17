@@ -15,12 +15,14 @@ public class HTTPServerJSON extends NanoHTTPD {
 	public static final String MIME_SVG = "image/svg+xml";
 	public static final String MIME_JSON = "application/json";
 
-	protected lastDataJSON lastData;
+	protected JSONDataLast lastData;
+	protected JSONDataHistory historyData;
 
-	public HTTPServerJSON(int port, lastDataJSON s) {
+	public HTTPServerJSON(int port, JSONDataLast s, JSONDataHistory h) {
 		super(port);
 
 		lastData=s;
+		historyData=h;
 	}
 
 	@Override public Response serve(IHTTPSession session) {
@@ -50,6 +52,9 @@ public class HTTPServerJSON extends NanoHTTPD {
 		} else if ( uri.endsWith("now.json") ) {
 			/* generate the response */
 			response = new NanoHTTPD.Response( Response.Status.OK,MIME_JSON, lastData.getLastDataJSON() );
+		} else if ( uri.endsWith("history.json") ) {
+			/* generate the response */
+			response = new NanoHTTPD.Response( Response.Status.OK,MIME_JSON, historyData.getHistoryDataJSON() );	
 		} else {
 			response = new NanoHTTPD.Response("{}");
 		}

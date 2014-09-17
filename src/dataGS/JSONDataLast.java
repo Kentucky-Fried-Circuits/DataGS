@@ -1,6 +1,6 @@
 package dataGS;
 
-public interface lastDataJSON {
+public interface JSONDataLast {
 
 	public String getLastDataJSON();
 	

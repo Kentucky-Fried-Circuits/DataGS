@@ -16,14 +16,11 @@ import net.spy.memcached.MemcachedClient;
 /* statistics */
 import org.apache.commons.math3.stat.descriptive.*;
 
+/* JSON */
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-/* to upload this to data.aprsworld.com use:
- * cd /home/world/planet
- * rsync -ave ssh DataGS/ aprsworld.com:DataGS/
- */
-public class DataGS implements ChannelData, lastDataJSON {
+public class DataGS implements ChannelData, JSONDataLast, JSONDataHistory {
 	private Log log;
 	private Timer threadMaintenanceTimer;
 
@@ -33,7 +30,6 @@ public class DataGS implements ChannelData, lastDataJSON {
 
 
 	/* data to summarize and send */
-	//	protected SynchronizedSummaryStatistics[] dataCh;
 	protected Map<Integer, SynchronizedSummaryStatistics> data;
 	protected Map<Integer, adcDouble> dataLast;
 	protected int intervalSummary;
@@ -47,52 +43,11 @@ public class DataGS implements ChannelData, lastDataJSON {
 
 
 	public String getLastDataJSON() {
-		return dataLastJSON;
+		return "{\"data\": [" + dataLastJSON + "]}";
 	}
 
-	@SuppressWarnings("unused")
-	private void memcacheLog(String s) {
-
-		if ( null == memcache ) {
-			//			System.err.println("# [LOG] " + s);
-			return;
-		}
-
-		String key="DATAGS_" + portNumber;
-		long index = memcache.incr(key + "_INDEX",1,0,3600*24*2);
-
-		memcache.set(key + "_" + index,3600*24*2, s);
-		System.err.println("# [" + key + "_" + index + "] " + s);
-
-	}
-
-	@SuppressWarnings("unused")
-	private String connectionThreadInfo(DataGSServerThread conn) {
-		String s="# connectionThreadInfo() debug debug of " + conn.getName() + "\n";
-
-		try {
-			s = s + "# isAlive(): " + conn.isAlive() + "\n";
-			s = s + "# getState(): " + conn.getState() + "\n";
-			s = s + "# socket.isBound(): " + conn.socket.isBound() + "\n";
-			s = s + "# socket.isClosed(): " + conn.socket.isClosed() + "\n";
-			s = s + "# socket.isConnected(): " + conn.socket.isConnected() + "\n";
-			s = s + "# socket.isInputShutdown(): " + conn.socket.isInputShutdown() + "\n";
-			s = s + "# socket.isOutputShutdown(): " + conn.socket.isOutputShutdown() + "\n";
-			if ( ! conn.socket.isClosed() ) {
-				s = s + "# socket.getReceiveBufferSize():" + conn.socket.getReceiveBufferSize() + "\n";
-				s = s + "# socket.getSendBufferSize():" + conn.socket.getSendBufferSize() + "\n";
-				s = s + "# socket.getSoLinger():" + conn.socket.getSoLinger() + "\n";
-				s = s + "# socket.getSoTimeout():" + conn.socket.getSoTimeout() + "\n";
-				s = s + "# socket.getInetAddress():" + conn.socket.getInetAddress() + "\n";
-				s = s + "# socket.getReuseAddress():" + conn.socket.getReuseAddress() + "\n";
-				s = s + "# socket.getTcpNoDelay():" + conn.socket.getTcpNoDelay() + "\n";
-			}
-		} catch ( Exception e ) {
-			s = s + "# connectionThreadInfo() caught an exception - can you believe that!\n";
-			s = s + "# " + e + "\n";
-		}
-
-		return s;
+	public String getHistoryDataJSON() {
+		return "{\"history\": [" + "]}";
 	}
 
 	private void threadMaintenanceTimer() {
@@ -132,7 +87,7 @@ public class DataGS implements ChannelData, lastDataJSON {
 
 
 		synchronized ( dataLastJSON ) {
-			dataLastJSON="{\"data\": [";
+			dataLastJSON="";
 
 			Iterator<Entry<Integer, adcDouble>> it = dataLast.entrySet().iterator();
 			while (it.hasNext()) {
@@ -162,7 +117,6 @@ public class DataGS implements ChannelData, lastDataJSON {
 			if ( dataLastJSON.length() >= 2 ) {
 				dataLastJSON = dataLastJSON.substring(0, dataLastJSON.length()-2);
 			}
-			dataLastJSON = dataLastJSON + "]}";
 		}
 	}
 
@@ -364,7 +318,7 @@ public class DataGS implements ChannelData, lastDataJSON {
 
 		if ( 0 != httpPort ) {
 			System.err.println("# HTTP server listening on port " + httpPort);
-			HTTPServerJSON httpd = new HTTPServerJSON(httpPort, this);
+			HTTPServerJSON httpd = new HTTPServerJSON(httpPort, this, this);
 			httpd.start();
 		} else {
 			System.err.println("# HTTP server disabled.");
