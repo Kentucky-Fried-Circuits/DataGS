@@ -17,4 +17,13 @@ sortOrder: order in which to initially display. Not guaranteed to be unique. Dea
 	public int precision;
 	public int sortOrder;
 	
+	public ChannelDescription(int id, String title, String description, String units, int precision, int sortOrder) {
+		this.id=id;
+		this.title=title;
+		this.description=description;
+		this.units=units;
+		this.precision=precision;
+		this.sortOrder=sortOrder;
+	}
+	
 }
