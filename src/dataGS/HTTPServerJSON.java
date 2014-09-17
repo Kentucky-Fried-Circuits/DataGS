@@ -46,16 +46,14 @@ public class HTTPServerJSON extends NanoHTTPD {
 				response = new NanoHTTPD.Response("{}");
 			}
 		/* dynamically generated JSON */
-		} else if ( uri.endsWith("channels.json") ) {
-			response = new NanoHTTPD.Response("{}");
 		} else if ( uri.endsWith("now.json") ) {
-			/* generate the response */
-			response = new NanoHTTPD.Response( Response.Status.OK,MIME_JSON, data.getJSON("now") );
+			response = new NanoHTTPD.Response( Response.Status.OK,MIME_JSON, data.getJSON(DataGS.JSON_NOW) );
 		} else if ( uri.endsWith("history.json") ) {
-			/* generate the response */
-			response = new NanoHTTPD.Response( Response.Status.OK,MIME_JSON, data.getJSON("history") );	
+			response = new NanoHTTPD.Response( Response.Status.OK,MIME_JSON, data.getJSON(DataGS.JSON_HISTORY) );
+		} else if ( uri.endsWith("channels.json") ) {
+			response = new NanoHTTPD.Response( Response.Status.OK,MIME_JSON, data.getJSON(DataGS.JSON_CHANNEL_DESCRIPTIONS) );
 		} else {
-			response = new NanoHTTPD.Response("{}");
+			response = new NanoHTTPD.Response( Response.Status.NOT_FOUND,MIME_PLAINTEXT, "Not Found");
 		}
 		
 

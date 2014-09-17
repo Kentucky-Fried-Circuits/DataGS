@@ -41,23 +41,32 @@ public class DataGS implements ChannelData, JSONData {
 	public static final int DATABASE_TYPE_SQLITE = 1;
 	public static final int DATABASE_TYPE_NONE = 2;
 
+	/* supported JSON resource requests */
+	public static final int JSON_NOW=0;
+	public static final int JSON_CHANNEL_DESCRIPTIONS=1;
+	public static final int JSON_HISTORY=2;
 
-	public String getJSON(String resource) {
-		if ( 0==resource.compareTo("now") ) {
+	public String getJSON(int resource) {
+		if ( JSON_NOW == resource ) {
 			return "{\"data\": [" + dataLastJSON + "]}";
+		} 
+		if ( JSON_CHANNEL_DESCRIPTIONS == resource ) {
+			return getChannelDataJSON();
 		}
 
 		return "invalid";
 	}
 
-	public String getHistoryDataJSON() {
-		ChannelDescription[] chd = new ChannelDescription[2];
+	private String getChannelDataJSON() {
+		ChannelDescription[] chd = new ChannelDescription[3];
 
 		chd[0] = new ChannelDescription('A', "A Channel (65)", "description of a channel", "volts", 3, -5);
 		chd[1] = new ChannelDescription('B', "B Channel (66)", "description of b channel", "watts", -1, 0);
+		chd[2] = new ChannelDescription('Z', "Z Channel", "description of Z channel", "&deg;C", -2, 100);
 
 		Gson gson = new GsonBuilder().serializeSpecialFloatingPointValues().create();
 
+		System.err.println("# got here, bitches");
 
 		//return gson.toJson(chd);
 		return "{\"channelData\": [" + gson.toJson(chd) + "]}";

@@ -2,6 +2,6 @@ package dataGS;
 
 public interface JSONData {
 
-	public String getJSON(String resource);
+	public String getJSON(int resource);
 	
 }
