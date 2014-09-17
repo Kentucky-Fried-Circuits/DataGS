@@ -24,7 +24,7 @@ import com.google.gson.GsonBuilder;
  * rsync -ave ssh DataGS/ aprsworld.com:DataGS/
  */
 public class DataGS implements ChannelData, lastDataJSON {
-	private Log log, threadLog;
+	private Log log;
 	private Timer threadMaintenanceTimer;
 
 	private Vector<DataGSServerThread> connectionThreads;
@@ -43,6 +43,7 @@ public class DataGS implements ChannelData, lastDataJSON {
 	/* supported databases */
 	public static final int DATABASE_TYPE_MYSQL = 0;
 	public static final int DATABASE_TYPE_SQLITE = 1;
+	public static final int DATABASE_TYPE_NONE = 2;
 
 
 	public String getLastDataJSON() {
@@ -128,16 +129,10 @@ public class DataGS implements ChannelData, lastDataJSON {
 
 		/* export latest statistics to JSON */
 		Gson gson = new GsonBuilder().serializeSpecialFloatingPointValues().create();
-		/* ugly kludge ... we should automatically do this */
 
 
-		//		dataLastJSON = gson.toJson(dataLast.get(new Integer(65)));
-		//		dataLastJSON += "," + gson.toJson(dataLast.get(new Integer(69)));
-		//		dataLastJSON += "," + gson.toJson(dataLast.get(new Integer('W')));
-
-		
 		synchronized ( dataLastJSON ) {
-			dataLastJSON="";
+			dataLastJSON="{\"data\": [";
 
 			Iterator<Entry<Integer, adcDouble>> it = dataLast.entrySet().iterator();
 			while (it.hasNext()) {
@@ -146,6 +141,7 @@ public class DataGS implements ChannelData, lastDataJSON {
 
 				dataLastJSON += gson.toJson(pairs.getValue()) + ", ";
 
+				
 				/* insert into MySQL */
 				String table = "adc_" + pairs.getKey();
 				adcDouble a = pairs.getValue();
@@ -157,13 +153,16 @@ public class DataGS implements ChannelData, lastDataJSON {
 						a.max,
 						a.stddev
 						);
+
 				log.queryAutoCreate(sql, "dataGSProto.analogDoubleSummarized", table);
+
 			}
-			
+
 			/* remove last comma */
 			if ( dataLastJSON.length() >= 2 ) {
 				dataLastJSON = dataLastJSON.substring(0, dataLastJSON.length()-2);
 			}
+			dataLastJSON = dataLastJSON + "]}";
 		}
 	}
 
@@ -189,8 +188,8 @@ public class DataGS implements ChannelData, lastDataJSON {
 		String myHost, myUser, myPass, myDB;
 		int myPort;
 		myHost="localhost";
-		myUser="root";
-		myPass="roadtoad";
+		myUser="";
+		myPass="";
 		myDB="dataGS";
 		myPort=3306;
 
@@ -199,14 +198,13 @@ public class DataGS implements ChannelData, lastDataJSON {
 		String sqliteProtoURL="";
 
 		/* Data GS parameters */
-		boolean oneMySQLPerThread=false;
 		portNumber=4010;
 		int httpPort=0;
 		int socketTimeout=62;
 		int stationTimeout=121;
 		boolean logConnection=false;
 		boolean memcachedDebug=false;
-		int databaseType=DATABASE_TYPE_MYSQL;
+		int databaseType=DATABASE_TYPE_NONE;
 
 
 
@@ -219,7 +217,6 @@ public class DataGS implements ChannelData, lastDataJSON {
 		options.addOption("h", "host", true, "MySQL host");
 		options.addOption("p", "password", true, "MySQL password");
 		options.addOption("u", "user", true, "MySQL username");
-		options.addOption("o", "one-mysql-per-thread", false, "Open a MySQL connection for each thread");
 
 		/* sqlite options */
 		options.addOption("s", "SQLite-URL",true,"SQLite URL (e.g. DataGS.db");
@@ -245,7 +242,6 @@ public class DataGS implements ChannelData, lastDataJSON {
 			if ( line.hasOption("user") ) myUser=line.getOptionValue("user");
 			if ( line.hasOption("password") ) myPass=line.getOptionValue("password");
 			if ( line.hasOption("database") ) myDB=line.getOptionValue("database");
-			if ( line.hasOption("one-mysql-per-thread") ) oneMySQLPerThread=true;
 
 			/* SQLite */
 			if ( line.hasOption("SQLite-URL") ) sqliteURL= line.getOptionValue("SQLite-URL");
@@ -285,6 +281,9 @@ public class DataGS implements ChannelData, lastDataJSON {
 		ServerSocket serverSocket = null;
 		boolean listening = true;
 
+		if ( null != myUser && "" != myUser) {
+			databaseType=DATABASE_TYPE_MYSQL;
+		}
 
 		/* if SQLite database URL is specified, then we use SQLite database ... otherwise MySQL */
 		if ( null != sqliteURL && "" != sqliteURL ) {
@@ -299,9 +298,7 @@ public class DataGS implements ChannelData, lastDataJSON {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		}
-
-		if ( DATABASE_TYPE_SQLITE == databaseType ) {
+		} else if ( DATABASE_TYPE_SQLITE == databaseType ) {
 			System.err.println("# Opening SQLite database");
 			log = new LogSQLite(sqliteProtoURL,sqliteURL);
 			try {
@@ -309,6 +306,8 @@ public class DataGS implements ChannelData, lastDataJSON {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}			
+		} else if ( DATABASE_TYPE_NONE == databaseType ) {
+			log = new LogNull();
 		}
 
 
@@ -351,12 +350,8 @@ public class DataGS implements ChannelData, lastDataJSON {
 		status.start();
 		status.updateStatus();
 
-		/* if oneMySQLPerThread then we send a null threadLog and the thread is responsible for opening its own connections */
-		if ( false == oneMySQLPerThread ) {
-			threadLog=log;
-		} else {
-			threadLog=null;
-		}
+
+
 
 		memcache=null;
 		if ( true == memcachedDebug ) {
@@ -397,7 +392,7 @@ public class DataGS implements ChannelData, lastDataJSON {
 
 			DataGSServerThread conn = new DataGSServerThread(
 					socket,
-					threadLog,
+					log,
 					myHost, 
 					myUser, 
 					myPass, 
@@ -431,7 +426,7 @@ public class DataGS implements ChannelData, lastDataJSON {
 	}
 
 	public static void main(String[] args) throws IOException {
-		System.err.println("# Major version: 2014-09-06 (precision)");
+		System.err.println("# Major version: 2014-09-17 (precision)");
 
 		DataGS d=new DataGS();
 

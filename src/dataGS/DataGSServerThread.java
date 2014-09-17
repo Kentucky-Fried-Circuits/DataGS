@@ -25,10 +25,10 @@ public class DataGSServerThread extends Thread {
 	protected MemcachedClient memcache;
 
 	protected Vector<ChannelData> channelDataListeners;
-	
+
 	public void addChannelDataListener(ChannelData c) {
 		channelDataListeners.add(c);
-		
+
 	}
 
 	public DataGSServerThread(
@@ -66,6 +66,7 @@ public class DataGSServerThread extends Thread {
 
 		memcacheLog("Starting thread: " + socket.getInetAddress().getHostAddress() + ":" + socket.getLocalPort());
 
+		/*
 		if ( null == log ) {
 			System.err.println("# Opening MySQL connection in thread");
 			log = new LogMySQL(myHost,myUser,myPass,myDB,myPort);
@@ -75,7 +76,7 @@ public class DataGSServerThread extends Thread {
 				e.printStackTrace();
 			}
 		}
-
+		 */
 
 		//dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 		dateFormat=df;
@@ -137,31 +138,31 @@ public class DataGSServerThread extends Thread {
 			b[i]=(byte) (rawBuffer[i] & 0xff);
 		}
 		String line = new String(b);
-//		System.err.println("# Line: " + line);
-		
-		
+		//		System.err.println("# Line: " + line);
+
+
 		try {
 			int ch=b[0];
 			double d=Double.parseDouble(line.substring(1));
-			
-		//	System.err.println("# ch=" + ch + " d=" + d + " line.substring(1)=" + line.substring(1));
-			
+
+			//	System.err.println("# ch=" + ch + " d=" + d + " line.substring(1)=" + line.substring(1));
+
 			for ( int i=0 ; i<channelDataListeners.size() ; i++ ) {
 				channelDataListeners.elementAt(i).ingest(ch, d);
 			}
-			
+
 		} catch ( Exception e ) {
 			System.err.println("# Error parsing: " + line);
 		}
-		
-		
-		
-		
+
+
+
+
 		//int nFields = line.split(",").length;
 		//System.err.println("# nFields: " + nFields);
-		
-		
-		
+
+
+
 
 	}
 
@@ -223,6 +224,7 @@ public class DataGSServerThread extends Thread {
 				"'closed'" +
 				")";
 		//		System.err.println("# SQL: " + sql);
+
 
 		log.queryAutoCreate(sql, "worldDataProto.connection", "connection");
 
