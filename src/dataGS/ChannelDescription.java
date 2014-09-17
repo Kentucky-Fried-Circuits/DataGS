@@ -25,5 +25,15 @@ sortOrder: order in which to initially display. Not guaranteed to be unique. Dea
 		this.precision=precision;
 		this.sortOrder=sortOrder;
 	}
+
+	public String toString() {
+		String s="### Channel id: " + id + "\n";
+		s += "# title: " + title + "\n";
+		s += "# description: " + description + "\n";
+		s += "# units: " + units + "\n";
+		s += "# precision: " + precision + "\n";
+		s += "# sortOrder: " + sortOrder;
+		return s;
+	}
 	
 }

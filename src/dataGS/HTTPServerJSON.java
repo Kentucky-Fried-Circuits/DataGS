@@ -43,15 +43,20 @@ public class HTTPServerJSON extends NanoHTTPD {
 			try {
 				response = new NanoHTTPD.Response( Response.Status.OK, MIME_GIF, new FileInputStream("www/favicon.ico"));
 			} catch (FileNotFoundException e) {
-				response = new NanoHTTPD.Response("{}");
+				response = new NanoHTTPD.Response( Response.Status.NOT_FOUND,MIME_PLAINTEXT, "Not Found");
 			}
+		} else if ( uri.endsWith("channels.json") ) {
+			try {
+				response = new NanoHTTPD.Response( Response.Status.OK, MIME_JSON, new FileInputStream("www/channels.json"));
+			} catch (FileNotFoundException e) {
+				response = new NanoHTTPD.Response( Response.Status.NOT_FOUND,MIME_PLAINTEXT, "Not Found");
+			}
+		}
 		/* dynamically generated JSON */
-		} else if ( uri.endsWith("now.json") ) {
+		else if ( uri.endsWith("now.json") ) {
 			response = new NanoHTTPD.Response( Response.Status.OK,MIME_JSON, data.getJSON(DataGS.JSON_NOW) );
 		} else if ( uri.endsWith("history.json") ) {
 			response = new NanoHTTPD.Response( Response.Status.OK,MIME_JSON, data.getJSON(DataGS.JSON_HISTORY) );
-		} else if ( uri.endsWith("channels.json") ) {
-			response = new NanoHTTPD.Response( Response.Status.OK,MIME_JSON, data.getJSON(DataGS.JSON_CHANNEL_DESCRIPTIONS) );
 		} else {
 			response = new NanoHTTPD.Response( Response.Status.NOT_FOUND,MIME_PLAINTEXT, "Not Found");
 		}
