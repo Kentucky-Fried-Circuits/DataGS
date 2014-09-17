@@ -20,7 +20,7 @@ import org.apache.commons.math3.stat.descriptive.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-public class DataGS implements ChannelData, JSONData, JSONDataHistory {
+public class DataGS implements ChannelData, JSONData {
 	private Log log;
 	private Timer threadMaintenanceTimer;
 
@@ -42,19 +42,23 @@ public class DataGS implements ChannelData, JSONData, JSONDataHistory {
 	public static final int DATABASE_TYPE_NONE = 2;
 
 
-	public String getJSON() {
-		return "{\"data\": [" + dataLastJSON + "]}";
+	public String getJSON(String resource) {
+		if ( 0==resource.compareTo("now") ) {
+			return "{\"data\": [" + dataLastJSON + "]}";
+		}
+
+		return "invalid";
 	}
 
 	public String getHistoryDataJSON() {
 		ChannelDescription[] chd = new ChannelDescription[2];
-		
+
 		chd[0] = new ChannelDescription('A', "A Channel (65)", "description of a channel", "volts", 3, -5);
 		chd[1] = new ChannelDescription('B', "B Channel (66)", "description of b channel", "watts", -1, 0);
-		
+
 		Gson gson = new GsonBuilder().serializeSpecialFloatingPointValues().create();
-		
-		
+
+
 		//return gson.toJson(chd);
 		return "{\"channelData\": [" + gson.toJson(chd) + "]}";
 	}
@@ -105,7 +109,7 @@ public class DataGS implements ChannelData, JSONData, JSONDataHistory {
 
 				dataLastJSON += gson.toJson(pairs.getValue()) + ", ";
 
-				
+
 				/* insert into MySQL */
 				String table = "adc_" + pairs.getKey();
 				adcDouble a = pairs.getValue();
@@ -327,7 +331,7 @@ public class DataGS implements ChannelData, JSONData, JSONDataHistory {
 
 		if ( 0 != httpPort ) {
 			System.err.println("# HTTP server listening on port " + httpPort);
-			HTTPServerJSON httpd = new HTTPServerJSON(httpPort, this, this);
+			HTTPServerJSON httpd = new HTTPServerJSON(httpPort, this);
 			httpd.start();
 		} else {
 			System.err.println("# HTTP server disabled.");
