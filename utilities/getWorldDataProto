@@ -1,2 +1,0 @@
-#!/bin/bash
-curl http://automated:system@data.aprsworld.com/admin/exportProtoSQL.php | mysql -uroot -proadtoad worldDataProto
