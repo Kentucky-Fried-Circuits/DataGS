@@ -99,7 +99,7 @@ public class DataGS implements ChannelData, JSONData {
 			/* create a JSON data history point and put into limited length FIFO */
 			if ( null != historyJSON ) {
 				historyJSON.add(HistoryPointJSON.toJSON(now, data));
-				System.err.println("# historyJSON is " + historyJSON.size() + " of " + historyJSON.maxSize() + " maximum.");
+//				System.err.println("# historyJSON is " + historyJSON.size() + " of " + historyJSON.maxSize() + " maximum.");
 			}
 			
 
