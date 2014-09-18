@@ -31,7 +31,7 @@ public class DataGS implements ChannelData, JSONData {
 
 	/* data to summarize and send */
 	protected Map<Integer, SynchronizedSummaryStatistics> data;
-	protected Map<Integer, adcDouble> dataLast;
+	protected Map<Integer, AdcDouble> dataLast;
 	protected int intervalSummary;
 	protected Timer dataTimer;
 	protected String dataLastJSON;
@@ -79,9 +79,13 @@ public class DataGS implements ChannelData, JSONData {
 			while (it.hasNext()) {
 				Map.Entry<Integer, SynchronizedSummaryStatistics> pairs = (Map.Entry<Integer, SynchronizedSummaryStatistics>)it.next();
 
-				dataLast.put(pairs.getKey(),new adcDouble(pairs.getKey(),now,pairs.getValue()));
+				dataLast.put(pairs.getKey(),new AdcDouble(pairs.getKey(),now,pairs.getValue()));
 			}
 
+			/* create a history data point */
+			System.err.println("history point:\n ["  + HistoryPointJSON.toJSON(now, data) + "]\n");
+			
+			
 			/* clear statistics for next pass */
 			data.clear();
 		}
@@ -94,9 +98,9 @@ public class DataGS implements ChannelData, JSONData {
 		synchronized ( dataLastJSON ) {
 			dataLastJSON="";
 
-			Iterator<Entry<Integer, adcDouble>> it = dataLast.entrySet().iterator();
+			Iterator<Entry<Integer, AdcDouble>> it = dataLast.entrySet().iterator();
 			while (it.hasNext()) {
-				Map.Entry<Integer, adcDouble> pairs = (Map.Entry<Integer, adcDouble>)it.next();
+				Map.Entry<Integer, AdcDouble> pairs = (Map.Entry<Integer, AdcDouble>)it.next();
 				System.out.println(pairs.getKey() + " = " + pairs.getValue());
 
 				dataLastJSON += gson.toJson(pairs.getValue()) + ", ";
@@ -104,7 +108,7 @@ public class DataGS implements ChannelData, JSONData {
 
 				/* insert into MySQL */
 				String table = "adc_" + pairs.getKey();
-				adcDouble a = pairs.getValue();
+				AdcDouble a = pairs.getValue();
 				String sql = String.format("INSERT INTO %s VALUES(now(), %d, %f, %f, %f, %f)",
 						table,
 						a.n,
@@ -169,7 +173,7 @@ public class DataGS implements ChannelData, JSONData {
 
 		intervalSummary = 1000;
 		data = new HashMap<Integer, SynchronizedSummaryStatistics>();
-		dataLast = new HashMap<Integer, adcDouble>();
+		dataLast = new HashMap<Integer, AdcDouble>();
 
 		/* MySQL options */
 		options.addOption("d", "database", true, "MySQL database");
