@@ -1,6 +1,8 @@
 package dataGS;
 import java.net.*;
+
 import javax.swing.Timer;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
@@ -8,10 +10,17 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
+
+
 /* Command line parsing from Apache */
 import org.apache.commons.cli.*;
+import org.apache.commons.collections4.queue.CircularFifoQueue;
+
+
 /* Memcache client for logging */
 import net.spy.memcached.MemcachedClient;
+
+
 
 /* statistics */
 import org.apache.commons.math3.stat.descriptive.*;
@@ -36,6 +45,9 @@ public class DataGS implements ChannelData, JSONData {
 	protected Timer dataTimer;
 	protected String dataLastJSON;
 
+	/* history data */
+	protected CircularFifoQueue<String> historyJSON;
+
 	/* supported databases */
 	public static final int DATABASE_TYPE_MYSQL = 0;
 	public static final int DATABASE_TYPE_SQLITE = 1;
@@ -48,7 +60,9 @@ public class DataGS implements ChannelData, JSONData {
 	public String getJSON(int resource) {
 		if ( JSON_NOW == resource ) {
 			return "{\"data\": [" + dataLastJSON + "]}";
-		} 
+		} else if ( JSON_HISTORY == resource ) {
+			return "{\"history\": [" + historyJSON.toString() + "]}";
+		}
 
 
 		return "invalid";
@@ -82,10 +96,13 @@ public class DataGS implements ChannelData, JSONData {
 				dataLast.put(pairs.getKey(),new AdcDouble(pairs.getKey(),now,pairs.getValue()));
 			}
 
-			/* create a history data point */
-			System.err.println("history point:\n ["  + HistoryPointJSON.toJSON(now, data) + "]\n");
+			/* create a JSON data history point and put into limited length FIFO */
+			if ( null != historyJSON ) {
+				historyJSON.add(HistoryPointJSON.toJSON(now, data));
+				System.err.println("# historyJSON is " + historyJSON.size() + " of " + historyJSON.maxSize() + " maximum.");
+			}
 			
-			
+
 			/* clear statistics for next pass */
 			data.clear();
 		}
@@ -169,6 +186,7 @@ public class DataGS implements ChannelData, JSONData {
 		boolean memcachedDebug=false;
 		int databaseType=DATABASE_TYPE_NONE;
 
+		int dataHistoryJSONHours=24;
 
 
 		intervalSummary = 1000;
@@ -194,6 +212,7 @@ public class DataGS implements ChannelData, JSONData {
 
 		/* built-in web server options */
 		options.addOption("j", "http-port", true, "webserver port, 0 to disable");
+		options.addOption("H", "json-history-hours", true, "hours of history data to make available, 0 to disable");
 
 		/* parse command line */
 		CommandLineParser parser = new PosixParser();
@@ -211,9 +230,11 @@ public class DataGS implements ChannelData, JSONData {
 			if ( line.hasOption("SQLite-proto-URL") ) sqliteProtoURL= line.getOptionValue("SQLite-proto-URL");
 
 			/* web server */
-			options.addOption("j", "http-port", true, "webserver port, 0 to disable");
 			if ( line.hasOption("http-port") ) {
 				httpPort = Integer.parseInt(line.getOptionValue("http-port"));
+			}
+			if ( line.hasOption("json-history-hours") ) {
+				dataHistoryJSONHours = Integer.parseInt(line.getOptionValue("json-history-hours"));
 			}
 
 			/* DataGSCollector */
@@ -239,6 +260,22 @@ public class DataGS implements ChannelData, JSONData {
 			System.err.println("# Error parsing command line: " + e);
 		}
 
+		
+		historyJSON=null;
+		if ( dataHistoryJSONHours > 0 ) {
+			int nPoints=(dataHistoryJSONHours*60*60)/(intervalSummary/1000);
+			
+			System.err.printf("# Enabling history JSON for %d hours (%d data points at %d millisecond interval rate)\n",
+					dataHistoryJSONHours,
+					nPoints,
+					intervalSummary);
+			historyJSON = new CircularFifoQueue<String>(nPoints);
+		} else {
+			System.err.println("# History JSON disabled");
+			historyJSON=null;
+		}
+		
+		
 
 		connectionThreads=new Vector<DataGSServerThread>();
 		ServerSocket serverSocket = null;
