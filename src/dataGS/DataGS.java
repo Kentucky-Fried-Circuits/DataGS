@@ -61,7 +61,7 @@ public class DataGS implements ChannelData, JSONData {
 		if ( JSON_NOW == resource ) {
 			return "{\"data\": [" + dataLastJSON + "]}";
 		} else if ( JSON_HISTORY == resource ) {
-			return "{\"history\": [" + historyJSON.toString() + "]}";
+			return "{\"history\":" + historyJSON.toString() + "}";
 		}
 
 
