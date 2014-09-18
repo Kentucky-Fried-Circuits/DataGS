@@ -2,7 +2,7 @@ package dataGS;
 
 import org.apache.commons.math3.stat.descriptive.SynchronizedSummaryStatistics;
 
-public class adcDouble {
+public class AdcDouble {
 	public int channel;
 	public long time;
 	public long n;
@@ -11,7 +11,7 @@ public class adcDouble {
 	public double max;
 	public double stddev;
 	
-	public adcDouble(int ch, long t, SynchronizedSummaryStatistics s) {
+	public AdcDouble(int ch, long t, SynchronizedSummaryStatistics s) {
 		channel=ch;
 		time=t;
 		n=s.getN();
