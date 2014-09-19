@@ -23,6 +23,8 @@ public class AdcDouble {
 	}
 	
 	public String toString() {
-		return "time=" + time + " n=" + n + " avg=" + avg + " min=" + min + " max=" + max + " stddev=" + stddev;
+		return String.format("n=%d avg=%0.6f min=%0.6f max=%0.6f stddev=" + stddev);
+		//return "time=" + time + " n=" + n + " avg=" + avg + " min=" + min + " max=" + max + " stddev=" + stddev;
+		//return "time=" + time + " n=" + n + " avg=" + avg + " min=" + min + " max=" + max + " stddev=" + stddev;
 	}
 }
