@@ -565,7 +565,27 @@ public abstract class NanoHTTPD {
         public Response(String msg) {
             this(Status.OK, MIME_HTML, msg);
         }
+        
+        /**
+	 * Added by Ian Gibbs 2014-10-06 
+	 * This addition is for gzip support
+	 */
+	public Response(byte[] msg) {
 
+	    this( Status.OK, MIME_HTML, msg );
+
+	}
+	/**
+	 * Added by Ian Gibbs 2014-10-06 
+	 * This addition is for gzip support
+	 */
+	public Response(IStatus status, String mimeType, byte[] txt) {
+
+	    this.status = status;
+	    this.mimeType = mimeType;
+	    this.data = txt != null ? new ByteArrayInputStream( txt ) : null;
+	    this.addHeader( "content-encoding", "gzip" );
+	}
         /**
          * Basic constructor.
          */
