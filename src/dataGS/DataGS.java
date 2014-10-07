@@ -10,7 +10,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
-
+//test comment
 
 /* Command line parsing from Apache */
 import org.apache.commons.cli.*;
@@ -99,9 +99,9 @@ public class DataGS implements ChannelData, JSONData {
 			/* create a JSON data history point and put into limited length FIFO */
 			if ( null != historyJSON ) {
 				historyJSON.add(HistoryPointJSON.toJSON(now, data));
-				//				System.err.println("# historyJSON is " + historyJSON.size() + " of " + historyJSON.maxSize() + " maximum.");
+//				System.err.println("# historyJSON is " + historyJSON.size() + " of " + historyJSON.maxSize() + " maximum.");
 			}
-
+			
 
 			/* clear statistics for next pass */
 			data.clear();
@@ -133,7 +133,7 @@ public class DataGS implements ChannelData, JSONData {
 						a.min,
 						a.max,
 						a.stddev
-				);
+						);
 
 				log.queryAutoCreate(sql, "dataGSProto.analogDoubleSummarized", table);
 
@@ -177,9 +177,6 @@ public class DataGS implements ChannelData, JSONData {
 		String sqliteURL="";
 		String sqliteProtoURL="";
 
-		/* serial port parameters */
-		String serialPortWorldData="";
-
 		/* Data GS parameters */
 		portNumber=4010;
 		int httpPort=0;
@@ -212,10 +209,6 @@ public class DataGS implements ChannelData, JSONData {
 		options.addOption("t", "socket-timeout",true, "DataGSCollector connection socket timeout");
 		options.addOption("T", "station-timeout",true, "DataGSCollector station history timeout");
 		options.addOption("m", "memcacheDebug", false, "Debug messages written to memcached per station");
-
-		/* serial port data source options */
-		options.addOption("R", "serialPortWorldData",true,"Serial Port to listen for worldData packets");
-
 
 		/* built-in web server options */
 		options.addOption("j", "http-port", true, "webserver port, 0 to disable");
@@ -258,12 +251,6 @@ public class DataGS implements ChannelData, JSONData {
 				stationTimeout = Integer.parseInt(line.getOptionValue("station-timeout"));
 			}
 
-			/* serial port */
-			if ( line.hasOption("serialPortWorldData") ) {
-				serialPortWorldData=line.getOptionValue("serialPortWorldData");
-			}
-
-
 			if ( line.hasOption("memcacheDebug") ) memcachedDebug=true;
 
 
@@ -273,11 +260,11 @@ public class DataGS implements ChannelData, JSONData {
 			System.err.println("# Error parsing command line: " + e);
 		}
 
-
+		
 		historyJSON=null;
 		if ( dataHistoryJSONHours > 0 ) {
 			int nPoints=(dataHistoryJSONHours*60*60)/(intervalSummary/1000);
-
+			
 			System.err.printf("# Enabling history JSON for %d hours (%d data points at %d millisecond interval rate)\n",
 					dataHistoryJSONHours,
 					nPoints,
@@ -287,10 +274,13 @@ public class DataGS implements ChannelData, JSONData {
 			System.err.println("# History JSON disabled");
 			historyJSON=null;
 		}
-
-
-
 		
+		
+
+		connectionThreads=new Vector<DataGSServerThread>();
+		ServerSocket serverSocket = null;
+		boolean listening = true;
+
 		if ( null != myUser && "" != myUser) {
 			databaseType=DATABASE_TYPE_MYSQL;
 		}
@@ -321,31 +311,14 @@ public class DataGS implements ChannelData, JSONData {
 		}
 
 
-		/* serial port for WorldData packets */
-		if ( "" != serialPortWorldData ) {
-			System.err.println("# Listening for WorldData packets on " + serialPortWorldData);
-		}
 
 
-
-		
-		connectionThreads=new Vector<DataGSServerThread>();
-		
-		/* socket for DataGS packets */
-		ServerSocket serverSocket = null;
-		boolean listening = false;
-
-		if ( 0 != portNumber ) {
-			System.err.println("# Listening on port " + portNumber + " with " + socketTimeout + " second socket timeout and " + stationTimeout + " second station timeout");
-			try {
-				serverSocket = new ServerSocket(portNumber);
-				listening=true;
-			} catch (IOException e) {
-				System.err.println("# Could not listen on port: " + portNumber);
-				System.exit(-1);
-			}
-		} else {
-			System.err.println("# DataGS socket disabled because portNumber=0");
+		System.err.println("# Listening on port " + portNumber + " with " + socketTimeout + " second socket timeout and " + stationTimeout + " second station timeout");
+		try {
+			serverSocket = new ServerSocket(portNumber);
+		} catch (IOException e) {
+			System.err.println("# Could not listen on port: " + portNumber);
+			System.exit(-1);
 		}
 
 
@@ -408,12 +381,12 @@ public class DataGS implements ChannelData, JSONData {
 				/* Log the connection before starting the new thread */
 				status.addConnection(socket);
 				String sql = "INSERT INTO connection (logdate,localPort,remoteIP,remotePort,status) VALUES (" +
-				"'" +  dateFormat.format(new Date()) + "', " +
-				socket.getLocalPort() + ", " + 
-				"'" + socket.getInetAddress().getHostAddress() + "', " +
-				socket.getPort() + ", " + 
-				"'accept'" +
-				")";
+						"'" +  dateFormat.format(new Date()) + "', " +
+						socket.getLocalPort() + ", " + 
+						"'" + socket.getInetAddress().getHostAddress() + "', " +
+						socket.getPort() + ", " + 
+						"'accept'" +
+						")";
 				log.queryAutoCreate(sql, "DataGSProto.connection", "connection");
 			}
 
@@ -453,7 +426,7 @@ public class DataGS implements ChannelData, JSONData {
 	}
 
 	public static void main(String[] args) throws IOException {
-		System.err.println("# Major version: 2014-10-07 (precision)");
+		System.err.println("# Major version: 2014-09-19 (precision)");
 
 		DataGS d=new DataGS();
 
