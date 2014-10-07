@@ -4,11 +4,9 @@ import java.text.DecimalFormat;
 
 
 
-public class HandlerMagWeb { // implements HandlerInterfaceBinary {	
-	public HandlerMagWeb () {
-	}
+public class HandlerMagWeb { 	
 
-	public boolean processPacket(int[] rawBuffer, Log log) {
+	public boolean processPacket(int[] rawBuffer) {
 		RecordMagWeb r = new RecordMagWeb();
 		r.parseRecord(rawBuffer);
 
@@ -16,13 +14,14 @@ public class HandlerMagWeb { // implements HandlerInterfaceBinary {
 		if ( true != r.isValid() ) {
 			return false;
 		}
+		
 
 		StringBuilder sb=new StringBuilder();
 		StringBuilder va=new StringBuilder();
 		DecimalFormat df1 = new DecimalFormat("0.0");
 		DecimalFormat df2 = new DecimalFormat("0.00");
 
-		String table = "magWeb_" + r.serialNumber;
+		String table = "magWeb_" ; //+ r.serialNumber;
 
 		sb.append("INSERT INTO ");
 		sb.append(table);
@@ -243,9 +242,9 @@ public class HandlerMagWeb { // implements HandlerInterfaceBinary {
 		sb.append(va.toString());
 		sb.append(")");
 		
-	//	System.out.println("SQL: " + sb.toString());
+		System.out.println("SQL: " + sb.toString());
 
-		log.queryAutoCreate(sb.toString(),"worldDataProto.magWeb",table);
+//		log.queryAutoCreate(sb.toString(),"worldDataProto.magWeb",table);
 
 		return true;
 

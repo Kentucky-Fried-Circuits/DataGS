@@ -8,7 +8,7 @@ import org.apache.commons.math3.stat.descriptive.SynchronizedSummaryStatistics;
 
 public class HistoryPointJSON {
 
-	public static String toJSON(long time, Map<Integer, SynchronizedSummaryStatistics> data) {
+	public static String toJSON(long time, Map<String, SynchronizedSummaryStatistics> data) {
 		String json;
 		
 		json = "{\"time\":" + time + ","; /* open data element and add the timestamp */
@@ -27,10 +27,10 @@ public class HistoryPointJSON {
 		
 		json += "\"data\": {"; /* open data array */
 		
-		Iterator<Entry<Integer, SynchronizedSummaryStatistics>> it = data.entrySet().iterator();
+		Iterator<Entry<String, SynchronizedSummaryStatistics>> it = data.entrySet().iterator();
 		if ( ! data.isEmpty() ) {
 			while (it.hasNext()) {
-				Map.Entry<Integer, SynchronizedSummaryStatistics> pairs = (Map.Entry<Integer, SynchronizedSummaryStatistics>)it.next();
+				Map.Entry<String, SynchronizedSummaryStatistics> pairs = (Map.Entry<String, SynchronizedSummaryStatistics>)it.next();
 
 				json += "\"" + pairs.getKey() + "\":" + pairs.getValue().getMean();
 

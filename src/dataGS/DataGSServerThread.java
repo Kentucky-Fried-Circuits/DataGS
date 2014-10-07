@@ -142,7 +142,7 @@ public class DataGSServerThread extends Thread {
 
 
 		try {
-			int ch=b[0];
+			String ch=b[0] + "";
 			double d=Double.parseDouble(line.substring(1));
 
 			//	System.err.println("# ch=" + ch + " d=" + d + " line.substring(1)=" + line.substring(1));

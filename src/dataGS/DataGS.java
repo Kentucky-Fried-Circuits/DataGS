@@ -39,8 +39,8 @@ public class DataGS implements ChannelData, JSONData {
 
 
 	/* data to summarize and send */
-	protected Map<Integer, SynchronizedSummaryStatistics> data;
-	protected Map<Integer, AdcDouble> dataLast;
+	protected Map<String, SynchronizedSummaryStatistics> data;
+	protected Map<String, AdcDouble> dataLast;
 	protected int intervalSummary;
 	protected Timer dataTimer;
 	protected String dataLastJSON;
@@ -89,9 +89,9 @@ public class DataGS implements ChannelData, JSONData {
 			dataLast.clear();
 
 			/* iterate through and export summary */
-			Iterator<Entry<Integer, SynchronizedSummaryStatistics>> it = data.entrySet().iterator();
+			Iterator<Entry<String, SynchronizedSummaryStatistics>> it = data.entrySet().iterator();
 			while (it.hasNext()) {
-				Map.Entry<Integer, SynchronizedSummaryStatistics> pairs = (Map.Entry<Integer, SynchronizedSummaryStatistics>)it.next();
+				Map.Entry<String, SynchronizedSummaryStatistics> pairs = (Map.Entry<String, SynchronizedSummaryStatistics>)it.next();
 
 				dataLast.put(pairs.getKey(),new AdcDouble(pairs.getKey(),now,pairs.getValue()));
 			}
@@ -115,9 +115,9 @@ public class DataGS implements ChannelData, JSONData {
 		synchronized ( dataLastJSON ) {
 			dataLastJSON="";
 
-			Iterator<Entry<Integer, AdcDouble>> it = dataLast.entrySet().iterator();
+			Iterator<Entry<String, AdcDouble>> it = dataLast.entrySet().iterator();
 			while (it.hasNext()) {
-				Map.Entry<Integer, AdcDouble> pairs = (Map.Entry<Integer, AdcDouble>)it.next();
+				Map.Entry<String, AdcDouble> pairs = (Map.Entry<String, AdcDouble>)it.next();
 				System.out.println(pairs.getKey() + " = " + pairs.getValue());
 
 				dataLastJSON += gson.toJson(pairs.getValue()) + ", ";
@@ -145,10 +145,8 @@ public class DataGS implements ChannelData, JSONData {
 			}
 		}
 	}
-
-	public void ingest(int channel, double value) {
-		Integer ch = new Integer(channel);
-
+	
+	public void ingest(String ch, double value) {
 		/* initialize the channel if it hasn't be already */
 		if ( false == data.containsKey(ch) ) {
 			data.put(ch, new SynchronizedSummaryStatistics());
@@ -179,6 +177,7 @@ public class DataGS implements ChannelData, JSONData {
 
 		/* serial port parameters */
 		String serialPortWorldData="";
+		int serialPortWorldDataSpeed=9600;
 
 		/* Data GS parameters */
 		portNumber=4010;
@@ -193,8 +192,8 @@ public class DataGS implements ChannelData, JSONData {
 
 
 		intervalSummary = 1000;
-		data = new HashMap<Integer, SynchronizedSummaryStatistics>();
-		dataLast = new HashMap<Integer, AdcDouble>();
+		data = new HashMap<String, SynchronizedSummaryStatistics>();
+		dataLast = new HashMap<String, AdcDouble>();
 
 		/* MySQL options */
 		options.addOption("d", "database", true, "MySQL database");
@@ -214,7 +213,8 @@ public class DataGS implements ChannelData, JSONData {
 		options.addOption("m", "memcacheDebug", false, "Debug messages written to memcached per station");
 
 		/* serial port data source options */
-		options.addOption("R", "serialPortWorldData",true,"Serial Port to listen for worldData packets");
+		options.addOption("r", "serialPortWorldData",true,"Serial Port to listen for worldData packets");
+		options.addOption("R", "serialPortWorldDataSpeed",true,"Serial port speed");
 
 
 		/* built-in web server options */
@@ -262,6 +262,9 @@ public class DataGS implements ChannelData, JSONData {
 			if ( line.hasOption("serialPortWorldData") ) {
 				serialPortWorldData=line.getOptionValue("serialPortWorldData");
 			}
+			if ( line.hasOption("serialPortWorldDataSpeed") ) {
+				serialPortWorldDataSpeed = Integer.parseInt(line.getOptionValue("serialPortWorldDataSpeed"));
+			}
 
 
 			if ( line.hasOption("memcacheDebug") ) memcachedDebug=true;
@@ -290,7 +293,7 @@ public class DataGS implements ChannelData, JSONData {
 
 
 
-		
+
 		if ( null != myUser && "" != myUser) {
 			databaseType=DATABASE_TYPE_MYSQL;
 		}
@@ -321,16 +324,29 @@ public class DataGS implements ChannelData, JSONData {
 		}
 
 
+
+		/* track our data source threads */
+		connectionThreads=new Vector<DataGSServerThread>();
+		/* timer to periodically clear thread listing */
+		threadMaintenanceTimer = new javax.swing.Timer(5000, new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				threadMaintenanceTimer();
+			}
+		});
+		threadMaintenanceTimer.start();
+		
+		
 		/* serial port for WorldData packets */
 		if ( "" != serialPortWorldData ) {
 			System.err.println("# Listening for WorldData packets on " + serialPortWorldData);
+			
+			WorldDataSerialReader ser = new WorldDataSerialReader(serialPortWorldData, serialPortWorldDataSpeed);
+			WorldDataProcessor worldProcessor = new WorldDataProcessor();
+			worldProcessor.addChannelDataListener(this);
+			ser.addPacketListener(worldProcessor);
 		}
 
 
-
-		
-		connectionThreads=new Vector<DataGSServerThread>();
-		
 		/* socket for DataGS packets */
 		ServerSocket serverSocket = null;
 		boolean listening = false;
@@ -348,17 +364,8 @@ public class DataGS implements ChannelData, JSONData {
 			System.err.println("# DataGS socket disabled because portNumber=0");
 		}
 
-
-
-
-
-		/* timer to periodically clear thread listing */
-		threadMaintenanceTimer = new javax.swing.Timer(5000, new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				threadMaintenanceTimer();
-			}
-		});
-		threadMaintenanceTimer.start();
+		
+		
 
 
 		/* timer to periodically handle the data */
@@ -379,7 +386,7 @@ public class DataGS implements ChannelData, JSONData {
 
 
 
-
+		/* memcache debugging */
 		memcache=null;
 		if ( true == memcachedDebug ) {
 			try {
@@ -389,6 +396,7 @@ public class DataGS implements ChannelData, JSONData {
 			}
 		}
 
+		/* built in http server to provide data */
 		if ( 0 != httpPort ) {
 			System.err.println("# HTTP server listening on port " + httpPort);
 			HTTPServerJSON httpd = new HTTPServerJSON(httpPort, this);
@@ -397,7 +405,7 @@ public class DataGS implements ChannelData, JSONData {
 			System.err.println("# HTTP server disabled.");
 		}
 
-		/* spin through and accept new connections as quickly as we can */
+		/* spin through and accept new connections as quickly as we can ... in DataGS format. */
 		while ( listening ) {
 			Socket socket=serverSocket.accept();
 			/* setup our sockets to send RST as soon as close() is called ... this is the default action */
@@ -437,8 +445,10 @@ public class DataGS implements ChannelData, JSONData {
 			System.err.println("# connectionThreads.size()=" + connectionThreads.size());
 		}
 
-		System.err.print ("# DataGS shuting down server socket ... ");
-		serverSocket.close();
+		if ( null != serverSocket ) {
+			System.err.print ("# DataGS shuting down server socket ... ");
+			serverSocket.close();
+		}
 
 		if ( null != threadMaintenanceTimer && threadMaintenanceTimer.isRunning() ) {
 			threadMaintenanceTimer.stop();
@@ -449,7 +459,7 @@ public class DataGS implements ChannelData, JSONData {
 		}
 
 
-		System.err.println("done");
+		System.err.println("# dataGS done");
 	}
 
 	public static void main(String[] args) throws IOException {
