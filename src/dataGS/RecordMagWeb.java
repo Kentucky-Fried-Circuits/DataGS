@@ -4,7 +4,7 @@ import java.util.Date;
 public class RecordMagWeb {
 	public static final int maxAgeCurrent=250;
 	private static final boolean debug=false;
-	public String serialNumber;
+	private String serialNumber;
 	private int vScale;
 
 	/* meta data */
@@ -116,7 +116,7 @@ public class RecordMagWeb {
 	public double rtr_revision;
 
 	private int lCRC, rCRC;
-	public Date rxDate;
+	private Date rxDate;
 
 
 	public RecordMagWeb() {

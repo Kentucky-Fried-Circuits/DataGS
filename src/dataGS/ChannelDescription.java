@@ -10,14 +10,14 @@ precision: number of places to the right of the decimal. If 0, decimal point is 
 sortOrder: order in which to initially display. Not guaranteed to be unique. Deal with it. 
  */
 	
-	public int id;
+	public String id;
 	public String title;
 	public String description;
 	public String units;
 	public int precision;
 	public int sortOrder;
 	
-	public ChannelDescription(int id, String title, String description, String units, int precision, int sortOrder) {
+	public ChannelDescription(String id, String title, String description, String units, int precision, int sortOrder) {
 		this.id=id;
 		this.title=title;
 		this.description=description;

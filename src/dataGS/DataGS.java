@@ -39,8 +39,8 @@ public class DataGS implements ChannelData, JSONData {
 
 
 	/* data to summarize and send */
-	protected Map<Integer, SynchronizedSummaryStatistics> data;
-	protected Map<Integer, AdcDouble> dataLast;
+	protected Map<String, SynchronizedSummaryStatistics> data;
+	protected Map<String, AdcDouble> dataLast;
 	protected int intervalSummary;
 	protected Timer dataTimer;
 	protected String dataLastJSON;
@@ -89,9 +89,9 @@ public class DataGS implements ChannelData, JSONData {
 			dataLast.clear();
 
 			/* iterate through and export summary */
-			Iterator<Entry<Integer, SynchronizedSummaryStatistics>> it = data.entrySet().iterator();
+			Iterator<Entry<String, SynchronizedSummaryStatistics>> it = data.entrySet().iterator();
 			while (it.hasNext()) {
-				Map.Entry<Integer, SynchronizedSummaryStatistics> pairs = (Map.Entry<Integer, SynchronizedSummaryStatistics>)it.next();
+				Map.Entry<String, SynchronizedSummaryStatistics> pairs = (Map.Entry<String, SynchronizedSummaryStatistics>)it.next();
 
 				dataLast.put(pairs.getKey(),new AdcDouble(pairs.getKey(),now,pairs.getValue()));
 			}
@@ -115,9 +115,9 @@ public class DataGS implements ChannelData, JSONData {
 		synchronized ( dataLastJSON ) {
 			dataLastJSON="";
 
-			Iterator<Entry<Integer, AdcDouble>> it = dataLast.entrySet().iterator();
+			Iterator<Entry<String, AdcDouble>> it = dataLast.entrySet().iterator();
 			while (it.hasNext()) {
-				Map.Entry<Integer, AdcDouble> pairs = (Map.Entry<Integer, AdcDouble>)it.next();
+				Map.Entry<String, AdcDouble> pairs = (Map.Entry<String, AdcDouble>)it.next();
 				System.out.println(pairs.getKey() + " = " + pairs.getValue());
 
 				dataLastJSON += gson.toJson(pairs.getValue()) + ", ";
@@ -145,10 +145,8 @@ public class DataGS implements ChannelData, JSONData {
 			}
 		}
 	}
-
-	public void ingest(int channel, double value) {
-		Integer ch = new Integer(channel);
-
+	
+	public void ingest(String ch, double value) {
 		/* initialize the channel if it hasn't be already */
 		if ( false == data.containsKey(ch) ) {
 			data.put(ch, new SynchronizedSummaryStatistics());
@@ -194,8 +192,8 @@ public class DataGS implements ChannelData, JSONData {
 
 
 		intervalSummary = 1000;
-		data = new HashMap<Integer, SynchronizedSummaryStatistics>();
-		dataLast = new HashMap<Integer, AdcDouble>();
+		data = new HashMap<String, SynchronizedSummaryStatistics>();
+		dataLast = new HashMap<String, AdcDouble>();
 
 		/* MySQL options */
 		options.addOption("d", "database", true, "MySQL database");
@@ -344,6 +342,7 @@ public class DataGS implements ChannelData, JSONData {
 			
 			WorldDataSerialReader ser = new WorldDataSerialReader(serialPortWorldData, serialPortWorldDataSpeed);
 			WorldDataProcessor worldProcessor = new WorldDataProcessor();
+			worldProcessor.addChannelDataListener(this);
 			ser.addPacketListener(worldProcessor);
 		}
 
