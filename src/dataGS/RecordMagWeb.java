@@ -3,120 +3,120 @@ import java.util.Date;
 
 public class RecordMagWeb {
 	public static final int maxAgeCurrent=250;
-	static final boolean debug=false;
-	public String serialNumber;
-	int vScale;
+	private static final boolean debug=false;
+	private String serialNumber;
+	private int vScale;
 
 	/* meta data */
-	int sequenceNumber;
-	int firmware_year;
-	int firmware_month;
-	int firmware_day;
+	public int sequenceNumber;
+	public int firmware_year;
+	public int firmware_month;
+	public int firmware_day;
 	
 	/* packet ages determine what we want to insert and what we want to leave null */
-	int age_inverter;
-	int length_inverter;
-	int age_remote, age_remote_0xA0, age_remote_0xA1, age_remote_0xA2, age_remote_0xA3, age_remote_0xA4, age_remote_0x80;
-	int age_ags_0xA1, age_ags_0xA2;
-	int age_rtr, age_bmk;
+	public int age_inverter;
+	public int length_inverter;
+	public int age_remote, age_remote_0xA0, age_remote_0xA1, age_remote_0xA2, age_remote_0xA3, age_remote_0xA4, age_remote_0x80;
+	public int age_ags_0xA1, age_ags_0xA2;
+	public int age_rtr, age_bmk;
 
 	/* inverter parameters */
-	int i_status, i_fault;
-	double i_dc_volts;
-	int i_dc_amps, i_ac_volts_out, i_ac_volts_in;
-	int i_led_invert, i_led_charge;
-	int i_temp_battery, i_temp_transformer, i_temp_fet;
-	int i_amps_in, i_amps_out;
-	double i_ac_hz;
-	int i_stack_mode;
-	double i_revision;
-	int i_model;
+	public int i_status, i_fault;
+	public double i_dc_volts;
+	public int i_dc_amps, i_ac_volts_out, i_ac_volts_in;
+	public int i_led_invert, i_led_charge;
+	public int i_temp_battery, i_temp_transformer, i_temp_fet;
+	public int i_amps_in, i_amps_out;
+	public double i_ac_hz;
+	public int i_stack_mode;
+	public double i_revision;
+	public int i_model;
 
 	/* remote */
-	int r_search_watts;
-	int r_battery_size;
-	int r_battery_type;
-	double r_absorb_volts;
-	int r_charger_amps;
-	int r_input_amps;
-	double r_revision;
-	int r_parallel_threshold;
-	int r_force_charge;
-	int r_auto_genstart;
-	double r_low_batt_cut_out;
-	int r_vac_cut_out;
-	double r_float_volts;
-	double r_eq_volts;
-	int r_absorb_time_minutes;
-	int r_hours;
-	int r_minutes;
+	public int r_search_watts;
+	public int r_battery_size;
+	public int r_battery_type;
+	public double r_absorb_volts;
+	public int r_charger_amps;
+	public int r_input_amps;
+	public double r_revision;
+	public int r_parallel_threshold;
+	public int r_force_charge;
+	public int r_auto_genstart;
+	public double r_low_batt_cut_out;
+	public int r_vac_cut_out;
+	public double r_float_volts;
+	public double r_eq_volts;
+	public int r_absorb_time_minutes;
+	public int r_hours;
+	public int r_minutes;
 
 	/* remote 0xA0 footer */
-	int r_ags_gen_run_time_minutes;
-	int r_ags_start_tempF;
-	double r_ags_start_vdc;
-	int r_ags_quiet_time;
+	public int r_ags_gen_run_time_minutes;
+	public int r_ags_start_tempF;
+	public double r_ags_start_vdc;
+	public int r_ags_quiet_time;
 
 	/* remote 0xA1 footer */
-	int r_ags_start_time_hour;
-	int r_ags_start_time_minute;
-	int r_ags_stop_time_hour;
-	int r_ags_stop_time_minute;
-	double r_ags_stop_vdc;
-	int r_ags_start_delay_seconds;
-	int r_ags_stop_delay_seconds;
-	int r_ags_max_run_time_minutes;
+	public int r_ags_start_time_hour;
+	public int r_ags_start_time_minute;
+	public int r_ags_stop_time_hour;
+	public int r_ags_stop_time_minute;
+	public double r_ags_stop_vdc;
+	public int r_ags_start_delay_seconds;
+	public int r_ags_stop_delay_seconds;
+	public int r_ags_max_run_time_minutes;
 
 	/* remote 0xA2 footer */
-	int r_ags_start_soc;
-	int r_ags_stop_soc;
-	int r_ags_start_amps;
-	int r_ags_start_amps_delay_seconds;
-	int r_ags_stop_amps;
-	int r_ags_stop_amps_delay_seconds;
+	public int r_ags_start_soc;
+	public int r_ags_stop_soc;
+	public int r_ags_start_amps;
+	public int r_ags_start_amps_delay_seconds;
+	public int r_ags_stop_amps;
+	public int r_ags_stop_amps_delay_seconds;
 
 	/* remote 0xA3 footer */
-	int r_ags_quiet_time_begin_hour;
-	int r_ags_quiet_time_begin_minute;
-	int r_ags_quiet_time_end_hour;
-	int r_ags_quiet_time_end_minute;
-	int r_ags_exercise_days;
-	int r_ags_exercise_start_hour;
-	int r_ags_exercise_start_minute;
-	int r_ags_exercise_run_time_minutes;
-	int r_ags_top_off_minutes;
+	public 	int r_ags_quiet_time_begin_hour;
+	public int r_ags_quiet_time_begin_minute;
+	public int r_ags_quiet_time_end_hour;
+	public int r_ags_quiet_time_end_minute;
+	public int r_ags_exercise_days;
+	public int r_ags_exercise_start_hour;
+	public int r_ags_exercise_start_minute;
+	public int r_ags_exercise_run_time_minutes;
+	public int r_ags_top_off_minutes;
 
 	/* remote 0xA4 footer */
-	int r_ags_warm_up_seconds;
-	int r_ags_cool_down_seconds;
+	public int r_ags_warm_up_seconds;
+	public int r_ags_cool_down_seconds;
 
 	/* remote 0x80 footer */
-	int r_bmk_efficiency;
-	int r_bmk_battery_size;
+	public int r_bmk_efficiency;
+	public int r_bmk_battery_size;
 
 
 	/* AGS 0xA1 parameters */
-	int a_status, a_temperature,a_gen_runtime_minutes;
-	double a_voltage;
-	double a_revision;
+	public int a_status, a_temperature,a_gen_runtime_minutes;
+	public double a_voltage;
+	public double a_revision;
 	
 	/* AGS 0xA2 parameters */
-	int a_days_since_last;
+	public int a_days_since_last;
 
 	/* BMK parameters */
-	int b_state_of_charge;
-	double b_dc_volts, b_dc_amps, b_dc_min_volts, b_dc_max_volts;
-	int b_amph_in_out;
-	double b_amph_trip;
-	int b_amph_cumulative;
-	int b_fault;
-	double b_revision;
+	public int b_state_of_charge;
+	public double b_dc_volts, b_dc_amps, b_dc_min_volts, b_dc_max_volts;
+	public int b_amph_in_out;
+	public double b_amph_trip;
+	public int b_amph_cumulative;
+	public int b_fault;
+	public double b_revision;
 
 	/* RTR parameters */
-	double rtr_revision;
+	public double rtr_revision;
 
-	public int lCRC, rCRC;
-	public Date rxDate;
+	private int lCRC, rCRC;
+	private Date rxDate;
 
 
 	public RecordMagWeb() {
