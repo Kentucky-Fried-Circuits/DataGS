@@ -343,6 +343,8 @@ public class DataGS implements ChannelData, JSONData {
 			System.err.println("# Listening for WorldData packets on " + serialPortWorldData);
 			
 			WorldDataSerialReader ser = new WorldDataSerialReader(serialPortWorldData, serialPortWorldDataSpeed);
+			WorldDataProcessor worldProcessor = new WorldDataProcessor();
+			ser.addPacketListener(worldProcessor);
 		}
 
 
