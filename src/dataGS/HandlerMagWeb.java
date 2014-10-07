@@ -1,5 +1,4 @@
 package dataGS;
-import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 
 
@@ -16,34 +15,13 @@ public class HandlerMagWeb {
 			return false;
 		}
 		
-		/* use reflection to send off the public variables from the Record */
-		Class<? extends RecordMagWeb> rmw = r.getClass();
-		Field rmwf[] = rmw.getFields();
-		String s="";
-		for ( int i=0 ; i<rmwf.length ; i++ ) {
-			Field f = rmwf[i];
-			
-			System.err.print("# f[" + i + "] is " + rmwf[i].toGenericString());
-			System.err.print("(name=" + f.getName() + ") ");
-			System.err.print("(type=" + f.getGenericType() + ") ");
-			try { 
-				System.err.print("(value=" + rmw.getDeclaredField(f.getName()).get(r) + ") ");
-			} catch ( NoSuchFieldException e ) {
-				System.err.println("# no such field ... WTF");
-			} catch ( IllegalAccessException e ) {
-				System.err.println("# Illegal access violation");
-			}
-			System.err.println("");
-			
-		}
-		
 
 		StringBuilder sb=new StringBuilder();
 		StringBuilder va=new StringBuilder();
 		DecimalFormat df1 = new DecimalFormat("0.0");
 		DecimalFormat df2 = new DecimalFormat("0.00");
 
-		String table = "magWeb_" + r.serialNumber;
+		String table = "magWeb_" ; //+ r.serialNumber;
 
 		sb.append("INSERT INTO ");
 		sb.append(table);
