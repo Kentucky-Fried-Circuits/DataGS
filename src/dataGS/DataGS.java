@@ -290,10 +290,7 @@ public class DataGS implements ChannelData, JSONData {
 
 
 
-		connectionThreads=new Vector<DataGSServerThread>();
-		ServerSocket serverSocket = null;
-		boolean listening = true;
-
+		
 		if ( null != myUser && "" != myUser) {
 			databaseType=DATABASE_TYPE_MYSQL;
 		}
@@ -330,15 +327,25 @@ public class DataGS implements ChannelData, JSONData {
 		}
 
 
+
+		
+		connectionThreads=new Vector<DataGSServerThread>();
+		
 		/* socket for DataGS packets */
+		ServerSocket serverSocket = null;
+		boolean listening = false;
+
 		if ( 0 != portNumber ) {
 			System.err.println("# Listening on port " + portNumber + " with " + socketTimeout + " second socket timeout and " + stationTimeout + " second station timeout");
 			try {
 				serverSocket = new ServerSocket(portNumber);
+				listening=true;
 			} catch (IOException e) {
 				System.err.println("# Could not listen on port: " + portNumber);
 				System.exit(-1);
 			}
+		} else {
+			System.err.println("# DataGS socket disabled because portNumber=0");
 		}
 
 
@@ -446,7 +453,7 @@ public class DataGS implements ChannelData, JSONData {
 	}
 
 	public static void main(String[] args) throws IOException {
-		System.err.println("# Major version: 2014-09-19 (precision)");
+		System.err.println("# Major version: 2014-10-07 (precision)");
 
 		DataGS d=new DataGS();
 
