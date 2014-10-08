@@ -106,7 +106,7 @@ public class DataGS implements ChannelData, JSONData {
 
 			/* create a JSON data history point and put into limited length FIFO */
 			if ( null != historyJSON ) {
-				historyJSON.add(HistoryPointJSON.toJSON(now, data));
+				historyJSON.add(HistoryPointJSON.toJSON(now, data, channelDesc));
 				//				System.err.println("# historyJSON is " + historyJSON.size() + " of " + historyJSON.maxSize() + " maximum.");
 			}
 
@@ -502,11 +502,14 @@ public class DataGS implements ChannelData, JSONData {
 		}
 		cd = gson.fromJson( jsonStrArray[jsonStrArray.length-1], ChannelDescription.class );
 		d.channelDesc.put( cd.id, cd );
-/* 
+
+		System.out.println(d.channelDesc.get( 69 ).precision);
+		
+		/* 
 		Iterator<Entry<Integer, ChannelDescription>> it = d.channelDesc.entrySet().iterator();
 		while (it.hasNext())
 			System.out.println(it.next().toString());
-  */      
+		 */      
         d.run(args);
 	}
 }
