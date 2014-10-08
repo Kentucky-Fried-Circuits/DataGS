@@ -47,5 +47,17 @@ public class HistoryPointJSON {
 		json += "}"; /* close whole data point element */
 		return json;
 	}
+	public static String numberPrecision(double val,int prec){
 
+		String format = "" + val ;
+
+		if ( prec >= 0 ) {
+			format = String.format("%."+prec+"f",val);
+		} else {
+			//format = String.format();
+			format=String.format( "%s",Math.round(Math.pow( 10, -prec ) * Math.round(val/Math.pow( 10, -prec ))));
+
+		}
+		return format;
+	}
 }

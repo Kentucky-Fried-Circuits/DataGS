@@ -1,33 +1,39 @@
 package dataGS;
-import java.net.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Scanner;
+import java.util.Vector;
 
 import javax.swing.Timer;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.*;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.Map.Entry;
-
-
-/* Command line parsing from Apache */
-import org.apache.commons.cli.*;
-import org.apache.commons.collections4.queue.CircularFifoQueue;
-
-
-/* Memcache client for logging */
 import net.spy.memcached.MemcachedClient;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.PosixParser;
+import org.apache.commons.collections4.queue.CircularFifoQueue;
+import org.apache.commons.math3.stat.descriptive.SynchronizedSummaryStatistics;
 
-
-/* statistics */
-import org.apache.commons.math3.stat.descriptive.*;
-
-/* JSON */
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+/* Command line parsing from Apache */
+/* Memcache client for logging */
+/* statistics */
+/* JSON */
 
 public class DataGS implements ChannelData, JSONData {
 	private Log log;
@@ -37,7 +43,9 @@ public class DataGS implements ChannelData, JSONData {
 	private MemcachedClient memcache;
 	private int portNumber;
 
-
+	/* channel description data */
+	protected Map<Integer, ChannelDescription> channelDesc;
+	
 	/* data to summarize and send */
 	protected Map<Integer, SynchronizedSummaryStatistics> data;
 	protected Map<Integer, AdcDouble> dataLast;
@@ -452,12 +460,53 @@ public class DataGS implements ChannelData, JSONData {
 		System.err.println("done");
 	}
 
+	public static String[] getJson(String filename){
+		
+		Scanner scanner;
+		String token="";
+		String toSplit="";
+		boolean start = false;
+		try{
+			scanner = new Scanner(new File(filename));
+			while (scanner.hasNext()) {
+				token=scanner.nextLine();
+				
+				if( token.contains( "]" ))
+					start=false;
+				if(start){
+				//	System.out.println(token);
+					toSplit+=token;
+				}
+				if( token.contains( "[" ) ) 
+					start=true;
+			}
+		}catch(Exception e){
+			System.err.println(e);
+		}
+		//System.out.println(toSplit);
+		return toSplit.split( "}," );
+	}
+	
 	public static void main(String[] args) throws IOException {
 		System.err.println("# Major version: 2014-10-07 (precision)");
 
-		DataGS d=new DataGS();
-
-
-		d.run(args);
+		DataGS d = new DataGS();
+		
+		d.channelDesc = new HashMap<Integer, ChannelDescription>();
+		Gson gson = new GsonBuilder().create();
+		ChannelDescription cd;
+		String[] jsonStrArray = getJson("www/channels.json");
+		for ( int i = 0; i<jsonStrArray.length-1; i++ ) {
+			cd = gson.fromJson( jsonStrArray[i]+"}", ChannelDescription.class );
+			d.channelDesc.put( cd.id, cd );
+		}
+		cd = gson.fromJson( jsonStrArray[jsonStrArray.length-1], ChannelDescription.class );
+		d.channelDesc.put( cd.id, cd );
+/* 
+		Iterator<Entry<Integer, ChannelDescription>> it = d.channelDesc.entrySet().iterator();
+		while (it.hasNext())
+			System.out.println(it.next().toString());
+  */      
+        d.run(args);
 	}
 }
