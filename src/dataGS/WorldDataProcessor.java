@@ -38,7 +38,8 @@ public class WorldDataProcessor implements WorldDataListener {
 
 					String s=rmw.getDeclaredField(f.getName()).get(o).toString();
 						
-					channelDataListeners.elementAt(j).ingest(f.getName(), new Double(s));
+					//channelDataListeners.elementAt(j).ingest(f.getName(), new Double(s));
+					channelDataListeners.elementAt(j).ingest(f.getName(), s);
 				} catch ( Exception e ) {
 					System.err.println("# Exception while sending data to channelDataListener(s)...");
 					e.printStackTrace();
