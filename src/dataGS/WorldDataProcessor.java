@@ -50,11 +50,11 @@ public class WorldDataProcessor implements WorldDataListener {
 	}
 
 	public void WorldDataPacketReceived(int[] rawBuffer) {
-		System.err.println("# WorldDataPacketReceived in WorldDataProcessor ... ");
+		System.err.print("# WorldDataProcessor received packet ");
 
 		switch ( rawBuffer[5] ) {
 		case 25:
-			System.err.println("# MagWeb complete packet");
+			System.err.println("(MagWeb complete packet) ");
 			if ( null == magWeb ) {
 				magWeb = new RecordMagWeb();
 			}
@@ -65,7 +65,7 @@ public class WorldDataProcessor implements WorldDataListener {
 			}
 			break;
 		default:
-			System.err.println("# Un-implement / incorrect WorldData format");
+			System.err.println("(Un-implemented / incorrect WorldData format)");
 		}
 
 	}

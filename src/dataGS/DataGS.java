@@ -135,7 +135,7 @@ public class DataGS implements ChannelData, JSONData {
 						a.min,
 						a.max,
 						a.stddev
-						);
+				);
 
 				log.queryAutoCreate(sql, "dataGSProto.analogDoubleSummarized", table);
 
@@ -189,6 +189,7 @@ public class DataGS implements ChannelData, JSONData {
 		boolean logConnection=false;
 		boolean memcachedDebug=false;
 		int databaseType=DATABASE_TYPE_NONE;
+		String channelMapFile="www/channels.json";
 
 		int dataHistoryJSONHours=24;
 
@@ -213,6 +214,7 @@ public class DataGS implements ChannelData, JSONData {
 		options.addOption("t", "socket-timeout",true, "DataGSCollector connection socket timeout");
 		options.addOption("T", "station-timeout",true, "DataGSCollector station history timeout");
 		options.addOption("m", "memcacheDebug", false, "Debug messages written to memcached per station");
+		options.addOption("c", "channel-map", true, "Location of channel map JSON file");
 
 		/* serial port data source options */
 		options.addOption("r", "serialPortWorldData",true,"Serial Port to listen for worldData packets");
@@ -259,6 +261,9 @@ public class DataGS implements ChannelData, JSONData {
 			if ( line.hasOption("station-timeout") ) {
 				stationTimeout = Integer.parseInt(line.getOptionValue("station-timeout"));
 			}
+			if ( line.hasOption("channel-map") ) {
+				channelMapFile=line.getOptionValue("channel-map");
+			}
 
 			/* serial port */
 			if ( line.hasOption("serialPortWorldData") ) {
@@ -277,6 +282,26 @@ public class DataGS implements ChannelData, JSONData {
 		} catch (ParseException e) {
 			System.err.println("# Error parsing command line: " + e);
 		}
+
+
+		/* load channels.json and de-serialize it into a hashmap */
+		channelDesc = new HashMap<String, ChannelDescription>();
+
+		File cmf = new File(channelMapFile);
+		if ( cmf.exists() && ! cmf.isDirectory() ) {
+			Gson gson = new GsonBuilder().create();
+			ChannelDescription cd;
+
+
+			String[] jsonStrArray = getJson(channelMapFile);
+			for ( int i = 0; i<jsonStrArray.length-1; i++ ) {
+				cd = gson.fromJson( jsonStrArray[i]+"}", ChannelDescription.class );
+				channelDesc.put( cd.id, cd );
+			}
+			cd = gson.fromJson( jsonStrArray[jsonStrArray.length-1], ChannelDescription.class );
+			channelDesc.put( cd.id, cd );
+		}
+
 
 
 		historyJSON=null;
@@ -401,7 +426,7 @@ public class DataGS implements ChannelData, JSONData {
 		/* built in http server to provide data */
 		if ( 0 != httpPort ) {
 			System.err.println("# HTTP server listening on port " + httpPort);
-			HTTPServerJSON httpd = new HTTPServerJSON(httpPort, this);
+			HTTPServerJSON httpd = new HTTPServerJSON(httpPort, this, channelMapFile);
 			httpd.start();
 		} else {
 			System.err.println("# HTTP server disabled.");
@@ -418,12 +443,12 @@ public class DataGS implements ChannelData, JSONData {
 				/* Log the connection before starting the new thread */
 				status.addConnection(socket);
 				String sql = "INSERT INTO connection (logdate,localPort,remoteIP,remotePort,status) VALUES (" +
-						"'" +  dateFormat.format(new Date()) + "', " +
-						socket.getLocalPort() + ", " + 
-						"'" + socket.getInetAddress().getHostAddress() + "', " +
-						socket.getPort() + ", " + 
-						"'accept'" +
-						")";
+				"'" +  dateFormat.format(new Date()) + "', " +
+				socket.getLocalPort() + ", " + 
+				"'" + socket.getInetAddress().getHostAddress() + "', " +
+				socket.getPort() + ", " + 
+				"'accept'" +
+				")";
 				log.queryAutoCreate(sql, "DataGSProto.connection", "connection");
 			}
 
@@ -492,22 +517,9 @@ public class DataGS implements ChannelData, JSONData {
 	}
 
 	public static void main(String[] args) throws IOException {
-		System.err.println("# Major version: 2014-10-07 (precision)");
+		System.err.println("# Major version: 2014-10-09 (precision)");
 
 		DataGS d=new DataGS();
-		d.channelDesc = new HashMap<String, ChannelDescription>();
-		Gson gson = new GsonBuilder().create();
-		ChannelDescription cd;
-		String[] jsonStrArray = getJson("www/channels.json");
-		for ( int i = 0; i<jsonStrArray.length-1; i++ ) {
-			cd = gson.fromJson( jsonStrArray[i]+"}", ChannelDescription.class );
-			d.channelDesc.put( cd.id, cd );
-		}
-		cd = gson.fromJson( jsonStrArray[jsonStrArray.length-1], ChannelDescription.class );
-		d.channelDesc.put( cd.id, cd );
-
-		//System.out.println(d.channelDesc.get( "69" ).precision);
-
 		d.run(args);
 	}
 }
