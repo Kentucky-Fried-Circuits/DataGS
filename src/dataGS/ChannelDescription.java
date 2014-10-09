@@ -17,17 +17,61 @@ sortOrder: order in which to initially display. Not guaranteed to be unique. Dea
 	public int precision;
 	public int sortOrder;
 	
-	public ChannelDescription(String id, String title, String description, String units, int precision, int sortOrder) {
+	
+	public static enum Modes {
+		AVERAGE, SAMPLE
+	};
+	
+	public Modes mode;
+	
+	public ChannelDescription(String id, Modes mode, String title, String description, String units, int precision, int sortOrder) {
 		this.id=id;
+		this.mode=mode;
 		this.title=title;
 		this.description=description;
 		this.units=units;
 		this.precision=precision;
 		this.sortOrder=sortOrder;
 	}
+	
+	public ChannelDescription(String id) {
+		this.id=id;
+		this.mode=Modes.SAMPLE;
+		title="";
+		description="";
+		units="";
+		precision=2;
+		sortOrder=0;
+	}
+	
+	public void setMode(Modes m) {
+		mode=m;
+	}
+	
+	public void setTitle(String t) {
+		title=t;
+	}
+	
+	public void setDescription(String d) {
+		description=d;
+	}
+	
+	public void setUnits(String u) {
+		units=u;
+	}
+	
+	public void setPrecision(int p) {
+		precision=p;
+	}
+	
+	public void setSortOrder(int s) {
+		sortOrder=s;
+	}
+	
 
 	public String toString() {
 		String s="### Channel id: " + id + "\n";
+		s += "# mode: " + mode + "\n";
 		s += "# title: " + title + "\n";
 		s += "# description: " + description + "\n";
 		s += "# units: " + units + "\n";
