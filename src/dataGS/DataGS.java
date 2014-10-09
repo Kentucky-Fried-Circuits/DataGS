@@ -22,8 +22,6 @@ import net.spy.memcached.MemcachedClient;
 
 
 
-/* statistics */
-import org.apache.commons.math3.stat.descriptive.*;
 
 /* JSON */
 import com.google.gson.Gson;
@@ -41,8 +39,8 @@ public class DataGS implements ChannelData, JSONData {
 	protected Map<String, ChannelDescription> channelDesc;
 
 	/* data to summarize and send */
-	protected Map<String, SynchronizedSummaryStatistics> data;
-	protected Map<String, AdcDouble> dataLast;
+	protected Map<String, SynchronizedSummaryData> data;
+	protected Map<String, DataPoint> dataLast;
 	protected int intervalSummary;
 	protected Timer dataTimer;
 	protected String dataLastJSON;
@@ -90,18 +88,19 @@ public class DataGS implements ChannelData, JSONData {
 		synchronized (data) {
 			dataLast.clear();
 
-			/* iterate through and export summary */
-			Iterator<Entry<String, SynchronizedSummaryStatistics>> it = data.entrySet().iterator();
+			
+			/* last (ie current) data JSON */
+			Iterator<Entry<String, SynchronizedSummaryData>> it = data.entrySet().iterator();
 			while (it.hasNext()) {
-				Map.Entry<String, SynchronizedSummaryStatistics> pairs = (Map.Entry<String, SynchronizedSummaryStatistics>)it.next();
+				Map.Entry<String, SynchronizedSummaryData> pairs = (Map.Entry<String, SynchronizedSummaryData>)it.next();
 
-				dataLast.put(pairs.getKey(),new AdcDouble(pairs.getKey(),now,pairs.getValue()));
+				dataLast.put(pairs.getKey(),new DataPoint(pairs.getKey(),now,pairs.getValue()));
 			}
 
 			/* create a JSON data history point and put into limited length FIFO */
 			if ( null != historyJSON ) {
 				historyJSON.add(HistoryPointJSON.toJSON(now, data, channelDesc));
-				//				System.err.println("# historyJSON is " + historyJSON.size() + " of " + historyJSON.maxSize() + " maximum.");
+				//	System.err.println("# historyJSON is " + historyJSON.size() + " of " + historyJSON.maxSize() + " maximum.");
 			}
 
 
@@ -111,23 +110,24 @@ public class DataGS implements ChannelData, JSONData {
 
 
 		/* export latest statistics to JSON */
-		Gson gson = new GsonBuilder().serializeSpecialFloatingPointValues().create();
+	//	Gson gson = new GsonBuilder().serializeSpecialFloatingPointValues().create();
 
 
 		synchronized ( dataLastJSON ) {
 			dataLastJSON="";
 
-			Iterator<Entry<String, AdcDouble>> it = dataLast.entrySet().iterator();
+			Iterator<Entry<String, DataPoint>> it = dataLast.entrySet().iterator();
 			while (it.hasNext()) {
-				Map.Entry<String, AdcDouble> pairs = (Map.Entry<String, AdcDouble>)it.next();
+				Map.Entry<String, DataPoint> pairs = (Map.Entry<String, DataPoint>)it.next();
 				System.out.println(pairs.getKey() + " = " + pairs.getValue());
 
-				dataLastJSON += gson.toJson(pairs.getValue()) + ", ";
+//				dataLastJSON += gson.toJson(pairs.getValue()) + ", ";
+				dataLastJSON += pairs.getValue().toJSON() + ", ";
 
 
 				/* insert into MySQL */
 				String table = "adc_" + pairs.getKey();
-				AdcDouble a = pairs.getValue();
+				DataPoint a = pairs.getValue();
 				String sql = String.format("INSERT INTO %s VALUES(now(), %d, %f, %f, %f, %f)",
 						table,
 						a.n,
@@ -151,13 +151,22 @@ public class DataGS implements ChannelData, JSONData {
 	public void ingest(String ch, double value) {
 		/* initialize the channel if it hasn't be already */
 		if ( false == data.containsKey(ch) ) {
-			data.put(ch, new SynchronizedSummaryStatistics());
+			data.put(ch, new SynchronizedSummaryData(ChannelDescription.Modes.AVERAGE));
 		}
 
 
 		data.get(ch).addValue(value);
 	}
 
+	public void ingest(String ch, String value) {
+		/* initialize the channel if it hasn't be already */
+		if ( false == data.containsKey(ch) ) {
+			data.put(ch, new SynchronizedSummaryData(ChannelDescription.Modes.SAMPLE));
+		}
+
+
+		data.get(ch).addValue(value);
+	}
 
 	public void run(String[] args) throws IOException {
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
@@ -195,8 +204,8 @@ public class DataGS implements ChannelData, JSONData {
 
 
 		intervalSummary = 1000;
-		data = new HashMap<String, SynchronizedSummaryStatistics>();
-		dataLast = new HashMap<String, AdcDouble>();
+		data = new HashMap<String, SynchronizedSummaryData>();
+		dataLast = new HashMap<String, DataPoint>();
 
 		/* MySQL options */
 		options.addOption("d", "database", true, "MySQL database");
