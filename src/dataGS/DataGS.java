@@ -291,19 +291,20 @@ public class DataGS implements ChannelData, JSONData {
 		File cmf = new File(channelMapFile);
 		if ( cmf.exists() && ! cmf.isDirectory() ) {
 			System.err.print("# Loading channel description from " + channelMapFile + " ...");
+
+			/* used for deserializing json */
 			Gson gson = new GsonBuilder().create();
 			ChannelDescription cd;
 
-
+			/* get string array of json objects to deserialize  */
 			String[] jsonStrArray = getJson(channelMapFile);
 			
-			
-			for ( int i = 0; i<jsonStrArray.length-1; i++ ) {
-				cd = gson.fromJson( jsonStrArray[i]+"}", ChannelDescription.class );
+			/* iterate through jsonStrArray and create a ChannelDescription object 
+			 * and add it to the hash map */
+			for ( int i = 0; i<jsonStrArray.length; i++ ) {
+				cd = gson.fromJson( jsonStrArray[i], ChannelDescription.class );
 				channelDesc.put( cd.id, cd );
 			}
-			cd = gson.fromJson( jsonStrArray[jsonStrArray.length-1], ChannelDescription.class );
-			channelDesc.put( cd.id, cd );
 			System.err.println(" done. " + channelDesc.size() + " channels loaded.");
 		}
 
@@ -494,33 +495,66 @@ public class DataGS implements ChannelData, JSONData {
 		System.err.println("# dataGS done");
 	}
 
-	/* what the FUCK does this do? */
-	public static String[] getJson(String filename){
+	/* This method opens the file passed to it 
+	 * and returns the json object array
+	 *  as a string array of json objects */
+	public static String[] getJson( String filename ){
+		/* create BufferedREader to open file and read character by character */
+		BufferedReader br;
 
-		Scanner scanner;
-		String token="";
+		/* these will be used when reading in the file. 
+		 * token is each character read in and 
+		 * toSplit is to end up as a string representation of the array of json objects */
+		char token;
 		String toSplit="";
-		
 		boolean start = false;
 		try{
-			scanner = new Scanner(new File(filename));
-			while (scanner.hasNext()) {
-				token=scanner.nextLine();
+			br = new BufferedReader( new FileReader(filename) );
+			boolean readToken = true;
+			while ( readToken ) {
+				token = (char) br.read();
+				/* If we get a -1 then that means we reached the end of the file */
+				if ( (char)-1 == token ){
+					readToken = false;
+					break;
+				}
 
-				if ( token.contains( "]" ) )
+				/* This bracket indicates that we have gotten to the end of the json object array */
+				if ( ']' == token ) {
 					start=false;
+					//readToken=false;
+				}
+
+				/* If we have found the beginning of the json object array, then we
+				 * add the token to the toSplit string */
 				if ( start ) {
-					//	System.out.println(token);
 					toSplit+=token;
 				}
-				if ( token.contains( "[" ) ) 
+
+				/* This bracket indicates that we have found the beginning of the json object array */
+				if ( '[' == token ) 
 					start=true;
 			}
-		} catch(Exception e) {
+			/* we are done with the file so we close the bufferedreader */
+			br.close();
+		} catch ( Exception e ) {
 			System.err.println(e);
 		}
 		//System.out.println(toSplit);
-		return toSplit.split( "}," );
+		/* Now we have a string that looks something like this
+		 *  { <string of json object> },{ <string of json object> },{ <string of json object> },...{ <string of json object> }
+		 * 
+		 * 
+		 *  */
+		String[] split = toSplit.split( "},");
+
+		/* iterate through the split array and add the '}' bracket back without the ',' comma */
+		for ( int i = 0; i < split.length-1; i++ ){
+			split[i] = split[i] + "}";
+
+		}
+
+		return split;
 	}
 
 	public static void main(String[] args) throws IOException {
