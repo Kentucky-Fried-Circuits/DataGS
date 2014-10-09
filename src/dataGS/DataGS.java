@@ -37,6 +37,8 @@ public class DataGS implements ChannelData, JSONData {
 	private MemcachedClient memcache;
 	private int portNumber;
 
+	/* channel description data */
+	protected Map<String, ChannelDescription> channelDesc;
 
 	/* data to summarize and send */
 	protected Map<String, SynchronizedSummaryStatistics> data;
@@ -98,7 +100,7 @@ public class DataGS implements ChannelData, JSONData {
 
 			/* create a JSON data history point and put into limited length FIFO */
 			if ( null != historyJSON ) {
-				historyJSON.add(HistoryPointJSON.toJSON(now, data));
+				historyJSON.add(HistoryPointJSON.toJSON(now, data, channelDesc));
 				//				System.err.println("# historyJSON is " + historyJSON.size() + " of " + historyJSON.maxSize() + " maximum.");
 			}
 
@@ -133,7 +135,7 @@ public class DataGS implements ChannelData, JSONData {
 						a.min,
 						a.max,
 						a.stddev
-				);
+						);
 
 				log.queryAutoCreate(sql, "dataGSProto.analogDoubleSummarized", table);
 
@@ -145,7 +147,7 @@ public class DataGS implements ChannelData, JSONData {
 			}
 		}
 	}
-	
+
 	public void ingest(String ch, double value) {
 		/* initialize the channel if it hasn't be already */
 		if ( false == data.containsKey(ch) ) {
@@ -334,12 +336,12 @@ public class DataGS implements ChannelData, JSONData {
 			}
 		});
 		threadMaintenanceTimer.start();
-		
-		
+
+
 		/* serial port for WorldData packets */
 		if ( "" != serialPortWorldData ) {
 			System.err.println("# Listening for WorldData packets on " + serialPortWorldData);
-			
+
 			WorldDataSerialReader ser = new WorldDataSerialReader(serialPortWorldData, serialPortWorldDataSpeed);
 			WorldDataProcessor worldProcessor = new WorldDataProcessor();
 			worldProcessor.addChannelDataListener(this);
@@ -364,8 +366,8 @@ public class DataGS implements ChannelData, JSONData {
 			System.err.println("# DataGS socket disabled because portNumber=0");
 		}
 
-		
-		
+
+
 
 
 		/* timer to periodically handle the data */
@@ -416,12 +418,12 @@ public class DataGS implements ChannelData, JSONData {
 				/* Log the connection before starting the new thread */
 				status.addConnection(socket);
 				String sql = "INSERT INTO connection (logdate,localPort,remoteIP,remotePort,status) VALUES (" +
-				"'" +  dateFormat.format(new Date()) + "', " +
-				socket.getLocalPort() + ", " + 
-				"'" + socket.getInetAddress().getHostAddress() + "', " +
-				socket.getPort() + ", " + 
-				"'accept'" +
-				")";
+						"'" +  dateFormat.format(new Date()) + "', " +
+						socket.getLocalPort() + ", " + 
+						"'" + socket.getInetAddress().getHostAddress() + "', " +
+						socket.getPort() + ", " + 
+						"'accept'" +
+						")";
 				log.queryAutoCreate(sql, "DataGSProto.connection", "connection");
 			}
 
@@ -462,11 +464,49 @@ public class DataGS implements ChannelData, JSONData {
 		System.err.println("# dataGS done");
 	}
 
+	public static String[] getJson(String filename){
+
+		Scanner scanner;
+		String token="";
+		String toSplit="";
+		boolean start = false;
+		try{
+			scanner = new Scanner(new File(filename));
+			while (scanner.hasNext()) {
+				token=scanner.nextLine();
+
+				if( token.contains( "]" ))
+					start=false;
+				if(start){
+					//	System.out.println(token);
+					toSplit+=token;
+				}
+				if( token.contains( "[" ) ) 
+					start=true;
+			}
+		}catch(Exception e){
+			System.err.println(e);
+		}
+		//System.out.println(toSplit);
+		return toSplit.split( "}," );
+	}
+
 	public static void main(String[] args) throws IOException {
 		System.err.println("# Major version: 2014-10-07 (precision)");
 
 		DataGS d=new DataGS();
+		d.channelDesc = new HashMap<String, ChannelDescription>();
+		Gson gson = new GsonBuilder().create();
+		ChannelDescription cd;
+		String[] jsonStrArray = getJson("www/channels.json");
+		for ( int i = 0; i<jsonStrArray.length-1; i++ ) {
+			cd = gson.fromJson( jsonStrArray[i]+"}", ChannelDescription.class );
+			d.channelDesc.put( cd.id, cd );
+		}
+		cd = gson.fromJson( jsonStrArray[jsonStrArray.length-1], ChannelDescription.class );
+		d.channelDesc.put( cd.id, cd );
 
+		//System.out.println(d.channelDesc.get( "69" ).precision);
 
 		d.run(args);
 	}
