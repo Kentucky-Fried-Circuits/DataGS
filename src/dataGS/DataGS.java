@@ -287,19 +287,24 @@ public class DataGS implements ChannelData, JSONData {
 		/* load channels.json and de-serialize it into a hashmap */
 		channelDesc = new HashMap<String, ChannelDescription>();
 
+		System.err.println("# channel map file is " + channelMapFile);
 		File cmf = new File(channelMapFile);
 		if ( cmf.exists() && ! cmf.isDirectory() ) {
+			System.err.print("# Loading channel description from " + channelMapFile + " ...");
 			Gson gson = new GsonBuilder().create();
 			ChannelDescription cd;
 
 
 			String[] jsonStrArray = getJson(channelMapFile);
+			
+			
 			for ( int i = 0; i<jsonStrArray.length-1; i++ ) {
 				cd = gson.fromJson( jsonStrArray[i]+"}", ChannelDescription.class );
 				channelDesc.put( cd.id, cd );
 			}
 			cd = gson.fromJson( jsonStrArray[jsonStrArray.length-1], ChannelDescription.class );
 			channelDesc.put( cd.id, cd );
+			System.err.println(" done. " + channelDesc.size() + " channels loaded.");
 		}
 
 
@@ -489,27 +494,29 @@ public class DataGS implements ChannelData, JSONData {
 		System.err.println("# dataGS done");
 	}
 
+	/* what the FUCK does this do? */
 	public static String[] getJson(String filename){
 
 		Scanner scanner;
 		String token="";
 		String toSplit="";
+		
 		boolean start = false;
 		try{
 			scanner = new Scanner(new File(filename));
 			while (scanner.hasNext()) {
 				token=scanner.nextLine();
 
-				if( token.contains( "]" ))
+				if ( token.contains( "]" ) )
 					start=false;
-				if(start){
+				if ( start ) {
 					//	System.out.println(token);
 					toSplit+=token;
 				}
-				if( token.contains( "[" ) ) 
+				if ( token.contains( "[" ) ) 
 					start=true;
 			}
-		}catch(Exception e){
+		} catch(Exception e) {
 			System.err.println(e);
 		}
 		//System.out.println(toSplit);
