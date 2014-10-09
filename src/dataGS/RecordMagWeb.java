@@ -2,6 +2,8 @@ package dataGS;
 import java.util.Date;
 
 public class RecordMagWeb {
+	private static final boolean markDate=false;
+	
 	public static final int maxAgeCurrent=250;
 	private static final boolean debug=false;
 	private String serialNumber;
@@ -151,7 +153,9 @@ public class RecordMagWeb {
 
 
 	public void parseRecord(int[] buff) {
-		rxDate = new Date();
+		if ( markDate ) {
+			rxDate = new Date();
+		}
 
 		StringBuilder sb = new StringBuilder();
 

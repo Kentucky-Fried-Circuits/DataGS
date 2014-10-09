@@ -16,10 +16,12 @@ public class HTTPServerJSON extends NanoHTTPD {
 	public static final String MIME_JSON = "application/json";
 
 	protected JSONData data;
+	protected String channelMapFile;
 
-	public HTTPServerJSON(int port, JSONData s) {
+	public HTTPServerJSON(int port, JSONData s, String c) {
 		super( port );
 		data = s;
+		channelMapFile = c;
 	}
 
 	@Override
@@ -55,8 +57,7 @@ public class HTTPServerJSON extends NanoHTTPD {
 			}
 		} else if ( uri.endsWith( "channels.json" ) ) {
 			try {
-				response = new NanoHTTPD.Response( Response.Status.OK, MIME_JSON, new FileInputStream(
-				"www/channels.json" ) );
+				response = new NanoHTTPD.Response( Response.Status.OK, MIME_JSON, new FileInputStream( channelMapFile ) );
 			} catch ( FileNotFoundException e ) {
 				response = new NanoHTTPD.Response( Response.Status.NOT_FOUND, MIME_PLAINTEXT, "Not Found" );
 			}
