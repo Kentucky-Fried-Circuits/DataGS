@@ -143,12 +143,11 @@ public class DataGSServerThread extends Thread {
 
 		try {
 			String ch=b[0] + "";
-			double d=Double.parseDouble(line.substring(1));
-
+//			double d=Double.parseDouble(line.substring(1));
 			//	System.err.println("# ch=" + ch + " d=" + d + " line.substring(1)=" + line.substring(1));
 
 			for ( int i=0 ; i<channelDataListeners.size() ; i++ ) {
-				channelDataListeners.elementAt(i).ingest(ch, d);
+				channelDataListeners.elementAt(i).ingest(ch, line.substring(1));
 			}
 
 		} catch ( Exception e ) {

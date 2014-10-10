@@ -23,6 +23,12 @@ public class HistoryPointJSON {
 			while (it.hasNext()) {
 				Map.Entry<String, SynchronizedSummaryData> pairs = (Map.Entry<String, SynchronizedSummaryData>)it.next();
 
+				if ( false==chanDesc.get(pairs.getKey()).history ) {
+				//	System.err.println("## HistoryPointJSON is skipping " + pairs.getKey() + " because history is false");
+					continue;
+				}
+				
+				System.err.println("## HistoryPointJSON is adding " + pairs.getKey() + " because history is true");
 				
 				/* if we have have this key in the channel description map, we use the precision from there. Otherwise we
 				 * just go with default precision.
@@ -37,14 +43,17 @@ public class HistoryPointJSON {
 					json += "\"" + pairs.getKey() + "\":" + pairs.getValue().getMean() ;
 				}
 
-				if ( it.hasNext() ) {
-					/* add a comma if there is another element coming up */
-					json += ",";
-				}
-
+				json += ",";
+	
 			}
 		}
 
+		/* remove the last comma */
+		if ( ',' == json.charAt(json.length()-1) ) {
+			json = json.substring(0,json.length()-2);
+		}
+		
+		
 		json += "}"; /* close data array */
 
 		json += "}"; /* close whole data point element */

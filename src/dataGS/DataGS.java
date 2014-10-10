@@ -27,6 +27,8 @@ import net.spy.memcached.MemcachedClient;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import dataGS.ChannelDescription.Modes;
+
 public class DataGS implements ChannelData, JSONData {
 	private Log log;
 	private Timer threadMaintenanceTimer;
@@ -109,19 +111,17 @@ public class DataGS implements ChannelData, JSONData {
 		}
 
 
-		/* export latest statistics to JSON */
-	//	Gson gson = new GsonBuilder().serializeSpecialFloatingPointValues().create();
-
-
 		synchronized ( dataLastJSON ) {
 			dataLastJSON="";
 
 			Iterator<Entry<String, DataPoint>> it = dataLast.entrySet().iterator();
 			while (it.hasNext()) {
 				Map.Entry<String, DataPoint> pairs = (Map.Entry<String, DataPoint>)it.next();
+
+				/* debugging */
 				System.out.println(pairs.getKey() + " = " + pairs.getValue());
 
-//				dataLastJSON += gson.toJson(pairs.getValue()) + ", ";
+				/* use the DataPoint.toJSON() method to encode the members we care about into JSON */
 				dataLastJSON += pairs.getValue().toJSON() + ", ";
 
 
@@ -148,24 +148,31 @@ public class DataGS implements ChannelData, JSONData {
 		}
 	}
 
-	public void ingest(String ch, double value) {
-		/* initialize the channel if it hasn't be already */
-		if ( false == data.containsKey(ch) ) {
+
+	public void ingest(String ch, String s) {
+		/* create with appropriate mode, if we have this channel in our channel description */
+		if ( channelDesc.containsKey(ch) ) {
+			data.put(ch, new SynchronizedSummaryData( channelDesc.get(ch).mode ) );
+		} else {
 			data.put(ch, new SynchronizedSummaryData(ChannelDescription.Modes.AVERAGE));
 		}
-
-
-		data.get(ch).addValue(value);
-	}
-
-	public void ingest(String ch, String value) {
-		/* initialize the channel if it hasn't be already */
-		if ( false == data.containsKey(ch) ) {
-			data.put(ch, new SynchronizedSummaryData(ChannelDescription.Modes.SAMPLE));
+		
+		
+		if ( data.get(ch).mode == Modes.AVERAGE ) {
+			Double d;
+			try {
+				d=new Double(s);
+				data.get(ch).addValue(d);
+	//			System.err.println("# ingested " + ch + " as double with value=" + d);
+			} catch ( NumberFormatException e ) {
+				System.err.println("# error ingesting s=" + s + " as a double. Giving up");
+				return;
+			}
+		} else if ( data.get(ch).mode == Modes.SAMPLE ) {
+			data.get(ch).addValue(s);	
 		}
-
-
-		data.get(ch).addValue(value);
+				
+		
 	}
 
 	public void run(String[] args) throws IOException {

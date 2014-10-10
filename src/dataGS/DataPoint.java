@@ -59,10 +59,31 @@ public class DataPoint {
 			s += "\"sampleValue\": \"" + sampleValue + "\",";
 		} else if ( mode == Modes.AVERAGE ) {
 			s += "\"n\": " + n + ",";
-			s += "\"avg\": " + avg + ",";
-			s += "\"min\": " + min + ",";
-			s += "\"max\": " + max + ",";
-			s += "\"stddev\": " + stddev + ",";
+
+			/* JSON doesn't have a way of representing NaN properly. So we make the as non-quoted nulls */
+			if ( avg == Double.NaN ) {
+				s += "\"avg\": null,";
+			} else {
+				s += "\"avg\": " + Double.toString(avg) + ",";
+			}
+			
+			if ( min == Double.NaN ) {
+				s += "\"min\": null,";
+			} else {
+				s += "\"min\": " + Double.toString(min) + ",";
+			}
+			
+			if ( max == Double.NaN ) {
+				s += "\"max\": null,";
+			} else {
+				s += "\"max\": " + Double.toString(max) + ",";
+			}
+			
+			if ( stddev == Double.NaN ) {
+				s += "\"stddev\": null,";
+			} else {
+				s += "\"stddev\": " + Double.toString(stddev) + ",";
+			}
 		}
 		
 		s += "\"mode\": \"" + mode + "\"";
@@ -74,7 +95,7 @@ public class DataPoint {
 
 	public String toString() {
 		if ( mode==Modes.SAMPLE ) {
-			return "value=" + sampleValue;
+			return "value=" + sampleValue + " mode=" + mode;
 		}
 
 		return String.format("n=%d avg=%.6f min=%.6f max=%.6f stddev=" + stddev + " mode=" + mode,n,avg,min,max);

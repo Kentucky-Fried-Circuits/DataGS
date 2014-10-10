@@ -5,7 +5,7 @@ import java.util.Vector;
 
 public class WorldDataProcessor implements WorldDataListener {
 	RecordMagWeb magWeb;
-	
+
 	protected Vector<ChannelData> channelDataListeners;
 
 	public void addChannelDataListener(ChannelData c) {
@@ -15,18 +15,18 @@ public class WorldDataProcessor implements WorldDataListener {
 
 	public WorldDataProcessor ( ) {
 		channelDataListeners=new Vector<ChannelData>();
-		
+
 		magWeb=null;
-		
+
 	}
 
 	@SuppressWarnings("unchecked")
 	protected void reflectToDataGS(Object o) {
-		
+
 		/* use reflection to send off the public variables from the Record */
 		Class rmw = o.getClass();
 		Field rmwf[] = rmw.getFields();
-		
+
 		for ( int i=0 ; i<rmwf.length ; i++ ) {
 			Field f = rmwf[i];
 
@@ -34,19 +34,19 @@ public class WorldDataProcessor implements WorldDataListener {
 			for ( int j=0 ; j<channelDataListeners.size(); j++ ) {
 				try { 
 
-//					System.err.println("# name=>" + f.getName() + " value=" +  rmw.getDeclaredField(f.getName()).get(o)       );
+					//					System.err.println("# name=>" + f.getName() + " value=" +  rmw.getDeclaredField(f.getName()).get(o)       );
 
 					String s=rmw.getDeclaredField(f.getName()).get(o).toString();
-						
-					//channelDataListeners.elementAt(j).ingest(f.getName(), new Double(s));
+
+
 					channelDataListeners.elementAt(j).ingest(f.getName(), s);
 				} catch ( Exception e ) {
 					System.err.println("# Exception while sending data to channelDataListener(s)...");
 					e.printStackTrace();
 				}
 			}
-			
-			
+
+
 		}
 	}
 
