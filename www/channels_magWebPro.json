@@ -170,6 +170,7 @@
             "units": "",
             "precision": 2,
             "sortOrder": 0,
+            "history": "true",
             "mode": "SAMPLE"
         },
         {
@@ -206,6 +207,7 @@
             "units": "",
             "precision": 2,
             "sortOrder": 0,
+            "history": "true",
             "mode": "AVERAGE"
         },
         {
@@ -242,6 +244,7 @@
             "units": "",
             "precision": 2,
             "sortOrder": 0,
+            "history": "true",
             "mode": "AVERAGE"
         },
         {
@@ -251,6 +254,7 @@
             "units": "",
             "precision": 2,
             "sortOrder": 0,
+            "history": "true",
             "mode": "AVERAGE"
         },
         {
@@ -260,6 +264,7 @@
             "units": "",
             "precision": 2,
             "sortOrder": 0,
+            "history": "true",
             "mode": "AVERAGE"
         },
         {
@@ -269,6 +274,7 @@
             "units": "",
             "precision": 2,
             "sortOrder": 0,
+            "history": "true",
             "mode": "AVERAGE"
         },
         {
@@ -278,6 +284,7 @@
             "units": "",
             "precision": 2,
             "sortOrder": 0,
+            "history": "true",
             "mode": "AVERAGE"
         },
         {
@@ -287,6 +294,7 @@
             "units": "",
             "precision": 2,
             "sortOrder": 0,
+            "history": "true",
             "mode": "AVERAGE"
         },
         {
@@ -764,6 +772,7 @@
             "units": "",
             "precision": 2,
             "sortOrder": 0,
+            "history": "true",
             "mode": "AVERAGE"
         },
         {
@@ -782,6 +791,7 @@
             "units": "",
             "precision": 2,
             "sortOrder": 0,
+            "history": "true",
             "mode": "AVERAGE"
         },
         {
@@ -811,7 +821,7 @@
             "sortOrder": 0,
             "mode": "AVERAGE",
             "history": "true",
-            "statsLong": "true"
+            "log": "true"
         },
         {
             "id": "b_dc_volts",
@@ -822,7 +832,7 @@
             "sortOrder": 0,
             "mode": "AVERAGE",
 			"history": "true",
-            "statsLong": "true"
+            "log": "true"
         },
         {
             "id": "b_dc_amps",
@@ -833,7 +843,7 @@
             "sortOrder": 0,
             "mode": "AVERAGE",
 			"history": "true",
-            "statsLong": "true"
+            "log": "true"
         },
         {
             "id": "b_dc_min_volts",
@@ -860,6 +870,7 @@
             "units": "",
             "precision": 2,
             "sortOrder": 0,
+            "history": "true",
             "mode": "SAMPLE"
         },
         {
