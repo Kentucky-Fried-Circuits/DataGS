@@ -17,7 +17,7 @@ sortOrder: order in which to initially display. Not guaranteed to be unique. Dea
 	public int precision;
 	public int sortOrder;
 	public boolean history;
-	public boolean statsLong;
+	public boolean log;
 	
 	
 	public static enum Modes {
@@ -26,7 +26,7 @@ sortOrder: order in which to initially display. Not guaranteed to be unique. Dea
 	
 	public Modes mode;
 	
-	public ChannelDescription(String id, Modes mode, String title, String description, String units, int precision, int sortOrder, boolean history, boolean statsLong) {
+	public ChannelDescription(String id, Modes mode, String title, String description, String units, int precision, int sortOrder, boolean history, boolean log) {
 		this.id=id;
 		this.mode=mode;
 		this.title=title;
@@ -35,7 +35,7 @@ sortOrder: order in which to initially display. Not guaranteed to be unique. Dea
 		this.precision=precision;
 		this.sortOrder=sortOrder;
 		this.history=history;
-		this.statsLong=statsLong;
+		this.log=log;
 	}
 	
 	public ChannelDescription(String id) {
@@ -47,7 +47,7 @@ sortOrder: order in which to initially display. Not guaranteed to be unique. Dea
 		precision=2;
 		sortOrder=0;
 		history=false;
-		statsLong=false;
+		log=false;
 	}
 	
 	public void setMode(Modes m) {
