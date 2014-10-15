@@ -171,7 +171,8 @@
             "precision": 2,
             "sortOrder": 0,
             "history": "true",
-            "mode": "SAMPLE"
+            "mode": "SAMPLE",
+            "log": "true"
         },
         {
             "id": "i_fault",
@@ -180,7 +181,8 @@
             "units": "",
             "precision": 2,
             "sortOrder": 0,
-            "mode": "SAMPLE"
+            "mode": "SAMPLE",
+            "log": "true"
         },
         {
             "id": "i_dc_volts",
@@ -189,7 +191,8 @@
             "units": "",
             "precision": 2,
             "sortOrder": 0,
-            "mode": "AVERAGE"
+            "mode": "AVERAGE",
+            "log": "true"
         },
         {
             "id": "i_dc_amps",
@@ -198,7 +201,8 @@
             "units": "",
             "precision": 2,
             "sortOrder": 0,
-            "mode": "AVERAGE"
+            "mode": "AVERAGE",
+            "log": "true"
         },
         {
             "id": "i_ac_volts_out",
@@ -208,7 +212,8 @@
             "precision": 2,
             "sortOrder": 0,
             "history": "true",
-            "mode": "AVERAGE"
+            "mode": "AVERAGE",
+            "log": "true"
         },
         {
             "id": "i_ac_volts_in",
@@ -217,7 +222,8 @@
             "units": "",
             "precision": 2,
             "sortOrder": 0,
-            "mode": "AVERAGE"
+            "mode": "AVERAGE",
+            "log": "true"
         },
         {
             "id": "i_led_invert",
@@ -245,7 +251,8 @@
             "precision": 2,
             "sortOrder": 0,
             "history": "true",
-            "mode": "AVERAGE"
+            "mode": "AVERAGE",
+            "log": "true"
         },
         {
             "id": "i_temp_transformer",
@@ -255,7 +262,8 @@
             "precision": 2,
             "sortOrder": 0,
             "history": "true",
-            "mode": "AVERAGE"
+            "mode": "AVERAGE",
+            "log": "true"
         },
         {
             "id": "i_temp_fet",
@@ -265,7 +273,8 @@
             "precision": 2,
             "sortOrder": 0,
             "history": "true",
-            "mode": "AVERAGE"
+            "mode": "AVERAGE",
+            "log": "true"
         },
         {
             "id": "i_amps_in",
@@ -275,7 +284,8 @@
             "precision": 2,
             "sortOrder": 0,
             "history": "true",
-            "mode": "AVERAGE"
+            "mode": "AVERAGE",
+            "log": "true"
         },
         {
             "id": "i_amps_out",
@@ -285,7 +295,8 @@
             "precision": 2,
             "sortOrder": 0,
             "history": "true",
-            "mode": "AVERAGE"
+            "mode": "AVERAGE",
+            "log": "true"
         },
         {
             "id": "i_ac_hz",
@@ -295,7 +306,8 @@
             "precision": 2,
             "sortOrder": 0,
             "history": "true",
-            "mode": "AVERAGE"
+            "mode": "AVERAGE",
+            "log": "true"
         },
         {
             "id": "i_stack_mode",
@@ -773,7 +785,8 @@
             "precision": 2,
             "sortOrder": 0,
             "history": "true",
-            "mode": "AVERAGE"
+            "mode": "AVERAGE",
+            "log": "true"
         },
         {
             "id": "a_gen_runtime_minutes",
@@ -871,7 +884,8 @@
             "precision": 2,
             "sortOrder": 0,
             "history": "true",
-            "mode": "SAMPLE"
+            "mode": "SAMPLE",
+            "log": "true"
         },
         {
             "id": "b_amph_trip",

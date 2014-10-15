@@ -10,7 +10,10 @@ public class LogLocal {
 	protected DateFormat dateFormat;
 	protected boolean autoTimestamp;
 
-	/* constructor */
+	/** constructor
+	 * @param String directory to write log files to
+	 * @param boolean make the timestamp automatically
+	 */
 	public LogLocal(String d, boolean autoTimestamp) {
 		directory=d;
 		dayFormat = new SimpleDateFormat("yyyyMMdd");
@@ -39,7 +42,7 @@ public class LogLocal {
 			/* Open the file and append to it */
 			BufferedWriter writer = new BufferedWriter(new FileWriter(filename,true));
 
-			if ( autoTimestamp ) {
+			if ( autoTimestamp || null == timeStamp ) {
 				line = dateFormat.format(timeStamp) + "," + line;
 			}
 			
