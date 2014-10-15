@@ -58,7 +58,11 @@ public class DataGS implements ChannelData, JSONData {
 	/* supported JSON resource requests */
 	public static final int JSON_NOW=0;
 	public static final int JSON_HISTORY=1;
-
+	
+	/* loglocal */
+	LogLocal logLocal;
+	
+	
 	public String getJSON(int resource) {
 		if ( JSON_NOW == resource ) {
 			return "{\"data\": [" + dataLastJSON + "]}";
@@ -87,6 +91,7 @@ public class DataGS implements ChannelData, JSONData {
 
 		//		System.err.println("######### dataMaintenanceTimer() #########");
 
+
 		synchronized (data) {
 			dataLast.clear();
 
@@ -104,8 +109,13 @@ public class DataGS implements ChannelData, JSONData {
 				historyJSON.add(HistoryPointJSON.toJSON(now, data, channelDesc));
 				//	System.err.println("# historyJSON is " + historyJSON.size() + " of " + historyJSON.maxSize() + " maximum.");
 			}
-
-
+			
+			/* loglocal */
+			if ( null != logLocal) {
+				/* log line to local file */
+				logLocal.log( HistoryPointJSON.toCSV( data, channelDesc )[0], new Date(now), HistoryPointJSON.toCSV( data, channelDesc )[1] );
+			}
+			
 			/* clear statistics for next pass */
 			data.clear();
 		}
@@ -241,6 +251,9 @@ public class DataGS implements ChannelData, JSONData {
 		options.addOption("j", "http-port", true, "webserver port, 0 to disable");
 		options.addOption("H", "json-history-hours", true, "hours of history data to make available, 0 to disable");
 
+		/* loglocal */
+		options.addOption("w", "loglocal-directory", true, "directory for logging csv files");
+		
 		/* parse command line */
 		CommandLineParser parser = new PosixParser();
 		try {
@@ -291,6 +304,11 @@ public class DataGS implements ChannelData, JSONData {
 
 
 			if ( line.hasOption("memcacheDebug") ) memcachedDebug=true;
+			
+			/* loglocal */
+			if ( line.hasOption("loglocal-directory") ) {
+				logLocal = new LogLocal( line.getOptionValue("loglocal-directory"), true );
+			} 
 
 
 
@@ -574,7 +592,8 @@ public class DataGS implements ChannelData, JSONData {
 	}
 
 	public static void main(String[] args) throws IOException {
-		System.err.println("# Major version: 2014-10-09 (precision)");
+		System.err.println("# Major version: 2014-10-15 (ian laptop)");
+		System.err.println("# java.library.path: " + System.getProperty( "java.library.path" ));
 
 		DataGS d=new DataGS();
 		d.run(args);
