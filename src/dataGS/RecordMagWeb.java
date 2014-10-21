@@ -9,6 +9,9 @@ public class RecordMagWeb {
 	private String serialNumber;
 	private int vScale;
 
+	/* save buffer for worldDataCollector support */
+	private int[] buffer;
+	
 	/* meta data */
 	public int sequenceNumber;
 	public int firmware_year;
@@ -168,7 +171,9 @@ public class RecordMagWeb {
 		serialNumber=sb.toString();
 		//System.err.print("Serial Number=" + serialNumber + " ");
 
-
+		/* saving the buffer so we can change it */
+		buffer = buff;
+		
 		if ( 25 != buff[5] ) 
 			return;
 
@@ -540,6 +545,22 @@ public class RecordMagWeb {
 
 			System.out.flush();
 		}
+	}
+	
+	public int[] getMagWebPacket(char serialPrefix, short serialNumber){
+		//TODO((serialNumber>>8)&0xFF),(byte)(serialNumber&0xFF)
+		int[] ibuf = buffer;
+		ibuf[1]=serialPrefix;
+
+		ibuf[2] = ( serialNumber >> 8 ) & 0xff; 
+		ibuf[3] = ( serialNumber ) & 0xff;
+
+		int lCRC = crc_chk(ibuf,1,124);
+		
+		ibuf[125]= ( lCRC >> 8 ) & 0xff;
+		ibuf[126]= ( lCRC ) & 0xff;
+	
+		return ibuf;
 	}
 
 }

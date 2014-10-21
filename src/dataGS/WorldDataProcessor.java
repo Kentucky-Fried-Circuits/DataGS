@@ -1,5 +1,9 @@
 package dataGS;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.lang.reflect.Field;
 import java.util.Vector;
 
@@ -63,6 +67,7 @@ public class WorldDataProcessor implements WorldDataListener {
 			if ( magWeb.isValid() ) {
 				/* use reflection to send all public variables off to DataGS */
 				reflectToDataGS( (Object) magWeb);
+				
 			}
 			break;
 		default:

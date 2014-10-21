@@ -192,7 +192,8 @@
             "precision": 2,
             "sortOrder": 0,
             "mode": "AVERAGE",
-            "log": "true"
+            "log": "true",
+            "summaryStatsFromHistory": "true"
         },
         {
             "id": "i_dc_amps",
@@ -252,7 +253,8 @@
             "sortOrder": 0,
             "history": "true",
             "mode": "AVERAGE",
-            "log": "true"
+            "log": "true",
+            "summaryStatsFromHistory": "true"
         },
         {
             "id": "i_temp_transformer",
@@ -834,7 +836,8 @@
             "sortOrder": 0,
             "mode": "AVERAGE",
             "history": "true",
-            "log": "true"
+            "log": "true",
+            "summaryStatsFromHistory": "true"
         },
         {
             "id": "b_dc_volts",
