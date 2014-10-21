@@ -90,7 +90,7 @@ public class LogLocal {
 	 * @return true if write was sucessfull, false otherwise
 	 */
 	public boolean log(String line, Date timeStamp, String header) {
-		String filename= directory + "/" + dayFormat.format(timeStamp) + ".CSV";
+		String filename= directory + "/" + dayFormat.format(timeStamp) + ".csv";
 
 		
 		try { 

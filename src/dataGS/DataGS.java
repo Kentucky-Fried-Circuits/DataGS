@@ -15,6 +15,7 @@ import java.util.Map.Entry;
 /* Command line parsing from Apache */
 import org.apache.commons.cli.*;
 import org.apache.commons.collections4.queue.CircularFifoQueue;
+import org.apache.commons.lang3.StringEscapeUtils;
 
 
 /* Memcache client for logging */
@@ -46,7 +47,9 @@ public class DataGS implements ChannelData, JSONData {
 	protected int intervalSummary;
 	protected Timer dataTimer;
 	protected String dataLastJSON;
-
+	
+	protected String historyFiles;
+	protected String logLocalDir;
 	/* history data */
 	protected CircularFifoQueue<String> historyJSON;
 
@@ -58,6 +61,7 @@ public class DataGS implements ChannelData, JSONData {
 	/* supported JSON resource requests */
 	public static final int JSON_NOW=0;
 	public static final int JSON_HISTORY=1;
+	public static final int JSON_HISTORY_FILES = 2;
 	
 	/* loglocal */
 	LogLocal logLocal;
@@ -68,6 +72,8 @@ public class DataGS implements ChannelData, JSONData {
 			return "{\"data\": [" + dataLastJSON + "]}";
 		} else if ( JSON_HISTORY == resource ) {
 			return "{\"history\":" + historyJSON.toString() + "}";
+		} else if ( JSON_HISTORY_FILES == resource ) {
+			return "{\"history_files\": {" + historyFiles + "}}";
 		}
 
 
@@ -156,8 +162,24 @@ public class DataGS implements ChannelData, JSONData {
 				dataLastJSON = dataLastJSON.substring(0, dataLastJSON.length()-2);
 			}
 		}
+		
+		
 	}
-
+	
+	
+	/* go through a directory and return a string with every filename in directory, ignoring sub directories */
+	public String listFilesForFolder(String dirName) {
+		final File directory = new File(dirName);
+		String files="";
+		for ( final File fileEntry : directory.listFiles() ) {
+			/* if  not a directory */
+			if ( !fileEntry.isDirectory() ) {
+				files+="\""+StringEscapeUtils.escapeJson( fileEntry.getName() )+"\",";
+				//System.out.println(fileEntry.getName());
+			}
+		}
+		return files.substring(0,files.length()-1 );
+	}
 
 	public void ingest(String ch, String s) {
 		/* create with appropriate mode, if we have this channel in our channel description */
@@ -307,7 +329,9 @@ public class DataGS implements ChannelData, JSONData {
 			
 			/* loglocal */
 			if ( line.hasOption("loglocal-directory") ) {
-				logLocal = new LogLocal( line.getOptionValue("loglocal-directory"), true );
+				logLocalDir = line.getOptionValue("loglocal-directory");
+				logLocal = new LogLocal( logLocalDir, true );
+				
 			} 
 
 
@@ -447,6 +471,7 @@ public class DataGS implements ChannelData, JSONData {
 
 		/* start status update thread */
 		dataLastJSON="";
+		historyFiles="\"files\":["+listFilesForFolder( logLocalDir )+"]";
 		DataGSStatus status = new DataGSStatus(log,portNumber);
 		status.start();
 		status.updateStatus();
@@ -466,7 +491,7 @@ public class DataGS implements ChannelData, JSONData {
 		/* built in http server to provide data */
 		if ( 0 != httpPort ) {
 			System.err.println("# HTTP server listening on port " + httpPort);
-			HTTPServerJSON httpd = new HTTPServerJSON(httpPort, this, channelMapFile);
+			HTTPServerJSON httpd = new HTTPServerJSON(httpPort, this, channelMapFile, logLocalDir);
 			httpd.start();
 		} else {
 			System.err.println("# HTTP server disabled.");
