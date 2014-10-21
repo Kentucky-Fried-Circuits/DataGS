@@ -1,34 +1,44 @@
 package dataGS;
-import java.net.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Vector;
 
 import javax.swing.Timer;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.*;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.Map.Entry;
-
-
-/* Command line parsing from Apache */
-import org.apache.commons.cli.*;
-import org.apache.commons.collections4.queue.CircularFifoQueue;
-import org.apache.commons.lang3.StringEscapeUtils;
-
-
-/* Memcache client for logging */
 import net.spy.memcached.MemcachedClient;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.PosixParser;
+import org.apache.commons.collections4.queue.CircularFifoQueue;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 
-
-
-/* JSON */
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import dataGS.ChannelDescription.Modes;
+/* Command line parsing from Apache */
+/* Memcache client for logging */
+/* JSON */
 
 public class DataGS implements ChannelData, JSONData {
 	private Log log;
@@ -44,6 +54,10 @@ public class DataGS implements ChannelData, JSONData {
 	/* data to summarize and send */
 	protected Map<String, SynchronizedSummaryData> data;
 	protected Map<String, DataPoint> dataLast;
+	
+	/* data for the historical data page */
+	protected Map<String, HashMap<String, SynchronizedSummaryData>> summaryStatsFromHistory;
+	
 	protected int intervalSummary;
 	protected Timer dataTimer;
 	protected String dataLastJSON;
@@ -62,6 +76,7 @@ public class DataGS implements ChannelData, JSONData {
 	public static final int JSON_NOW=0;
 	public static final int JSON_HISTORY=1;
 	public static final int JSON_HISTORY_FILES = 2;
+	public static final int JSON_SUMMARY_STATS = 3;
 	
 	/* loglocal */
 	LogLocal logLocal;
@@ -101,7 +116,6 @@ public class DataGS implements ChannelData, JSONData {
 		synchronized (data) {
 			dataLast.clear();
 
-			
 			/* last (ie current) data JSON */
 			Iterator<Entry<String, SynchronizedSummaryData>> it = data.entrySet().iterator();
 			while (it.hasNext()) {
@@ -167,20 +181,74 @@ public class DataGS implements ChannelData, JSONData {
 	}
 	
 	
-	/* go through a directory and return a string with every filename in directory, ignoring sub directories */
-	public String listFilesForFolder(String dirName) {
+	/* go through a directory and return a string[] with every filename in directory, ignoring sub directories */
+	//TODO listFilesForFolder
+	public String[] listFilesForFolder(String dirName) {
+		return listFilesForFolder( dirName, false );
+	}
+	public String[] listFilesForFolder(String dirName, boolean absolute) {
+		
+		
+		
 		final File directory = new File(dirName);
-		String files="";
+		List<String> files = new ArrayList<String>();
 		for ( final File fileEntry : directory.listFiles() ) {
 			/* if  not a directory */
 			if ( !fileEntry.isDirectory() ) {
-				files+="\""+StringEscapeUtils.escapeJson( fileEntry.getName() )+"\",";
-				//System.out.println(fileEntry.getName());
+				if ( absolute ) {
+					files.add( fileEntry.getAbsolutePath() );
+				} else {
+					files.add( fileEntry.getName() );
+				}
+				
+							
+				
 			}
 		}
-		return files.substring(0,files.length()-1 );
+		return files.toArray( new String[ files.size() ] );
+	}
+	
+	public void createSummaryStatsFromHistory(String[] files){
+		
+		/* initialize summaryStatsFromHistory hashmap NOTE: this may need to move somewhere else*/
+		summaryStatsFromHistory = new HashMap<String, HashMap<String, SynchronizedSummaryData>>();
+		
+		String date;
+		for ( int i = 0 ; i < files.length ; i++ ) {
+			date=FilenameUtils.getBaseName( files[i] );//FilenameUtils.removeExtension(files[i]);
+			
+			summaryStatsFromHistory.put( date, getSummaryEntry( files[i] ) );
+		}
+		
+	}
+	
+	public String filesToJson(String[] files){
+		String json="";
+		for ( int i = 0 ; i < files.length ; i++ ) {
+			json+="\""+StringEscapeUtils.escapeJson( files[i] )+"\",";
+			
+		}
+		return json.substring( 0, json.length()-1 );
 	}
 
+	/* This method returns a hashmap of the summary of the file */
+	//TODO getSummaryEntry
+	public HashMap<String, SynchronizedSummaryData> getSummaryEntry(String absolutePath){
+		/* hashmap to be returned */
+		Map<String, SynchronizedSummaryData> tempSummaryStat = new HashMap<String, SynchronizedSummaryData>();
+		
+		/* iterate through channelDesc, finding every channel that contains the key summaryStatsFromHistory */
+	
+		/* open file from absolutePath and use apache commons csv parser to get info and summarize it */
+		
+		
+		//this is just a test and will be deleted when actual summarizing happens
+		tempSummaryStat.put( "i_dc_volts", new SynchronizedSummaryData(channelDesc.get( "" ).mode) );
+
+		
+		return (HashMap<String, SynchronizedSummaryData>) tempSummaryStat;
+	}
+	
 	public void ingest(String ch, String s) {
 		/* create with appropriate mode, if we have this channel in our channel description */
 		if ( channelDesc.containsKey(ch) ) {
@@ -245,6 +313,7 @@ public class DataGS implements ChannelData, JSONData {
 		intervalSummary = 1000;
 		data = new HashMap<String, SynchronizedSummaryData>();
 		dataLast = new HashMap<String, DataPoint>();
+
 
 		/* MySQL options */
 		options.addOption("d", "database", true, "MySQL database");
@@ -467,11 +536,18 @@ public class DataGS implements ChannelData, JSONData {
 		});
 		dataTimer.start();
 
+		
+		
+		
+		/* get array of all filenames from logLocalDir */
+		String[] files = listFilesForFolder( logLocalDir );
 
+		/* Create the JSON file with all the loglocal files in it */
+		historyFiles="\"files\":["+filesToJson( files )+"]";
 
 		/* start status update thread */
 		dataLastJSON="";
-		historyFiles="\"files\":["+listFilesForFolder( logLocalDir )+"]";
+		
 		DataGSStatus status = new DataGSStatus(log,portNumber);
 		status.start();
 		status.updateStatus();
