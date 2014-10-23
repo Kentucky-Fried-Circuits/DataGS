@@ -13,5 +13,6 @@
 	<classpathentry kind="lib" path="jspComm.jar"/>
 	<classpathentry kind="lib" path="Serialio.jar"/>
 	<classpathentry kind="lib" path="/home/ian/git/DataGS/commons-lang3-3.3.2.jar"/>
+	<classpathentry kind="lib" path="/home/ian/git/DataGS/commons-csv-1.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

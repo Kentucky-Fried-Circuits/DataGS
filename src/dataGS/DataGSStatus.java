@@ -1,5 +1,6 @@
 package dataGS;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.net.Socket;
 import java.util.Vector;
 

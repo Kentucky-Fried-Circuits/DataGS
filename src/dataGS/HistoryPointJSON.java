@@ -6,9 +6,6 @@ import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 
 
 public class HistoryPointJSON {

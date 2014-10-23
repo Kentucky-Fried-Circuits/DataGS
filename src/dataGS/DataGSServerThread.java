@@ -1,10 +1,16 @@
 package dataGS;
-import java.net.*;
-import net.spy.memcached.MemcachedClient;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.Socket;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.text.DateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.Vector;
+
+import net.spy.memcached.MemcachedClient;
 //import java.awt.event.*;
-import java.io.*;
 
 //import javax.swing.Timer;
 
