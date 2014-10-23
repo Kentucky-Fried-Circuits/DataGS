@@ -8,7 +8,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 
 public class HTTPServerJSON extends NanoHTTPD {
 
-	public static final boolean DEBUG = true;
+	public static final boolean DEBUG = false;
 
 	public static final String MIME_JAVASCRIPT = "text/javascript";
 	public static final String MIME_CSS = "text/css";
@@ -119,6 +119,8 @@ public class HTTPServerJSON extends NanoHTTPD {
 			response = new NanoHTTPD.Response( Response.Status.OK, MIME_JSON, data.getJSON( DataGS.JSON_HISTORY ), gzipAllowed );
 		} else if ( uri.endsWith( "historyFiles.json" ) ) {
 			response = new NanoHTTPD.Response( Response.Status.OK, MIME_JSON, data.getJSON( DataGS.JSON_HISTORY_FILES ), gzipAllowed );
+		} else if ( uri.endsWith( "summaryStats.json" ) ) {
+			response = new NanoHTTPD.Response( Response.Status.OK, MIME_JSON, data.getJSON( DataGS.JSON_SUMMARY_STATS ), gzipAllowed );
 		} 
 		/* for internet explorer */
 		else if ( uri.endsWith( "now.dat" ) ) {
@@ -127,6 +129,8 @@ public class HTTPServerJSON extends NanoHTTPD {
 			response = new NanoHTTPD.Response( Response.Status.OK, MIME_PLAINTEXT, data.getJSON( DataGS.JSON_HISTORY ), gzipAllowed );
 		} else if ( uri.endsWith( "historyFiles.dat" ) ) {
 			response = new NanoHTTPD.Response( Response.Status.OK, MIME_PLAINTEXT, data.getJSON( DataGS.JSON_HISTORY_FILES ), gzipAllowed );
+		} else if ( uri.endsWith( "summaryStats.dat" ) ) {
+			response = new NanoHTTPD.Response( Response.Status.OK, MIME_PLAINTEXT, data.getJSON( DataGS.JSON_SUMMARY_STATS ), gzipAllowed );
 		} else {
 			response = new NanoHTTPD.Response( Response.Status.NOT_FOUND, MIME_PLAINTEXT, "Not Found" );
 		}

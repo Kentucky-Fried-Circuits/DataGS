@@ -1,8 +1,11 @@
 package dataGS;
 import java.io.IOException;
-import java.util.*;
+import java.util.TooManyListenersException;
+import java.util.Vector;
+
+import javax.comm.SerialPortEvent;
+import javax.comm.SerialPortEventListener;
 //import gnu.io.*;
-import javax.comm.*;
 
 public class WorldDataSerialReader extends Thread implements SerialPortEventListener {
 	LinkSerial link;
