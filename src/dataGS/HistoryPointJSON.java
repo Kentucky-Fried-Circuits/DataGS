@@ -28,7 +28,7 @@ public class HistoryPointJSON {
 					continue;
 				}
 				
-				System.err.println("## HistoryPointJSON is adding " + pairs.getKey() + " because history is true");
+				//System.err.println("## HistoryPointJSON is adding " + pairs.getKey() + " because history is true");
 				
 				/* if we have have this key in the channel description map, we use the precision from there. Otherwise we
 				 * just go with default precision.
@@ -89,7 +89,7 @@ public class HistoryPointJSON {
 					continue;
 				}
 				
-				System.err.println("## HistoryPointJSON is adding " + pairs.getKey() + " because history is true");
+				//System.err.println("## HistoryPointJSON is adding " + pairs.getKey() + " because history is true");
 				
 				/* if we have have this key in the channel description map, we use the precision from there. Otherwise we
 				 * just go with default precision.
