@@ -31,7 +31,6 @@ public class SynchronizedSummaryData extends SummaryStatistics {
 	public String toString() {
 		if ( mode == ChannelDescription.Modes.SAMPLE )
 			return sampleValue;
-		
-		return this.toString();
+		return super.toString();
 	}
 }
