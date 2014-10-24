@@ -11,6 +11,8 @@ import java.net.Socket;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -68,9 +70,9 @@ public class DataGS implements ChannelData, JSONData {
 
 	protected String historyFiles;
 	protected String logLocalDir;
-	
+
 	protected String summaryStatsJson;
-	
+
 	/* history data */
 	protected CircularFifoQueue<String> historyJSON;
 
@@ -97,7 +99,7 @@ public class DataGS implements ChannelData, JSONData {
 		} else if ( JSON_HISTORY_FILES == resource ) {
 			return "{\"history_files\": {" + historyFiles + "}}";
 		} else if ( JSON_SUMMARY_STATS == resource ) {
-			return "{\"summary_stats\": [" + summaryStatsJson + "]}";
+			return "{\"summary_stats\": [" + summaryJSON() + "]}";
 		}
 
 
@@ -187,6 +189,7 @@ public class DataGS implements ChannelData, JSONData {
 		}
 
 
+
 	}
 
 
@@ -218,7 +221,9 @@ public class DataGS implements ChannelData, JSONData {
 
 			}
 		}
-		return files.toArray( new String[ files.size() ] );
+		String[] sort = files.toArray( new String[ files.size() ] );
+		Arrays.sort(sort, Collections.reverseOrder());
+		return  sort;
 	}
 
 	/**
@@ -289,14 +294,19 @@ public class DataGS implements ChannelData, JSONData {
 			Map.Entry<String, SynchronizedSummaryData> pairs;
 			/* open the file */
 			scanner = new Scanner(file);
+			/* first line of the csv file is the header */
 			String header=scanner.nextLine();
 			//parser = CSVParser.parse(header, CSVFormat.DEFAULT);
 			/* We have to remove the quotes and the spaces in the header line */
 			header= header.replace( "\"", "" );
 			header= header.replace( " ", "" );	
+			String line = "";
 			while (scanner.hasNext()){
-				/* TODO I wonder if it should be split with just a comma separator  */
-				parser = CSVParser.parse(scanner.nextLine(), CSVFormat.DEFAULT.withHeader( header.split( "," ) ));
+				/* TODO The thread aborts if there is an issue parsing, and I haven't found a good way to catch that  */
+				line = scanner.nextLine();
+				line= line.replace( "\"", "" );
+				line= line.replace( " ", "" );
+				parser = CSVParser.parse(line, CSVFormat.DEFAULT.withHeader( header.split( "," ) ));
 				/* parse each csv line */
 				for (CSVRecord csvRecord : parser) {
 					/* iterate through tempSumStat and add each csv value needed to it's SyncSumData */
@@ -304,10 +314,17 @@ public class DataGS implements ChannelData, JSONData {
 					while(itS.hasNext()){
 						try{
 							pairs = (Map.Entry<String, SynchronizedSummaryData>)itS.next();
-							System.out.println(pairs.getKey());
-							pairs.getValue().addValue(csvRecord.get(pairs.getKey()));
+							String sVal = csvRecord.get(pairs.getKey()).replace( "\"", "" );
+							if ( !sVal.contains( "NULL" )  ){
+								/* convert String value into a double. Originally done in one line but broken apart for readability. */
+								double dval = Double.parseDouble(sVal);
+								/* add double */
+								pairs.getValue().addValue( dval );
+							}
 						}catch(Exception e){
 							System.err.println(e);
+							System.err.println("header: " + header);
+							System.err.println("line: " + line);
 						}
 					}
 				}
@@ -318,6 +335,7 @@ public class DataGS implements ChannelData, JSONData {
 
 		} catch ( IOException e ) {
 			e.printStackTrace();
+			System.err.println("error occured on this day: " + absolutePath);
 		}
 
 
@@ -325,6 +343,8 @@ public class DataGS implements ChannelData, JSONData {
 		return (HashMap<String, SynchronizedSummaryData>) tempSummaryStat;
 	}
 
+	
+	
 	public void ingest(String ch, String s) {
 		/* create with appropriate mode, if we have this channel in our channel description */
 		if ( channelDesc.containsKey(ch) ) {
@@ -779,6 +799,73 @@ public class DataGS implements ChannelData, JSONData {
 		DataGS d=new DataGS();
 		d.run(args);
 	}
+
+	public String summaryJSON(){
+		try {
+			String json = "";
+			String part = "";
+			//HashMap<String,SynchronizedSummaryData> ssfh= summaryStatsFromHistory.get( date );
+			Iterator<Entry<String,HashMap<String, SynchronizedSummaryData>>> itS;
+			HashMap<String,SynchronizedSummaryData> ssd;
+			Iterator<Entry<String, SynchronizedSummaryData>> it;
+			Map.Entry<String, SynchronizedSummaryData> pairs;
+
+
+
+			itS = summaryStatsFromHistory.entrySet().iterator();
+			Map.Entry<String,HashMap<String, SynchronizedSummaryData>> dateMap;// = (Map.Entry<String,HashMap<String, SynchronizedSummaryData>>)it.next();
+			/* iterate through summaryStatsFrom History */
+			while ( itS.hasNext() ) {
+				dateMap = (Map.Entry<String,HashMap<String, SynchronizedSummaryData>>)itS.next();
+				json += "{";
+
+				ssd= summaryStatsFromHistory.get( dateMap.getKey() );
+
+
+				it = ssd.entrySet().iterator();
+				if ( it.hasNext() ){
+					pairs = (Map.Entry<String, SynchronizedSummaryData>)it.next();
+					System.out.println(pairs.getValue().toString());
+					json+="\"day\":"+dateMap.getKey()+",";
+					json+="\"n\":"+NaNcheck(ssd.get( pairs.getKey() ).getN())+",";
+					/* part is used to avoid having to remove the last comma for each day */
+					/* get the first SyncSumData */
+
+					part="\""+pairs.getKey()+"_min\":"+NaNcheck(ssd.get( pairs.getKey() ).getMin())+",";
+					part+="\""+pairs.getKey()+"_max\":"+NaNcheck(ssd.get( pairs.getKey() ).getMax())+",";
+					part+="\""+pairs.getKey()+"_avg\":"+NaNcheck(ssd.get( pairs.getKey() ).getMean())+"";
+				}
+				while ( it.hasNext() ) {
+					//Map.Entry<String, SynchronizedSummaryData> pairs = (Map.Entry<String, SynchronizedSummaryData>)it.next();
+					pairs = (Map.Entry<String, SynchronizedSummaryData>)it.next();
+					part="\""+pairs.getKey()+"_min\":"+NaNcheck(ssd.get( pairs.getKey() ).getMin())+","+part;
+					part="\""+pairs.getKey()+"_max\":"+NaNcheck(ssd.get( pairs.getKey() ).getMax())+","+part;
+					part="\""+pairs.getKey()+"_avg\":"+NaNcheck(ssd.get( pairs.getKey() ).getMean())+","+part;
+				}
+				json += part+"},";
+
+			}
+
+			/* remove the last comma */
+			return json.substring( 0, json.length()-1 );
+		}catch(Exception e){
+			/* if syncSumData isn't ready, set to initializing*/
+			return null;
+		}
+	}
+
+	public String NaNcheck( double check ){
+		if( Double.isNaN( check ) ){
+			return "null";
+		}
+		
+		return "\""+check+"\"";
+	}
+	public String NaNcheck( String check ){
+		
+		return "\""+check+"\"";
+	}
+	
 	public class summaryHistoryThread implements Runnable {
 
 		public void run() {

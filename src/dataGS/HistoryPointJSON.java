@@ -37,14 +37,25 @@ public class HistoryPointJSON {
 					/* just dump the current value */
 					json += "\"" + StringEscapeUtils.escapeJson( pairs.getKey() ) + "\": \"" + StringEscapeUtils.escapeJson( pairs.getValue().sampleValue ) + "\"";
 				} else if ( chanDesc.containsKey(pairs.getKey() )) {
-					json += "\"" + StringEscapeUtils.escapeJson( pairs.getKey() ) + "\":" + StringEscapeUtils.escapeJson( numberPrecision(pairs.getValue().getMean(), chanDesc.get( pairs.getKey() ).precision ) );
+					double mean = pairs.getValue().getMean();
+					if ( Double.isNaN( mean ) ) {
+						json += "\"" + StringEscapeUtils.escapeJson( pairs.getKey() ) + "\":null,";
+					} else {
+						json += "\"" + StringEscapeUtils.escapeJson( pairs.getKey() ) + "\":" + StringEscapeUtils.escapeJson( numberPrecision(pairs.getValue().getMean(), chanDesc.get( pairs.getKey() ).precision ) );
+					}
 				} else {
 					System.err.println("# No channel description found for " + pairs.getKey() + " using default double.");
-					json += "\"" + pairs.getKey() + "\":" + pairs.getValue().getMean() ;
+					double mean = pairs.getValue().getMean();
+					if ( Double.isNaN( mean ) ) {
+						json += "\"" + pairs.getKey() + "\":null," ;
+					}else {
+
+						json += "\"" + pairs.getKey() + "\":" + pairs.getValue().getMean() ;
+					}
 				}
 
 				json += ",";
-	
+
 			}
 			/* remove the last comma */
 			if ( ',' == json.charAt(json.length()-1) ) {
@@ -87,10 +98,10 @@ public class HistoryPointJSON {
 					/* just dump the current value */
 					csv[0] +=" \"" + StringEscapeUtils.escapeCsv(pairs.getValue().sampleValue) + "\"";
 				} else if ( chanDesc.containsKey(pairs.getKey() )) {
-					csv[0] += " \"" + StringEscapeUtils.escapeCsv(numberPrecision(pairs.getValue().getMean(), chanDesc.get( pairs.getKey() ).precision ))+"\"";
+					csv[0] += "" + StringEscapeUtils.escapeCsv(numberPrecision(pairs.getValue().getMean(), chanDesc.get( pairs.getKey() ).precision ))+"";
 				} else {
 					System.err.println("# No channel description found for " + pairs.getKey() + " using default double.");
-					csv[0] += " \"" + pairs.getValue().getMean() + " \"" ;
+					csv[0] += "" + pairs.getValue().getMean() + "" ;
 				}
 				csv[1] +=" \"" +StringEscapeUtils.escapeCsv(pairs.getKey())+"\",";
 				csv[0] += ",";
