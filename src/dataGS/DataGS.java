@@ -60,13 +60,18 @@ public class DataGS implements ChannelData, JSONData {
 	/* data to summarize and send */
 	protected Map<String, SynchronizedSummaryData> data;
 	protected Map<String, DataPoint> dataLast;
+	protected Map<String, DataPoint> dataNow;
 
 	/* data for the historical data page */
 	protected Map<String, HashMap<String, SynchronizedSummaryData>> summaryStatsFromHistory;
+	protected boolean summaryReady=false;
+	Date date;
+	SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 
 	protected int intervalSummary;
 	protected Timer dataTimer;
 	protected String dataLastJSON;
+	protected String dataNowJSON;
 
 	protected String historyFiles;
 	protected String logLocalDir;
@@ -86,6 +91,8 @@ public class DataGS implements ChannelData, JSONData {
 	public static final int JSON_HISTORY=1;
 	public static final int JSON_HISTORY_FILES = 2;
 	public static final int JSON_SUMMARY_STATS = 3;
+	public static final int JSON_LIVE = 4;
+	
 
 	/* loglocal */
 	LogLocal logLocal;
@@ -93,13 +100,15 @@ public class DataGS implements ChannelData, JSONData {
 
 	public String getJSON(int resource) {
 		if ( JSON_NOW == resource ) {
-			return "{\"data\": [" + dataLastJSON + "]}";
+			return "{\"data\": [" + dataNowJSON + "]}";
 		} else if ( JSON_HISTORY == resource ) {
 			return "{\"history\":" + historyJSON.toString() + "}";
 		} else if ( JSON_HISTORY_FILES == resource ) {
 			return "{\"history_files\": {" + historyFiles + "}}";
 		} else if ( JSON_SUMMARY_STATS == resource ) {
 			return "{\"summary_stats\": [" + summaryJSON() + "]}";
+		} else if ( JSON_LIVE == resource ) {
+			return "{\"data\": [" + dataLastJSON + "]}";
 		}
 
 
@@ -125,14 +134,24 @@ public class DataGS implements ChannelData, JSONData {
 
 
 		synchronized (data) {
-			dataLast.clear();
+			dataNow.clear();
 
+			/* get today's syncSumData from summaryStatsFromHistory if ready
+			if ( summaryReady ){
+				date = new Date();
+				Map<String, SynchronizedSummaryData> today = summaryStatsFromHistory.get( sdf.format( date ) );
+				Iterator TodayIt = today.entrySet().iterator();
+				
+			}
+			*/
 			/* last (ie current) data JSON */
 			Iterator<Entry<String, SynchronizedSummaryData>> it = data.entrySet().iterator();
 			while (it.hasNext()) {
 				Map.Entry<String, SynchronizedSummaryData> pairs = (Map.Entry<String, SynchronizedSummaryData>)it.next();
 
-				dataLast.put(pairs.getKey(),new DataPoint(pairs.getKey(),now,pairs.getValue()));
+				dataNow.put(pairs.getKey(),new DataPoint(pairs.getKey(),now,pairs.getValue()));
+				System.out.println(pairs.getKey()+"="+pairs.getValue());
+				//today.put();
 			}
 
 			/* create a JSON data history point and put into limited length FIFO */
@@ -152,18 +171,18 @@ public class DataGS implements ChannelData, JSONData {
 		}
 
 
-		synchronized ( dataLastJSON ) {
-			dataLastJSON="";
+		synchronized ( dataNowJSON ) {
+			dataNowJSON="";
 
-			Iterator<Entry<String, DataPoint>> it = dataLast.entrySet().iterator();
+			Iterator<Entry<String, DataPoint>> it = dataNow.entrySet().iterator();
 			while (it.hasNext()) {
 				Map.Entry<String, DataPoint> pairs = (Map.Entry<String, DataPoint>)it.next();
 
 				/* debugging */
-				System.out.println(pairs.getKey() + " = " + pairs.getValue());
+				//System.out.println(pairs.getKey() + " = " + pairs.getValue());
 
 				/* use the DataPoint.toJSON() method to encode the members we care about into JSON */
-				dataLastJSON += pairs.getValue().toJSON() + ", ";
+				dataNowJSON += pairs.getValue().toJSON() + ", ";
 
 
 				/* insert into MySQL */
@@ -183,8 +202,8 @@ public class DataGS implements ChannelData, JSONData {
 			}
 
 			/* remove last comma */
-			if ( dataLastJSON.length() >= 2 ) {
-				dataLastJSON = dataLastJSON.substring(0, dataLastJSON.length()-2);
+			if ( dataNowJSON.length() >= 2 ) {
+				dataNowJSON = dataNowJSON.substring(0, dataNowJSON.length()-2);
 			}
 		}
 
@@ -216,8 +235,6 @@ public class DataGS implements ChannelData, JSONData {
 				} else {
 					files.add( fileEntry.getName() );
 				}
-
-
 
 			}
 		}
@@ -257,6 +274,7 @@ public class DataGS implements ChannelData, JSONData {
 			summaryStatsFromHistory.put( date, getSyncSumDatEntry( files[i] ) );
 		}
 		System.out.println("Files all traveled. Took "+((System.currentTimeMillis()-time)/1000)+" seconds");
+		summaryReady=true;
 	}
 
 
@@ -285,7 +303,7 @@ public class DataGS implements ChannelData, JSONData {
 
 		/* open file from absolutePath and use apache commons csv parser to get info and summarize it */
 		File file = new File(absolutePath);
-		System.out.println(absolutePath);
+	//	System.out.println(absolutePath);
 		/* Scanner is being used to read in the csv file line by line */
 		Scanner scanner;
 		CSVParser parser;
@@ -316,8 +334,10 @@ public class DataGS implements ChannelData, JSONData {
 							pairs = (Map.Entry<String, SynchronizedSummaryData>)itS.next();
 							String sVal = csvRecord.get(pairs.getKey()).replace( "\"", "" );
 							if ( !sVal.contains( "NULL" )  ){
+								
 								/* convert String value into a double. Originally done in one line but broken apart for readability. */
 								double dval = Double.parseDouble(sVal);
+								
 								/* add double */
 								pairs.getValue().addValue( dval );
 							}
@@ -346,6 +366,66 @@ public class DataGS implements ChannelData, JSONData {
 	
 	
 	public void ingest(String ch, String s) {
+		
+		/* if we get a null, that means that we have received a complete "record" and can make it available as the absolutely
+		 * latest values ... so we can get data as quickly as possible to a live display page
+		 */
+		if ( null == ch ) {
+			long now = System.currentTimeMillis();
+			dataLast.clear();
+			
+			/* last (ie current) data JSON */
+			Iterator<Entry<String, SynchronizedSummaryData>> it = data.entrySet().iterator();
+			while (it.hasNext()) {
+				Map.Entry<String, SynchronizedSummaryData> pairs = (Map.Entry<String, SynchronizedSummaryData>)it.next();
+
+				dataLast.put(pairs.getKey(),new DataPoint(pairs.getKey(),now,pairs.getValue()));
+			}
+
+			/* now make datalast into a JSON */
+			synchronized ( dataLastJSON ) {
+				dataLastJSON="";
+
+				Iterator<Entry<String, DataPoint>> itt = dataLast.entrySet().iterator();
+				while (itt.hasNext()) {
+					Map.Entry<String, DataPoint> pairs = (Map.Entry<String, DataPoint>)itt.next();
+
+					/* debugging */
+					//System.out.println(pairs.getKey() + " = " + pairs.getValue());
+
+					/* use the DataPoint.toJSON() method to encode the members we care about into JSON */
+					dataLastJSON += pairs.getValue().toJSON() + ", ";
+
+
+					/* insert into MySQL */
+					String table = "adc_" + pairs.getKey();
+					DataPoint a = pairs.getValue();
+					String sql = String.format("INSERT INTO %s VALUES(now(), %d, %f, %f, %f, %f)",
+							table,
+							a.n,
+							a.avg,
+							a.min,
+							a.max,
+							a.stddev
+							);
+
+					log.queryAutoCreate(sql, "dataGSProto.analogDoubleSummarized", table);
+
+				}
+
+				/* remove last comma */
+				if ( dataLastJSON.length() >= 2 ) {
+					dataLastJSON = dataLastJSON.substring(0, dataLastJSON.length()-2);
+				}
+			}
+
+			
+		
+			return;
+		}
+		
+		
+		
 		/* create with appropriate mode, if we have this channel in our channel description */
 		if ( channelDesc.containsKey(ch) ) {
 			data.put(ch, new SynchronizedSummaryData( channelDesc.get(ch).mode ) );
@@ -409,6 +489,7 @@ public class DataGS implements ChannelData, JSONData {
 		intervalSummary = 1000;
 		data = new HashMap<String, SynchronizedSummaryData>();
 		dataLast = new HashMap<String, DataPoint>();
+		dataNow = new HashMap<String, DataPoint>();
 
 
 		/* MySQL options */
@@ -647,6 +728,7 @@ public class DataGS implements ChannelData, JSONData {
 
 		/* start status update thread */
 		dataLastJSON="";
+		dataNowJSON="";
 
 		DataGSStatus status = new DataGSStatus(log,portNumber);
 		status.start();
@@ -802,35 +884,42 @@ public class DataGS implements ChannelData, JSONData {
 
 	public String summaryJSON(){
 		try {
+			/* The string to be returned */
 			String json = "";
+			/* part is used to avoid having to remove the last comma for each day */
 			String part = "";
 			//HashMap<String,SynchronizedSummaryData> ssfh= summaryStatsFromHistory.get( date );
+			
+			/* iterator for the Map with date (string) as key and Map as value */
 			Iterator<Entry<String,HashMap<String, SynchronizedSummaryData>>> itS;
+			itS = summaryStatsFromHistory.entrySet().iterator();
+			
+			/* the map with columnNames (string) as key and SyncSumData as value */
 			HashMap<String,SynchronizedSummaryData> ssd;
+			/* iterator for the columnName (string) with date as key and SyncSumData as value */
 			Iterator<Entry<String, SynchronizedSummaryData>> it;
+			/* The key value pair that uses the columnName (string) as a key */
 			Map.Entry<String, SynchronizedSummaryData> pairs;
 
-
-
-			itS = summaryStatsFromHistory.entrySet().iterator();
+			
+			/* The key value pair that uses the date (string) as a key */
 			Map.Entry<String,HashMap<String, SynchronizedSummaryData>> dateMap;// = (Map.Entry<String,HashMap<String, SynchronizedSummaryData>>)it.next();
 			/* iterate through summaryStatsFrom History */
 			while ( itS.hasNext() ) {
+				
 				dateMap = (Map.Entry<String,HashMap<String, SynchronizedSummaryData>>)itS.next();
 				json += "{";
-
+				/* The map that has a SyncSumData */
 				ssd= summaryStatsFromHistory.get( dateMap.getKey() );
-
-
 				it = ssd.entrySet().iterator();
 				if ( it.hasNext() ){
 					pairs = (Map.Entry<String, SynchronizedSummaryData>)it.next();
-					System.out.println(pairs.getValue().toString());
+				//	System.out.println(pairs.getValue().toString());
 					json+="\"day\":"+dateMap.getKey()+",";
 					json+="\"n\":"+NaNcheck(ssd.get( pairs.getKey() ).getN())+",";
-					/* part is used to avoid having to remove the last comma for each day */
-					/* get the first SyncSumData */
 
+					
+					/* get the first SyncSumData */
 					part="\""+pairs.getKey()+"_min\":"+NaNcheck(ssd.get( pairs.getKey() ).getMin())+",";
 					part+="\""+pairs.getKey()+"_max\":"+NaNcheck(ssd.get( pairs.getKey() ).getMax())+",";
 					part+="\""+pairs.getKey()+"_avg\":"+NaNcheck(ssd.get( pairs.getKey() ).getMean())+"";
@@ -854,6 +943,7 @@ public class DataGS implements ChannelData, JSONData {
 		}
 	}
 
+	/* check if NaN */
 	public String NaNcheck( double check ){
 		if( Double.isNaN( check ) ){
 			return "null";
@@ -866,6 +956,7 @@ public class DataGS implements ChannelData, JSONData {
 		return "\""+check+"\"";
 	}
 	
+	/* thread that runs the method to create the summary stats json */
 	public class summaryHistoryThread implements Runnable {
 
 		public void run() {

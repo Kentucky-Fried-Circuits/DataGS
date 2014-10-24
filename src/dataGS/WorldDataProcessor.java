@@ -44,9 +44,10 @@ public class WorldDataProcessor implements WorldDataListener {
 					System.err.println("# Exception while sending data to channelDataListener(s)...");
 					e.printStackTrace();
 				}
+				channelDataListeners.elementAt(j).ingest(null, null);
+
 			}
-
-
+			
 		}
 	}
 
