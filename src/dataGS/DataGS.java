@@ -106,9 +106,15 @@ public class DataGS implements ChannelData, JSONData {
 		} else if ( JSON_HISTORY_FILES == resource ) {
 			return "{\"history_files\": {" + historyFiles + "}}";
 		} else if ( JSON_SUMMARY_STATS == resource ) {
-			return "{\"summary_stats\": [" + summaryJSON() + "]}";
+			if ( summaryReady ) {
+				return "{\"summary_stats\": [" + summaryJSON() + "]}";
+			} else {
+				return "invalid";
+			}
 		} else if ( JSON_LIVE == resource ) {
+
 			return "{\"data\": [" + dataLastJSON + "]}";
+
 		}
 
 
@@ -136,21 +142,48 @@ public class DataGS implements ChannelData, JSONData {
 		synchronized (data) {
 			dataNow.clear();
 
-			/* get today's syncSumData from summaryStatsFromHistory if ready
-			if ( summaryReady ){
-				date = new Date();
-				Map<String, SynchronizedSummaryData> today = summaryStatsFromHistory.get( sdf.format( date ) );
-				Iterator TodayIt = today.entrySet().iterator();
-				
-			}
-			*/
+		
+			
+			/* TODO get today's syncSumData from summaryStatsFromHistory if ready */
+			Map<String, SynchronizedSummaryData> today;
+			date = new Date();
+//			if ( summaryReady ){
+//				
+//			}
+			
+			
 			/* last (ie current) data JSON */
 			Iterator<Entry<String, SynchronizedSummaryData>> it = data.entrySet().iterator();
 			while (it.hasNext()) {
 				Map.Entry<String, SynchronizedSummaryData> pairs = (Map.Entry<String, SynchronizedSummaryData>)it.next();
 
 				dataNow.put(pairs.getKey(),new DataPoint(pairs.getKey(),now,pairs.getValue()));
-				System.out.println(pairs.getKey()+"="+pairs.getValue());
+				//System.out.println(pairs.getKey()+"="+pairs.getValue());
+				
+				if ( summaryReady ){
+					today = summaryStatsFromHistory.get( sdf.format( date ) );
+					String ch = pairs.getKey();	 
+					
+					
+					if ( today.containsKey( ch ) ) {
+						if ( today.get(ch).mode == Modes.AVERAGE ) {
+							Double s = pairs.getValue().getMean();
+							Double d;
+							try {
+								d=new Double(s);
+								today.get(ch).addValue(d);
+								//			System.err.println("# ingested " + ch + " as double with value=" + d);
+							} catch ( NumberFormatException e ) {
+								System.err.println("# error ingesting s=" + s + " as a double. Giving up");
+								return;
+							}
+						} else if ( today.get(ch).mode == Modes.SAMPLE ) {
+							String s = pairs.getValue().sampleValue;
+							today.get(ch).addValue(s);	
+						}
+					}
+				}
+				
 				//today.put();
 			}
 
@@ -274,7 +307,7 @@ public class DataGS implements ChannelData, JSONData {
 			summaryStatsFromHistory.put( date, getSyncSumDatEntry( files[i] ) );
 		}
 		System.out.println("Files all traveled. Took "+((System.currentTimeMillis()-time)/1000)+" seconds");
-		summaryReady=true;
+		
 	}
 
 
@@ -320,7 +353,7 @@ public class DataGS implements ChannelData, JSONData {
 			header= header.replace( " ", "" );	
 			String line = "";
 			while (scanner.hasNext()){
-				/* TODO The thread aborts if there is an issue parsing, and I haven't found a good way to catch that  */
+				
 				line = scanner.nextLine();
 				line= line.replace( "\"", "" );
 				line= line.replace( " ", "" );
@@ -447,6 +480,7 @@ public class DataGS implements ChannelData, JSONData {
 		} else if ( data.get(ch).mode == Modes.SAMPLE ) {
 			data.get(ch).addValue(s);	
 		}
+		
 
 
 	}
@@ -722,8 +756,7 @@ public class DataGS implements ChannelData, JSONData {
 		/* Create the JSON file with all the loglocal files in it */
 		historyFiles="\"files\":["+filesToJson( files )+"]";
 
-		/* test TODO */
-		//createSummaryStatsFromHistory( listFilesForFolder( logLocalDir, true ) );
+		/* Create summary in another thread */
 		(new Thread(new summaryHistoryThread())).start();
 
 		/* start status update thread */
@@ -963,6 +996,7 @@ public class DataGS implements ChannelData, JSONData {
 			long timer = System.currentTimeMillis();
 			createSummaryStatsFromHistory( listFilesForFolder( logLocalDir, true ) );
 			System.out.println("summary creation took: "+((System.currentTimeMillis()-timer)/1000)+" seconds");
+			summaryReady=true;
 		}
 
 
