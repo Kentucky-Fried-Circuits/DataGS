@@ -154,7 +154,8 @@ public class DataGS implements ChannelData, JSONData {
 			Iterator<Entry<String, SynchronizedSummaryData>> it = data.entrySet().iterator();
 			while (it.hasNext()) {
 				Map.Entry<String, SynchronizedSummaryData> pairs = (Map.Entry<String, SynchronizedSummaryData>)it.next();
-
+				System.out.println("DGS success: "+pairs.getKey());
+				
 				dataNow.put(pairs.getKey(),new DataPoint(pairs.getKey(),now,pairs.getValue()));
 				//System.out.println(pairs.getKey()+"="+pairs.getValue());
 				
