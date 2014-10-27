@@ -17,15 +17,15 @@ public class HistoryPointJSON {
 		json = "{\"time\":" + time + ","; /* open data element and add the timestamp */
 
 		json += "\"data\": {"; /* open data array */
-
+		Map.Entry<String, SynchronizedSummaryData> pairs;
 		Iterator<Entry<String, SynchronizedSummaryData>> it = data.entrySet().iterator();
 		System.out.println("HPJ iterate");
 		System.out.flush();
 		if ( ! data.isEmpty() ) {
 			while (it.hasNext()) {
 				
-				Map.Entry<String, SynchronizedSummaryData> pairs = (Map.Entry<String, SynchronizedSummaryData>)it.next();
-				//System.out.println("HPJ success: "+pairs.getKey());
+				pairs = (Map.Entry<String, SynchronizedSummaryData>)it.next();
+				System.out.println("HPJ success: "+pairs.getKey());
 				if ( false==chanDesc.get(pairs.getKey()).history ) {
 				//	System.err.println("## HistoryPointJSON is skipping " + pairs.getKey() + " because history is false");
 					continue;
