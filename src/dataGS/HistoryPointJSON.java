@@ -10,53 +10,52 @@ import org.apache.commons.lang3.StringEscapeUtils;
 
 public class HistoryPointJSON {
 
-
+	
 	public static String toJSON(long time, Map<String, SynchronizedSummaryData> data, Map<String, ChannelDescription> chanDesc) {
 		String json;
 
 		json = "{\"time\":" + time + ","; /* open data element and add the timestamp */
 
 		json += "\"data\": {"; /* open data array */
-		synchronized(data){
-			Iterator<Entry<String, SynchronizedSummaryData>> it = data.entrySet().iterator();
-			if ( ! data.isEmpty() ) {
-				while (it.hasNext()) {
 
-					Map.Entry<String, SynchronizedSummaryData> pairs = (Map.Entry<String, SynchronizedSummaryData>)it.next();
+		Iterator<Entry<String, SynchronizedSummaryData>> it = data.entrySet().iterator();
+		if ( ! data.isEmpty() ) {
+			while (it.hasNext()) {
+				Map.Entry<String, SynchronizedSummaryData> pairs = (Map.Entry<String, SynchronizedSummaryData>)it.next();
 
-					if ( false==chanDesc.get(pairs.getKey()).history ) {
-						//	System.err.println("## HistoryPointJSON is skipping " + pairs.getKey() + " because history is false");
-						continue;
-					}
-
-					//System.err.println("## HistoryPointJSON is adding " + pairs.getKey() + " because history is true");
-
-					/* if we have have this key in the channel description map, we use the precision from there. Otherwise we
-					 * just go with default precision.
-					 */
-					if ( pairs.getValue().mode==ChannelDescription.Modes.SAMPLE ) {
-						/* just dump the current value */
-						json += "\"" + StringEscapeUtils.escapeJson( pairs.getKey() ) + "\": \"" + StringEscapeUtils.escapeJson( pairs.getValue().sampleValue ) + "\"";
-					} else if ( chanDesc.containsKey(pairs.getKey() )) {
-						double mean = pairs.getValue().getMean();
-						if ( Double.isNaN( mean ) ) {
-							json += "\"" + StringEscapeUtils.escapeJson( pairs.getKey() ) + "\":null,";
-						} else {
-							json += "\"" + StringEscapeUtils.escapeJson( pairs.getKey() ) + "\":" + StringEscapeUtils.escapeJson( numberPrecision(pairs.getValue().getMean(), chanDesc.get( pairs.getKey() ).precision ) );
-						}
-					} else {
-						System.err.println("# No channel description found for " + pairs.getKey() + " using default double.");
-						double mean = pairs.getValue().getMean();
-						if ( Double.isNaN( mean ) ) {
-							json += "\"" + pairs.getKey() + "\":null," ;
-						}else {
-
-							json += "\"" + pairs.getKey() + "\":" + pairs.getValue().getMean() ;
-						}
-					}
-
-					json += ",";
+				if ( false==chanDesc.get(pairs.getKey()).history ) {
+				//	System.err.println("## HistoryPointJSON is skipping " + pairs.getKey() + " because history is false");
+					continue;
 				}
+				
+				//System.err.println("## HistoryPointJSON is adding " + pairs.getKey() + " because history is true");
+				
+				/* if we have have this key in the channel description map, we use the precision from there. Otherwise we
+				 * just go with default precision.
+				 */
+				if ( pairs.getValue().mode==ChannelDescription.Modes.SAMPLE ) {
+					/* just dump the current value */
+					json += "\"" + StringEscapeUtils.escapeJson( pairs.getKey() ) + "\": \"" + StringEscapeUtils.escapeJson( pairs.getValue().sampleValue ) + "\"";
+				} else if ( chanDesc.containsKey(pairs.getKey() )) {
+					double mean = pairs.getValue().getMean();
+					if ( Double.isNaN( mean ) ) {
+						json += "\"" + StringEscapeUtils.escapeJson( pairs.getKey() ) + "\":null,";
+					} else {
+						json += "\"" + StringEscapeUtils.escapeJson( pairs.getKey() ) + "\":" + StringEscapeUtils.escapeJson( numberPrecision(pairs.getValue().getMean(), chanDesc.get( pairs.getKey() ).precision ) );
+					}
+				} else {
+					System.err.println("# No channel description found for " + pairs.getKey() + " using default double.");
+					double mean = pairs.getValue().getMean();
+					if ( Double.isNaN( mean ) ) {
+						json += "\"" + pairs.getKey() + "\":null," ;
+					}else {
+
+						json += "\"" + pairs.getKey() + "\":" + pairs.getValue().getMean() ;
+					}
+				}
+
+				json += ",";
+
 			}
 			/* remove the last comma */
 			if ( ',' == json.charAt(json.length()-1) ) {
@@ -64,7 +63,7 @@ public class HistoryPointJSON {
 			}
 		}
 
-
+		
 		json += "}"; /* close data array */
 
 		json += "}"; /* close whole data point element */
@@ -86,12 +85,12 @@ public class HistoryPointJSON {
 				Map.Entry<String, SynchronizedSummaryData> pairs = (Map.Entry<String, SynchronizedSummaryData>)it.next();
 
 				if ( false==chanDesc.get(pairs.getKey()).log ) {
-					//	System.err.println("## HistoryPointJSON is skipping " + pairs.getKey() + " because history is false");
+				//	System.err.println("## HistoryPointJSON is skipping " + pairs.getKey() + " because history is false");
 					continue;
 				}
-
+				
 				//System.err.println("## HistoryPointJSON is adding " + pairs.getKey() + " because history is true");
-
+				
 				/* if we have have this key in the channel description map, we use the precision from there. Otherwise we
 				 * just go with default precision.
 				 */
@@ -106,7 +105,7 @@ public class HistoryPointJSON {
 				}
 				csv[1] +=" \"" +StringEscapeUtils.escapeCsv(pairs.getKey())+"\",";
 				csv[0] += ",";
-
+	
 			}
 			/* remove the last comma */
 			if ( ',' == csv[0].charAt(csv[0].length()-1) ) {
@@ -120,8 +119,8 @@ public class HistoryPointJSON {
 
 		return csv;
 	}
-
-
+	
+	
 	public static String numberPrecision(double val,int prec){
 		if(Double.isNaN( val )){
 			return "null";
