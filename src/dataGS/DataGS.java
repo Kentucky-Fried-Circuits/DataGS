@@ -148,10 +148,7 @@ public class DataGS implements ChannelData, JSONData {
 			/* TODO get today's syncSumData from summaryStatsFromHistory if ready */
 			Map<String, SynchronizedSummaryData> today;
 			date = new Date();
-//			if ( summaryReady ){
-//				
-//			}
-			
+
 			
 			/* last (ie current) data JSON */
 			Iterator<Entry<String, SynchronizedSummaryData>> it = data.entrySet().iterator();
