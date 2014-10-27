@@ -20,6 +20,7 @@ public class HistoryPointJSON {
 
 		Iterator<Entry<String, SynchronizedSummaryData>> it = data.entrySet().iterator();
 		System.out.println("HPJ iterate");
+		System.out.flush();
 		if ( ! data.isEmpty() ) {
 			while (it.hasNext()) {
 				
@@ -30,7 +31,8 @@ public class HistoryPointJSON {
 					continue;
 				}
 				
-				//System.err.println("## HistoryPointJSON is adding " + pairs.getKey() + " because history is true");
+				System.err.println("## HistoryPointJSON is adding " + pairs.getKey() + " because history is true");
+				System.err.flush();
 				
 				/* if we have have this key in the channel description map, we use the precision from there. Otherwise we
 				 * just go with default precision.
@@ -65,6 +67,7 @@ public class HistoryPointJSON {
 			}
 		}
 		System.out.println("finish HPJ iterate");
+		System.out.flush();
 		
 		json += "}"; /* close data array */
 
