@@ -262,7 +262,7 @@ public class DataGS implements ChannelData, JSONData {
 		List<String> files = new ArrayList<String>();
 		for ( final File fileEntry : directory.listFiles() ) {
 			/* if  not a directory */
-			if ( !fileEntry.isDirectory() ) {
+			if ( !fileEntry.isDirectory() && !fileEntry.getName().contains("~") ) {
 				if ( absolute ) {
 					files.add( fileEntry.getAbsolutePath() );
 				} else {

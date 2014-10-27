@@ -122,6 +122,9 @@ public class HistoryPointJSON {
 	
 	
 	public static String numberPrecision(double val,int prec){
+		if(Double.isNaN( val )){
+			return "null";
+		}
 		String format = "" + val ;
 
 		if ( prec >= 0 ) {
