@@ -774,8 +774,12 @@ public class DataGS implements ChannelData, JSONData {
 		/* get array of all filenames from logLocalDir */
 		String[] files = listFilesForFolder( logLocalDir );
 
-		/* Create the JSON file with all the loglocal files in it */
-		historyFiles="\"files\":["+filesToJson( files )+"]";
+		/* if files are returned, create the JSON file with all the loglocal files in it */
+		if ( !files[0].equals("does-not-exist") ){
+			historyFiles="\"files\":["+filesToJson( files )+"]";
+		} else {
+			historyFiles="\"files\":[]";
+		}
 
 		/* Create summary in another thread */
 		(new Thread(new summaryHistoryThread())).start();
