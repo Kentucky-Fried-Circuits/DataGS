@@ -19,11 +19,12 @@ public class HistoryPointJSON {
 		json += "\"data\": {"; /* open data array */
 
 		Iterator<Entry<String, SynchronizedSummaryData>> it = data.entrySet().iterator();
+		System.out.println("HPJ iterate");
 		if ( ! data.isEmpty() ) {
 			while (it.hasNext()) {
 				
 				Map.Entry<String, SynchronizedSummaryData> pairs = (Map.Entry<String, SynchronizedSummaryData>)it.next();
-				System.out.println("HPJ success: "+pairs.getKey());
+				//System.out.println("HPJ success: "+pairs.getKey());
 				if ( false==chanDesc.get(pairs.getKey()).history ) {
 				//	System.err.println("## HistoryPointJSON is skipping " + pairs.getKey() + " because history is false");
 					continue;
@@ -63,7 +64,7 @@ public class HistoryPointJSON {
 				json = json.substring(0,json.length()-2);
 			}
 		}
-
+		System.out.println("finish HPJ iterate");
 		
 		json += "}"; /* close data array */
 
