@@ -23,7 +23,7 @@ public class HistoryPointJSON {
 			while (it.hasNext()) {
 				
 				Map.Entry<String, SynchronizedSummaryData> pairs = (Map.Entry<String, SynchronizedSummaryData>)it.next();
-				System.out.println("success");
+				System.out.println("HPJ success: "+pairs.getKey());
 				if ( false==chanDesc.get(pairs.getKey()).history ) {
 				//	System.err.println("## HistoryPointJSON is skipping " + pairs.getKey() + " because history is false");
 					continue;
