@@ -21,8 +21,9 @@ public class HistoryPointJSON {
 		Iterator<Entry<String, SynchronizedSummaryData>> it = data.entrySet().iterator();
 		if ( ! data.isEmpty() ) {
 			while (it.hasNext()) {
+				
 				Map.Entry<String, SynchronizedSummaryData> pairs = (Map.Entry<String, SynchronizedSummaryData>)it.next();
-
+				System.out.println("success");
 				if ( false==chanDesc.get(pairs.getKey()).history ) {
 				//	System.err.println("## HistoryPointJSON is skipping " + pairs.getKey() + " because history is false");
 					continue;
