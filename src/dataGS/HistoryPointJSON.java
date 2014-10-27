@@ -17,11 +17,11 @@ public class HistoryPointJSON {
 		json = "{\"time\":" + time + ","; /* open data element and add the timestamp */
 
 		json += "\"data\": {"; /* open data array */
+		synchronized(data){
+			Iterator<Entry<String, SynchronizedSummaryData>> it = data.entrySet().iterator();
+			if ( ! data.isEmpty() ) {
+				while (it.hasNext()) {
 
-		Iterator<Entry<String, SynchronizedSummaryData>> it = data.entrySet().iterator();
-		if ( ! data.isEmpty() ) {
-			while (it.hasNext()) {
-				synchronized(data){
 					Map.Entry<String, SynchronizedSummaryData> pairs = (Map.Entry<String, SynchronizedSummaryData>)it.next();
 
 					if ( false==chanDesc.get(pairs.getKey()).history ) {
