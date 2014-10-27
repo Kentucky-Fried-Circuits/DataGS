@@ -37,6 +37,7 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -258,24 +259,35 @@ public class DataGS implements ChannelData, JSONData {
 	public String[] listFilesForFolder(String dirName, boolean absolute) {
 
 		/* go through a directory and return a string[] with every filename in directory, ignoring sub directories */
-		final File directory = new File(dirName);
-		List<String> files = new ArrayList<String>();
-		for ( final File fileEntry : directory.listFiles() ) {
-			/* if  not a directory */
-			if ( !fileEntry.isDirectory() && !fileEntry.getName().contains("~") ) {
-				if ( absolute ) {
-					files.add( fileEntry.getAbsolutePath() );
-				} else {
-					files.add( fileEntry.getName() );
-				}
+		try{
+			final File directory = new File(dirName);
+			List<String> files = new ArrayList<String>();
+			for ( final File fileEntry : directory.listFiles() ) {
+				/* if  not a directory */
+				String fn = fileEntry.getName();
+				if ( !fileEntry.isDirectory() && !fn.contains("~") ) {
+					if ( NumberUtils.isNumber(FilenameUtils.getBaseName( fn )) ) {
+						if ( absolute ) {
+							files.add( fileEntry.getAbsolutePath() );
+						} else {
+							files.add( fileEntry.getName() );
+						}
+					}
 
+				}
 			}
+			String[] sort = files.toArray( new String[ files.size() ] );
+			Arrays.sort(sort, Collections.reverseOrder());
+			return  sort;
+		} catch (Exception e) {
+			System.err.println("Directory does not exist");
+			return new String[] {"does-not-exist"};
 		}
-		String[] sort = files.toArray( new String[ files.size() ] );
-		Arrays.sort(sort, Collections.reverseOrder());
-		return  sort;
+
 	}
 
+
+	
 	/**
 	 * 
 	 * @param files to be converted to json
@@ -628,8 +640,10 @@ public class DataGS implements ChannelData, JSONData {
 		System.err.println("# channel map file is " + channelMapFile);
 		File cmf = new File(channelMapFile);
 		if ( cmf.exists() && ! cmf.isDirectory() ) {
+			
 			System.err.print("# Loading channel description from " + channelMapFile + " ...");
-
+			System.err.flush();
+			
 			/* used for deserializing json */
 			Gson gson = new GsonBuilder().create();
 			ChannelDescription cd;
@@ -644,6 +658,8 @@ public class DataGS implements ChannelData, JSONData {
 				channelDesc.put( cd.id, cd );
 			}
 			System.err.println(" done. " + channelDesc.size() + " channels loaded.");
+			System.err.flush();
+			
 		}
 
 
@@ -656,9 +672,11 @@ public class DataGS implements ChannelData, JSONData {
 					dataHistoryJSONHours,
 					nPoints,
 					intervalSummary);
+			System.err.flush();
 			historyJSON = new CircularFifoQueue<String>(nPoints);
 		} else {
 			System.err.println("# History JSON disabled");
+			System.err.flush();
 			historyJSON=null;
 		}
 
@@ -710,6 +728,7 @@ public class DataGS implements ChannelData, JSONData {
 		/* serial port for WorldData packets */
 		if ( "" != serialPortWorldData ) {
 			System.err.println("# Listening for WorldData packets on " + serialPortWorldData);
+			System.err.flush();
 
 			WorldDataSerialReader ser = new WorldDataSerialReader(serialPortWorldData, serialPortWorldDataSpeed);
 			WorldDataProcessor worldProcessor = new WorldDataProcessor();
@@ -724,6 +743,7 @@ public class DataGS implements ChannelData, JSONData {
 
 		if ( 0 != portNumber ) {
 			System.err.println("# Listening on port " + portNumber + " with " + socketTimeout + " second socket timeout and " + stationTimeout + " second station timeout");
+			System.err.flush();
 			try {
 				serverSocket = new ServerSocket(portNumber);
 				listening=true;
@@ -733,6 +753,7 @@ public class DataGS implements ChannelData, JSONData {
 			}
 		} else {
 			System.err.println("# DataGS socket disabled because portNumber=0");
+			System.err.flush();
 		}
 
 
@@ -782,10 +803,12 @@ public class DataGS implements ChannelData, JSONData {
 		/* built in http server to provide data */
 		if ( 0 != httpPort ) {
 			System.err.println("# HTTP server listening on port " + httpPort);
+			System.err.flush();
 			HTTPServerJSON httpd = new HTTPServerJSON(httpPort, this, channelMapFile, logLocalDir);
 			httpd.start();
 		} else {
 			System.err.println("# HTTP server disabled.");
+			System.err.flush();
 		}
 
 		/* spin through and accept new connections as quickly as we can ... in DataGS format. */
@@ -843,6 +866,7 @@ public class DataGS implements ChannelData, JSONData {
 
 
 		System.err.println("# dataGS done");
+		System.err.flush();
 	}
 
 	/* This method opens the file passed to it 
@@ -907,13 +931,7 @@ public class DataGS implements ChannelData, JSONData {
 		return split;
 	}
 
-	public static void main(String[] args) throws IOException {
-		System.err.println("# Major version: 2014-10-15 (ian laptop)");
-		System.err.println("# java.library.path: " + System.getProperty( "java.library.path" ));
 
-		DataGS d=new DataGS();
-		d.run(args);
-	}
 
 	public String summaryJSON(){
 		try {
@@ -994,12 +1012,25 @@ public class DataGS implements ChannelData, JSONData {
 
 		public void run() {
 			long timer = System.currentTimeMillis();
-			createSummaryStatsFromHistory( listFilesForFolder( logLocalDir, true ) );
-			System.out.println("summary creation took: "+((System.currentTimeMillis()-timer)/1000)+" seconds");
-			summaryReady=true;
+			String[] files = listFilesForFolder(logLocalDir, true);
+			if ( !files[0].equals( "does-not-exist" ) ) {
+				createSummaryStatsFromHistory( files );
+				System.out.println("summary creation took: "+((System.currentTimeMillis()-timer)/1000)+" seconds");
+				summaryReady = true;
+			} else {
+				summaryReady = false;
+			}
 		}
 
-
-
 	}
+	
+	/* Main method */
+	public static void main(String[] args) throws IOException {
+		System.err.println("# Major version: 2014-10-27 (ian laptop)");
+		System.err.println("# java.library.path: " + System.getProperty( "java.library.path" ));
+
+		DataGS d=new DataGS();
+		d.run(args);
+	}
+	
 }
