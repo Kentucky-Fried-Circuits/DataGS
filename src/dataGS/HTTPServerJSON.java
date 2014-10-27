@@ -8,7 +8,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 
 public class HTTPServerJSON extends NanoHTTPD {
 
-	public static final boolean DEBUG = false;
+	public static final boolean DEBUG = true;
 
 	public static final String MIME_JAVASCRIPT = "text/javascript";
 	public static final String MIME_CSS = "text/css";
