@@ -153,9 +153,9 @@ public class DataGS implements ChannelData, JSONData {
 			/* last (ie current) data JSON */
 			Iterator<Entry<String, SynchronizedSummaryData>> it = data.entrySet().iterator();
 			System.out.println("DGS iterate");
+			System.out.flush();
 			while (it.hasNext()) {
 				Map.Entry<String, SynchronizedSummaryData> pairs = (Map.Entry<String, SynchronizedSummaryData>)it.next();
-				System.out.println("DGS success: "+pairs.getKey());
 				
 				dataNow.put(pairs.getKey(),new DataPoint(pairs.getKey(),now,pairs.getValue()));
 				//System.out.println(pairs.getKey()+"="+pairs.getValue());
@@ -187,8 +187,10 @@ public class DataGS implements ChannelData, JSONData {
 				//today.put();
 			}
 			System.out.println("finished DGS iterate");
+			System.out.flush();
 			/* create a JSON data history point and put into limited length FIFO */
 			if ( null != historyJSON ) {
+				
 				historyJSON.add(HistoryPointJSON.toJSON(now, data, channelDesc));
 				//	System.err.println("# historyJSON is " + historyJSON.size() + " of " + historyJSON.maxSize() + " maximum.");
 			}
