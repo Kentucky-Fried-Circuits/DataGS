@@ -125,3 +125,7 @@ Multiple ports can be seperated with a colon. Example:
 -DSERIAL_PORT_LIST=/dev/ttyUSB0:/dev/ttyUSB1
 ```
 
+### Setting the classpath
+
+Java needs to have the current directory, the bin directory, and the name of all the requires JAR files in the `-cp` 
+argument. The program itself is then started with `packageName.className`. Or `dataGS.DataGS`.
