@@ -13,6 +13,5 @@
 	<classpathentry kind="lib" path="jars/mysql-connector-java-5.1.7-bin.jar"/>
 	<classpathentry kind="lib" path="jars/Serialio.jar"/>
 	<classpathentry kind="lib" path="jars/sqlite-jdbc-3.7.2.jar"/>
-	<classpathentry kind="lib" path="jars/json-lib-2.4-jdk15.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
