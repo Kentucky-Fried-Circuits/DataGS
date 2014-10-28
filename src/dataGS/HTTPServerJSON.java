@@ -121,7 +121,7 @@ public class HTTPServerJSON extends NanoHTTPD {
 			/* listing of log files from filesystem */
 			response = new NanoHTTPD.Response( Response.Status.OK, MIME_JSON, data.getJSON( DataGS.JSON_HISTORY_FILES ), gzipAllowed );
 		} else if ( uri.endsWith( "summaryStats.json" ) ) {
-			
+			/* daily summaries from local log files */
 			if ( data.getJSON( DataGS.JSON_SUMMARY_STATS ).equals( "invalid" ) ) {
 				response = new NanoHTTPD.Response( Response.Status.NO_CONTENT, MIME_PLAINTEXT, "Not Found" );
 			}else{

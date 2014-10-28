@@ -9,10 +9,6 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.Vector;
 
-import net.spy.memcached.MemcachedClient;
-//import java.awt.event.*;
-
-//import javax.swing.Timer;
 
 public class DataGSServerThread extends Thread {
 	protected Socket socket = null;
@@ -27,8 +23,7 @@ public class DataGSServerThread extends Thread {
 	public DateFormat dateFormat;
 
 
-	/* memcache debuging */
-	protected MemcachedClient memcache;
+
 
 	protected Vector<ChannelData> channelDataListeners;
 
@@ -40,15 +35,9 @@ public class DataGSServerThread extends Thread {
 	public DataGSServerThread(
 			Socket socket, 
 			Log l,
-			String myHost, 
-			String myUser, 
-			String myPass, 
-			String myDB,
-			int myPort,
+
 			DateFormat df,
-			int socketTimeout, 
-			int stationTimeout, 
-			MemcachedClient mem) {
+			int socketTimeout) {
 
 		/* set our thread name */
 		super(socket.getInetAddress().getHostAddress() + ":" + socket.getLocalPort());
@@ -68,7 +57,6 @@ public class DataGSServerThread extends Thread {
 		threadLog=l;
 		rawBuffer = new int[1024];
 
-		memcache=mem;
 
 		memcacheLog("Starting thread: " + socket.getInetAddress().getHostAddress() + ":" + socket.getLocalPort());
 
@@ -92,18 +80,7 @@ public class DataGSServerThread extends Thread {
 
 
 	private void memcacheLog(String s) {
-
-		if ( null == memcache ) {
-			System.err.println("# [LOG] " + s);
-			return;
-		}
-
-		String key="DATABURP_" + socket.getLocalPort() + "_" + socket.getInetAddress().getHostAddress();
-		long index = memcache.incr(key + "_INDEX",1,0,3600*24*2);
-
-		memcache.set(key + "_" + index,3600*24*2, s);
-		System.err.println("# [" + key + "_" + index + "] " + s);
-
+		System.err.println("# [LOG] " + s);
 	}
 
 	/** Jump here when our packet starts with an A to Z */
