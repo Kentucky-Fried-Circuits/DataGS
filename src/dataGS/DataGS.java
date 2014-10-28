@@ -261,25 +261,7 @@ public class DataGS implements ChannelData, JSONData {
 		return json.substring( 0, json.length()-1 );
 	}
 
-	/**
-	 * 
-	 * @param files is the String array of files that will be summarized
-	 */
-	public void createSummaryStatsFromHistory(String[] files){
-
-		/* initialize summaryStatsFromHistory hashmap NOTE: this may need to move somewhere else*/
-		long time = System.currentTimeMillis();
-		summaryStatsFromHistory = new HashMap<String, HashMap<String, SynchronizedSummaryData>>();
-
-		String date;
-		for ( int i = 0 ; i < files.length ; i++ ) {
-			date=FilenameUtils.getBaseName( files[i] );//FilenameUtils.removeExtension(files[i]);
-			//System.out.println(files[i]);
-			summaryStatsFromHistory.put( date, getSyncSumDatEntry( files[i] ) );
-		}
-		System.out.println("Files all traveled. Took "+((System.currentTimeMillis()-time)/1000)+" seconds");
-
-	}
+	
 
 
 
@@ -457,7 +439,7 @@ public class DataGS implements ChannelData, JSONData {
 		
 		if ( cmf.exists() && ! cmf.isDirectory() ) {
 
-			System.err.print("# Loading channel description from " + channelMapFile + " ...");
+			System.err.println("# Loading channel description from " + channelMapFile + " ...");
 			System.err.flush();
 
 			/* used for deserializing json */
@@ -466,15 +448,16 @@ public class DataGS implements ChannelData, JSONData {
 
 			/* get string array of json objects to deserialize  */
 			String[] jsonStrArray = UtilFiles.getJsonFromFile(channelMapFile);
-
+			System.err.println(	"# " + (System.currentTimeMillis()-startTime) + " ms to read file ... ");
+			
 			/* iterate through jsonStrArray and create a ChannelDescription object 
 			 * and add it to the hash map */
 			for ( int i = 0; i<jsonStrArray.length; i++ ) {
 				cd = gson.fromJson( jsonStrArray[i], ChannelDescription.class );
 				channelDesc.put( cd.id, cd );
 			}
-			System.err.println(" done. " + channelDesc.size() + " channels loaded in " + 
-					(System.currentTimeMillis()-startTime) + " ms.");
+			System.err.println("# " + channelDesc.size() + " channels loaded in " + 
+					(System.currentTimeMillis()-startTime) + " ms total.");
 			System.err.flush();
 
 		}
@@ -519,6 +502,8 @@ public class DataGS implements ChannelData, JSONData {
 		data = new HashMap<String, SynchronizedSummaryData>();
 		dataLast = new HashMap<String, DataPoint>();
 		dataNow = new HashMap<String, DataPoint>();
+		dataLastJSON="";
+		dataNowJSON="";
 
 
 		/* MySQL options */
@@ -702,6 +687,12 @@ public class DataGS implements ChannelData, JSONData {
 		}
 
 
+		/* attempt to load history from files if logLocalDir is set */
+		if ( null != logLocalDir ) {
+			System.err.println("# Loading History from LogLocal directory " + logLocalDir );
+			System.err.flush();
+			loadHistoryFromFiles();
+		}
 
 
 
@@ -717,17 +708,7 @@ public class DataGS implements ChannelData, JSONData {
 		dataTimer.start();
 
 
-		/* attempt to load history from files if logLocalDir is set */
-		if ( null != logLocalDir ) {
-			System.err.println("# Loading History from LogLocal directory " + logLocalDir );
-			System.err.flush();
-			loadHistoryFromFiles();
-		}
 
-
-
-		dataLastJSON="";
-		dataNowJSON="";
 
 
 
@@ -893,7 +874,26 @@ public class DataGS implements ChannelData, JSONData {
 	/* thread that runs the method to create the summary stats json */
 	/* TODO: get rid of inner class ... doesn't meet APRS World's coding standards */
 	public class summaryHistoryThread implements Runnable {
+		/**
+		 * 
+		 * @param files is the String array of files that will be summarized
+		 */
+		public void createSummaryStatsFromHistory(String[] files){
 
+			/* initialize summaryStatsFromHistory hashmap NOTE: this may need to move somewhere else*/
+			long time = System.currentTimeMillis();
+			summaryStatsFromHistory = new HashMap<String, HashMap<String, SynchronizedSummaryData>>();
+
+			String date;
+			for ( int i = 0 ; i < files.length ; i++ ) {
+				date=FilenameUtils.getBaseName( files[i] );//FilenameUtils.removeExtension(files[i]);
+				//System.out.println(files[i]);
+				summaryStatsFromHistory.put( date, getSyncSumDatEntry( files[i] ) );
+			}
+			System.out.println("Files all traveled. Took "+((System.currentTimeMillis()-time)/1000)+" seconds");
+
+		}
+		
 		public void run() {
 			long startTime = System.currentTimeMillis();
 
