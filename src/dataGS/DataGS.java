@@ -25,6 +25,7 @@ import javax.swing.Timer;
 
 
 
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.Options;
@@ -415,8 +416,21 @@ public class DataGS implements ChannelData, JSONData {
 		/* null is used as a flag that we have a complete measurement set and we can publish to 
 		 * "live" page that shows that absolutely latest set of samples */ 
 
-		if ( null == ch )
+		if ( null == ch ) {
+			long now = System.currentTimeMillis();
+			long started = 0;
+			
+			try {
+				started=Long.parseLong(s);
+			} catch ( NumberFormatException e ) {
+				return;
+			}
+			
+			System.err.println("# whole packet took " + (started-now) + "ms to be ingested");
+			
 			return;
+		}
+			
 
 
 		/* we don't need to do anything if we aren't using the channel */
