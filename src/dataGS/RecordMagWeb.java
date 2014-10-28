@@ -177,7 +177,7 @@ public class RecordMagWeb {
 		/* saving the buffer so we can change it */
 		buffer = buff;
 		
-		if ( 25 != buff[5] ) 
+		if ( 25 != buff[5] || buff.length < 126 ) 
 			return;
 
 		sequenceNumber=(buff[6]<<8)+buff[7];

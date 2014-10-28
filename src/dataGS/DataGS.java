@@ -1,9 +1,7 @@
 package dataGS;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -40,7 +38,7 @@ import dataGS.ChannelDescription.Modes;
 
 public class DataGS implements ChannelData, JSONData {
 	private final boolean debug=false;
-	
+
 	private Log log;
 	private Timer threadMaintenanceTimer;
 
@@ -112,7 +110,7 @@ public class DataGS implements ChannelData, JSONData {
 			}
 		} else if ( JSON_SUMMARY_STATS == resource ) {
 			if ( summaryReady ) {
-				return "{\"summary_stats\": [" + summaryJSON() + "]}";
+				return "{\"summary_stats\": [" + dailySummaryJSON() + "]}";
 			} else {
 				return "invalid";
 			}
@@ -159,7 +157,7 @@ public class DataGS implements ChannelData, JSONData {
 				Map.Entry<String, SynchronizedSummaryData> pairs = (Map.Entry<String, SynchronizedSummaryData>)it.next();
 
 				dataNow.put(pairs.getKey(),new DataPoint(pairs.getKey(),now,pairs.getValue()));
-			
+
 				if ( summaryReady ){
 					today = summaryStatsFromHistory.get( sdf.format( date ) );
 					String ch = pairs.getKey();	 
@@ -379,21 +377,21 @@ public class DataGS implements ChannelData, JSONData {
 		if ( null == ch ) {
 			long now = System.currentTimeMillis();
 			long started = 0;
-			
+
 			try {
 				started=Long.parseLong(s);
 			} catch ( NumberFormatException e ) {
 				return;
 			}
-			
+
 			if ( debug ) {
 				System.err.println("# whole packet took " + (now-started) + "ms to be ingested");
 				System.err.flush();
 			}
-			
+
 			return;
 		}
-			
+
 
 
 		/* we don't need to do anything if we aren't using the channel */
@@ -444,15 +442,45 @@ public class DataGS implements ChannelData, JSONData {
 		}
 		System.err.println("# " + files.length + " files listed for historyFiles.json");
 		System.err.flush();
-		
+
 
 		System.err.println("# Starting thread to read logLocal files and summarize for history.json");
 		/* Create summary in another thread */
 		(new Thread(new summaryHistoryThread())).start();
-
-	
 	}
 	
+	protected void loadChannelMapFile(String channelMapFile) {
+		long startTime = System.currentTimeMillis();
+		System.err.println("# channel map file is " + channelMapFile);
+		File cmf = new File(channelMapFile);
+		
+		
+		if ( cmf.exists() && ! cmf.isDirectory() ) {
+
+			System.err.print("# Loading channel description from " + channelMapFile + " ...");
+			System.err.flush();
+
+			/* used for deserializing json */
+			Gson gson = new GsonBuilder().create();
+			ChannelDescription cd;
+
+			/* get string array of json objects to deserialize  */
+			String[] jsonStrArray = UtilFiles.getJsonFromFile(channelMapFile);
+
+			/* iterate through jsonStrArray and create a ChannelDescription object 
+			 * and add it to the hash map */
+			for ( int i = 0; i<jsonStrArray.length; i++ ) {
+				cd = gson.fromJson( jsonStrArray[i], ChannelDescription.class );
+				channelDesc.put( cd.id, cd );
+			}
+			System.err.println(" done. " + channelDesc.size() + " channels loaded in " + 
+					(System.currentTimeMillis()-startTime) + " ms.");
+			System.err.flush();
+
+		}
+
+	}
+
 
 	public void run(String[] args) throws IOException {
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
@@ -484,7 +512,7 @@ public class DataGS implements ChannelData, JSONData {
 		String channelMapFile="www/channels.json";
 		int dataHistoryJSONHours=24;
 
-		
+
 		logLocalDir=null;
 		processAllData=false;
 		intervalSummary = 1000;
@@ -590,29 +618,11 @@ public class DataGS implements ChannelData, JSONData {
 		/* load channels.json and de-serialize it into a hashmap */
 		channelDesc = new HashMap<String, ChannelDescription>();
 
-		System.err.println("# channel map file is " + channelMapFile);
 		File cmf = new File(channelMapFile);
 		if ( cmf.exists() && ! cmf.isDirectory() ) {
-
-			System.err.print("# Loading channel description from " + channelMapFile + " ...");
-			System.err.flush();
-
-			/* used for deserializing json */
-			Gson gson = new GsonBuilder().create();
-			ChannelDescription cd;
-
-			/* get string array of json objects to deserialize  */
-			String[] jsonStrArray = getJson(channelMapFile);
-
-			/* iterate through jsonStrArray and create a ChannelDescription object 
-			 * and add it to the hash map */
-			for ( int i = 0; i<jsonStrArray.length; i++ ) {
-				cd = gson.fromJson( jsonStrArray[i], ChannelDescription.class );
-				channelDesc.put( cd.id, cd );
-			}
-			System.err.println(" done. " + channelDesc.size() + " channels loaded.");
-			System.err.flush();
-
+			loadChannelMapFile(channelMapFile);
+		} else {
+			System.err.println("# " + channelMapFile + " not found. Using empty channel map");
 		}
 
 
@@ -714,7 +724,7 @@ public class DataGS implements ChannelData, JSONData {
 			loadHistoryFromFiles();
 		}
 
-	
+
 
 		dataLastJSON="";
 		dataNowJSON="";
@@ -746,7 +756,7 @@ public class DataGS implements ChannelData, JSONData {
 				System.err.println("# Could not listen on port: " + portNumber);
 				System.exit(-1);
 			}
-			
+
 			/* start status update thread */
 			DataGSStatus status = new DataGSStatus(log,portNumber);
 			status.start();
@@ -755,7 +765,7 @@ public class DataGS implements ChannelData, JSONData {
 			System.err.println("# DataGS socket disabled because portNumber=0");
 			System.err.flush();
 		}
-		
+
 		/* spin through and accept new connections as quickly as we can ... in DataGS format. */
 		while ( listening ) {
 			Socket socket=serverSocket.accept();
@@ -796,78 +806,18 @@ public class DataGS implements ChannelData, JSONData {
 		System.err.flush();
 	}
 
-	/* This method opens the file passed to it 
-	 * and returns the json object array
-	 *  as a string array of json objects */
-	public static String[] getJson( String filename ){
-		/* create BufferedREader to open file and read character by character */
-		BufferedReader br;
-
-		/* these will be used when reading in the file. 
-		 * token is each character read in and 
-		 * toSplit is to end up as a string representation of the array of json objects */
-		char token;
-		String toSplit="";
-		boolean start = false;
-		try{
-			br = new BufferedReader( new FileReader(filename) );
-			boolean readToken = true;
-			while ( readToken ) {
-				token = (char) br.read();
-				/* If we get a -1 then that means we reached the end of the file */
-				if ( (char)-1 == token ){
-					readToken = false;
-					break;
-				}
-
-				/* This bracket indicates that we have gotten to the end of the json object array */
-				if ( ']' == token ) {
-					start=false;
-					//readToken=false;
-				}
-
-				/* If we have found the beginning of the json object array, then we
-				 * add the token to the toSplit string */
-				if ( start ) {
-					toSplit+=token;
-				}
-
-				/* This bracket indicates that we have found the beginning of the json object array */
-				if ( '[' == token ) 
-					start=true;
-			}
-			/* we are done with the file so we close the bufferedreader */
-			br.close();
-		} catch ( Exception e ) {
-			System.err.println(e);
-		}
-		//System.out.println(toSplit);
-		/* Now we have a string that looks something like this
-		 *  { <string of json object> },{ <string of json object> },{ <string of json object> },...{ <string of json object> }
-		 * 
-		 * 
-		 *  */
-		String[] split = toSplit.split( "},");
-
-		/* iterate through the split array and add the '}' bracket back without the ',' comma */
-		for ( int i = 0; i < split.length-1; i++ ){
-			split[i] = split[i] + "}";
-
-		}
-
-		return split;
-	}
 
 
 
-	public String summaryJSON(){
+
+	public String dailySummaryJSON(){
+		/* The string to be returned */
+		String json = "";
+		/* part is used to avoid having to remove the last comma for each day */
+		String part = "";
+
+		/* @Ian - what in here would throw an exception? Is that normal flow */
 		try {
-			/* The string to be returned */
-			String json = "";
-			/* part is used to avoid having to remove the last comma for each day */
-			String part = "";
-			//HashMap<String,SynchronizedSummaryData> ssfh= summaryStatsFromHistory.get( date );
-
 			/* iterator for the Map with date (string) as key and Map as value */
 			Iterator<Entry<String,HashMap<String, SynchronizedSummaryData>>> itS;
 			itS = summaryStatsFromHistory.entrySet().iterator();
@@ -881,7 +831,8 @@ public class DataGS implements ChannelData, JSONData {
 
 
 			/* The key value pair that uses the date (string) as a key */
-			Map.Entry<String,HashMap<String, SynchronizedSummaryData>> dateMap;// = (Map.Entry<String,HashMap<String, SynchronizedSummaryData>>)it.next();
+			Map.Entry<String,HashMap<String, SynchronizedSummaryData>> dateMap;
+
 			/* iterate through summaryStatsFrom History */
 			while ( itS.hasNext() ) {
 
@@ -892,7 +843,7 @@ public class DataGS implements ChannelData, JSONData {
 				it = ssd.entrySet().iterator();
 				if ( it.hasNext() ){
 					pairs = (Map.Entry<String, SynchronizedSummaryData>)it.next();
-					//	System.out.println(pairs.getValue().toString());
+
 					json+="\"day\":"+dateMap.getKey()+",";
 					json+="\"n\":"+NaNcheck(ssd.get( pairs.getKey() ).getN())+",";
 
@@ -903,7 +854,6 @@ public class DataGS implements ChannelData, JSONData {
 					part+="\""+pairs.getKey()+"_avg\":"+NaNcheck(ssd.get( pairs.getKey() ).getMean())+"";
 				}
 				while ( it.hasNext() ) {
-					//Map.Entry<String, SynchronizedSummaryData> pairs = (Map.Entry<String, SynchronizedSummaryData>)it.next();
 					pairs = (Map.Entry<String, SynchronizedSummaryData>)it.next();
 					part="\""+pairs.getKey()+"_min\":"+NaNcheck(ssd.get( pairs.getKey() ).getMin())+","+part;
 					part="\""+pairs.getKey()+"_max\":"+NaNcheck(ssd.get( pairs.getKey() ).getMax())+","+part;
@@ -915,7 +865,7 @@ public class DataGS implements ChannelData, JSONData {
 
 			/* remove the last comma */
 			return json.substring( 0, json.length()-1 );
-		}catch(Exception e){
+		} catch (Exception e) {
 			/* if syncSumData isn't ready, set to initializing*/
 			return null;
 		}
@@ -923,7 +873,7 @@ public class DataGS implements ChannelData, JSONData {
 
 	/* check if NaN */
 	public String NaNcheck( double check ){
-		if( Double.isNaN( check ) ){
+		if ( Double.isNaN( check ) ){
 			return "null";
 		}
 
@@ -939,20 +889,20 @@ public class DataGS implements ChannelData, JSONData {
 		d.run(args);
 	}
 
-	
+
 	/* thread that runs the method to create the summary stats json */
 	/* TODO: get rid of inner class ... doesn't meet APRS World's coding standards */
 	public class summaryHistoryThread implements Runnable {
 
 		public void run() {
 			long startTime = System.currentTimeMillis();
-			
+
 			String[] files = new UtilFiles().listFilesForFolder(logLocalDir, true);
-			
+
 			if ( null != files && 0 != files.length ) {
-				
+
 				createSummaryStatsFromHistory( files );
-				
+
 				System.err.println("# SummaryHistoryThread completed summarizing logLocalFiles in "+((System.currentTimeMillis()-startTime)/1000)+" seconds");
 				summaryReady = true;
 			} else {
