@@ -104,6 +104,7 @@ public class UtilFiles {
 		 *  */
 		String[] split = toSplit.split( "},");
 
+		
 		/* iterate through the split array and add the '}' bracket back without the ',' comma */
 		for ( int i = 0; i < split.length-1; i++ ){
 			split[i] = split[i] + "}";
