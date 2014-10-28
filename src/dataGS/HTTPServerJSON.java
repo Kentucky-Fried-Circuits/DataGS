@@ -8,7 +8,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 
 public class HTTPServerJSON extends NanoHTTPD {
 
-	public static final boolean DEBUG = true;
+	public static final boolean DEBUG = false;
 
 	public static final String MIME_JAVASCRIPT = "text/javascript";
 	public static final String MIME_CSS = "text/css";
@@ -51,7 +51,7 @@ public class HTTPServerJSON extends NanoHTTPD {
 			}
 		}
 
-		System.err.println("URL is: " + uri);
+
 		
 		Response response = null;
 		
@@ -65,9 +65,7 @@ public class HTTPServerJSON extends NanoHTTPD {
 				response = new NanoHTTPD.Response( Response.Status.NOT_FOUND, MIME_PLAINTEXT, "Not Found" );
 			}
 		} else if ( uri.startsWith( "/history/") && uri.endsWith (".csv") ) {
-			// history returns text/plain ... historyCSV returns MIME_CSV
-			
-
+			/* logged history file from filesystem. Return as MIME_CSV */
 			/* only if the stuff between /history/ and .csv is numeric */
 			
 			if( FilenameUtils.getBaseName( uri ) != null &&
@@ -86,9 +84,7 @@ public class HTTPServerJSON extends NanoHTTPD {
 			}
 
 		} else if ( uri.startsWith( "/history/") && uri.endsWith (".txt") ) {
-			// history returns text/plain ... historyCSV returns MIME_CSV
-			
-
+			/* logged history file from filesystem. Return as MIME_PLAIN */
 			/* only if the stuff between /history/ and .csv is numeric */
 			if( FilenameUtils.getBaseName( uri ) != null &&
 					/* If all chars of basename are a number */
@@ -106,29 +102,39 @@ public class HTTPServerJSON extends NanoHTTPD {
 			}
 
 		} else if ( uri.endsWith( "channels.json" ) ) {
+			/* channel description file from filesystem */
 			try {
 				response = new NanoHTTPD.Response( Response.Status.OK, MIME_JSON, new FileInputStream( channelMapFile ) );
 			} catch ( FileNotFoundException e ) {
 				response = new NanoHTTPD.Response( Response.Status.NOT_FOUND, MIME_PLAINTEXT, "Not Found" );
 			}
-		}
-		/* dynamically generated JSON */
+		} 
+		
+		/* dynamically generated */
 		else if ( uri.endsWith( "live.json" ) ) {
+			/* absolutely latest samples */
 			response = new NanoHTTPD.Response( Response.Status.OK, MIME_JSON, data.getJSON( DataGS.JSON_LIVE ), gzipAllowed );
 		} else if ( uri.endsWith( "now.json" ) ) {
+			/* interval averaged or sampled */
 			response = new NanoHTTPD.Response( Response.Status.OK, MIME_JSON, data.getJSON( DataGS.JSON_NOW ), gzipAllowed );
 		} else if ( uri.endsWith( "history.json" ) ) {
+			/* time series data */
 			response = new NanoHTTPD.Response( Response.Status.OK, MIME_JSON, data.getJSON( DataGS.JSON_HISTORY ), gzipAllowed );
 		} else if ( uri.endsWith( "historyFiles.json" ) ) {
+			/* listing of log files from filesystem */
 			response = new NanoHTTPD.Response( Response.Status.OK, MIME_JSON, data.getJSON( DataGS.JSON_HISTORY_FILES ), gzipAllowed );
 		} else if ( uri.endsWith( "summaryStats.json" ) ) {
+			
 			if ( data.getJSON( DataGS.JSON_SUMMARY_STATS ).equals( "invalid" ) ) {
 				response = new NanoHTTPD.Response( Response.Status.NO_CONTENT, MIME_PLAINTEXT, "Not Found" );
 			}else{
 				response = new NanoHTTPD.Response( Response.Status.OK, MIME_JSON, data.getJSON( DataGS.JSON_SUMMARY_STATS ), gzipAllowed );
 			}
 		} 
-		/* for internet explorer */
+		
+		
+		
+		/* dynamically generated for internet explorer */
 		else if ( uri.endsWith( "live.dat" ) ) {
 			response = new NanoHTTPD.Response( Response.Status.OK, MIME_PLAINTEXT, data.getJSON( DataGS.JSON_LIVE ), gzipAllowed );
 		} else if ( uri.endsWith( "now.dat" ) ) {
@@ -143,7 +149,10 @@ public class HTTPServerJSON extends NanoHTTPD {
 			}else{
 				response = new NanoHTTPD.Response( Response.Status.OK, MIME_PLAINTEXT, data.getJSON( DataGS.JSON_SUMMARY_STATS ), gzipAllowed );
 			}
-		} else {
+		} 
+		
+		/* not found */
+		else {
 			response = new NanoHTTPD.Response( Response.Status.NOT_FOUND, MIME_PLAINTEXT, "Not Found" );
 		}
 		
