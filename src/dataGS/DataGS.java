@@ -196,7 +196,6 @@ public class DataGS implements ChannelData, JSONData {
 			}
 
 			/* clear statistics for next pass */
-			System.out.println("clearing data");
 			data.clear();
 		}
 
@@ -274,6 +273,10 @@ public class DataGS implements ChannelData, JSONData {
 		/* hashmap to be returned */
 		Map<String, SynchronizedSummaryData> tempSummaryStat = new HashMap<String, SynchronizedSummaryData>();
 
+		System.err.println("----->getSyncSumDatEntry working on " + absolutePath);
+		
+		
+		
 		/* iterate through channelDesc, finding every channel that contains the key summaryStatsFromHistory */
 
 		Iterator<Entry<String, ChannelDescription>> it = channelDesc.entrySet().iterator();
@@ -890,7 +893,7 @@ public class DataGS implements ChannelData, JSONData {
 				//System.out.println(files[i]);
 				summaryStatsFromHistory.put( date, getSyncSumDatEntry( files[i] ) );
 			}
-			System.out.println("Files all traveled. Took "+((System.currentTimeMillis()-time)/1000)+" seconds");
+			// System.out.println("Files all traveled. Took "+((System.currentTimeMillis()-time)/1000)+" seconds");
 
 		}
 		
