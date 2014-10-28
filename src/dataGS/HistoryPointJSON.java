@@ -101,14 +101,14 @@ public class HistoryPointJSON {
 				 */
 				if ( pairs.getValue().mode==ChannelDescription.Modes.SAMPLE ) {
 					/* just dump the current value */
-					csv[0] +=" \"" + StringEscapeUtils.escapeCsv(pairs.getValue().sampleValue) + "\"";
+					csv[0] +="\"" + StringEscapeUtils.escapeCsv(pairs.getValue().sampleValue) + "\"";
 				} else if ( chanDesc.containsKey(pairs.getKey() )) {
 					csv[0] += "" + StringEscapeUtils.escapeCsv(numberPrecision(pairs.getValue().getMean(), chanDesc.get( pairs.getKey() ).precision ))+"";
 				} else {
 					System.err.println("# No channel description found for " + pairs.getKey() + " using default double.");
 					csv[0] += "" + pairs.getValue().getMean() + "" ;
 				}
-				csv[1] +=" \"" +StringEscapeUtils.escapeCsv(pairs.getKey())+"\",";
+				csv[1] +="\"" +StringEscapeUtils.escapeCsv(pairs.getKey())+"\",";
 				csv[0] += ",";
 	
 			}

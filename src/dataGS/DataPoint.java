@@ -1,11 +1,6 @@
 package dataGS;
 
 
-
-
-import net.sf.json.util.JSONUtils;
-
-
 import dataGS.ChannelDescription.Modes;
 
 public class DataPoint {
@@ -20,11 +15,11 @@ public class DataPoint {
 	public ChannelDescription.Modes mode;
 
 
-	
+
 	public DataPoint(String ch, long t, SynchronizedSummaryData s) {
 		channel=ch;
 		time=t;
-		
+
 		if ( s.mode==Modes.AVERAGE ) {
 			n=s.getN();
 			avg=s.getMean();
@@ -59,15 +54,11 @@ public class DataPoint {
 		 * "mode":"SAMPLE"
 		 * } 
 		 */
-		
+
 		String s="{ \"channel\": \"" + channel + "\",";
 		s += "\"time\": " + time + ",";
 		if ( mode == Modes.SAMPLE ) {
-			if ( JSONUtils.isNumber(sampleValue) ) {
-				s += "\"sampleValue\": " + sampleValue + ",";
-			} else {
-				s += "\"sampleValue\": \"" + sampleValue + "\",";
-			}
+			s += "\"sampleValue\": \"" + sampleValue + "\",";
 		} else if ( mode == Modes.AVERAGE ) {
 			s += "\"n\": " + n + ",";
 
@@ -77,29 +68,29 @@ public class DataPoint {
 			} else {
 				s += "\"avg\": " + Double.toString(avg) + ",";
 			}
-			
+
 			if ( min == Double.NaN ) {
 				s += "\"min\": null,";
 			} else {
 				s += "\"min\": " + Double.toString(min) + ",";
 			}
-			
+
 			if ( max == Double.NaN ) {
 				s += "\"max\": null,";
 			} else {
 				s += "\"max\": " + Double.toString(max) + ",";
 			}
-			
+
 			if ( stddev == Double.NaN ) {
 				s += "\"stddev\": null,";
 			} else {
 				s += "\"stddev\": " + Double.toString(stddev) + ",";
 			}
 		}
-		
+
 		s += "\"mode\": \"" + mode + "\"";
 		s += "}";
-		
+
 		return s;
 	}
 
