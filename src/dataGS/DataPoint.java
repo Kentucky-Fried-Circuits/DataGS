@@ -1,6 +1,11 @@
 package dataGS;
 
 
+
+
+import net.sf.json.util.JSONUtils;
+
+
 import dataGS.ChannelDescription.Modes;
 
 public class DataPoint {
@@ -14,6 +19,8 @@ public class DataPoint {
 	public String sampleValue; 
 	public ChannelDescription.Modes mode;
 
+
+	
 	public DataPoint(String ch, long t, SynchronizedSummaryData s) {
 		channel=ch;
 		time=t;
@@ -56,7 +63,11 @@ public class DataPoint {
 		String s="{ \"channel\": \"" + channel + "\",";
 		s += "\"time\": " + time + ",";
 		if ( mode == Modes.SAMPLE ) {
-			s += "\"sampleValue\": \"" + sampleValue + "\",";
+			if ( JSONUtils.isNumber(sampleValue) ) {
+				s += "\"sampleValue\": " + sampleValue + ",";
+			} else {
+				s += "\"sampleValue\": \"" + sampleValue + "\",";
+			}
 		} else if ( mode == Modes.AVERAGE ) {
 			s += "\"n\": " + n + ",";
 
