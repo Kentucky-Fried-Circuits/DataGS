@@ -71,6 +71,8 @@ public class DataGS implements ChannelData, JSONData {
 	protected int intervalSummary;
 	protected Timer dataTimer;
 	protected String dataLastJSON;
+
+	/* JSON array of our latest completed data */
 	protected String dataNowJSON;
 
 	protected String historyFiles;
