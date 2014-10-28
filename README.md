@@ -81,4 +81,41 @@ options.addOption("H", "json-history-hours", true, "hours of history data to mak
 ### Local Logging arguments 
 ```
 options.addOption("w", "loglocal-directory", true, "directory for logging csv files");
+
+## Starting the software
+
+### Examples
 ```
+java -Djava.rmi.server.hostname=192.168.10.201 -Dcom.sun.management.jmxremote \
+-Dcom.sun.management.jmxremote.port=9010 -Dcom.sun.management.jmxremote.local.only=false \
+-Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false \
+-DSERIAL_PORT_LIST=/dev/ttyUSB1 \
+-cp .:bin:commons-cli-1.2.jar:commons-lang3-3.3.2.jar:commons-math3-3.3.jar:gson-2.3.jar:mysql-connector-java-5.1.7-bin.jar:commons-collections4-4.0.jar:jspComm.jar:Serialio.jar \
+dataGS.DataGS -j 8080 -l 4010 -i 10000 -c www/channels_magWebPro.json -r /dev/ttyUSB1 -R 57600 -a
+```
+
+### Enable remote profile via JMXREMOTE
+``` 
+-Djava.rmi.server.hostname=192.168.10.201 
+-Dcom.sun.management.jmxremote 
+-Dcom.sun.management.jmxremote.port=9010 
+-Dcom.sun.management.jmxremote.local.only=false 
+-Dcom.sun.management.jmxremote.authenticate=false 
+-Dcom.sun.management.jmxremote.ssl=false
+```
+Replace `192.168.10.201` with the IP of your public interface. Replace `9010` with a unique local port.
+
+Use software such as VisualVM (from Oracle) for monitoring
+
+### Specifying available serial ports under non-Windows operating systems
+
+The serialio.com library we use for accessing serial ports doesn't have support for auto-detecting serial ports
+under most operating systems. But we can tell the Java VM what serial ports are available. For example:
+```
+-DSERIAL_PORT_LIST=/dev/ttyUSB0
+```
+Multiple ports can be seperated with a colon. Example:
+```
+-DSERIAL_PORT_LIST=/dev/ttyUSB0:/dev/ttyUSB1
+```
+
