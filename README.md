@@ -81,6 +81,7 @@ options.addOption("H", "json-history-hours", true, "hours of history data to mak
 ### Local Logging arguments 
 ```
 options.addOption("w", "loglocal-directory", true, "directory for logging csv files");
+```
 
 ## Starting the software
 
@@ -96,9 +97,9 @@ dataGS.DataGS -j 8080 -l 4010 -i 10000 -c www/channels_magWebPro.json -r /dev/tt
 
 ### Enable remote profile via JMXREMOTE
 ``` 
--Djava.rmi.server.hostname=192.168.10.201 
--Dcom.sun.management.jmxremote 
--Dcom.sun.management.jmxremote.port=9010 
+-Djava.rmi.server.hostname=192.168.10.201
+-Dcom.sun.management.jmxremote
+-Dcom.sun.management.jmxremote.port=9010
 -Dcom.sun.management.jmxremote.local.only=false 
 -Dcom.sun.management.jmxremote.authenticate=false 
 -Dcom.sun.management.jmxremote.ssl=false
@@ -110,11 +111,16 @@ Use software such as VisualVM (from Oracle) for monitoring
 ### Specifying available serial ports under non-Windows operating systems
 
 The serialio.com library we use for accessing serial ports doesn't have support for auto-detecting serial ports
-under most operating systems. But we can tell the Java VM what serial ports are available. For example:
+under most operating systems. But we can tell the Java VM what serial ports are available. 
+
+For example:
+
 ```
 -DSERIAL_PORT_LIST=/dev/ttyUSB0
 ```
+
 Multiple ports can be seperated with a colon. Example:
+
 ```
 -DSERIAL_PORT_LIST=/dev/ttyUSB0:/dev/ttyUSB1
 ```
