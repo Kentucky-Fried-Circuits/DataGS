@@ -665,9 +665,6 @@ public class DataGS implements ChannelData, JSONData {
 
 		}
 
-		/* stub so we drop out for profiling channel file loading */
-		System.exit(10);
-
 
 		historyJSON=null;
 		if ( dataHistoryJSONHours > 0 ) {
@@ -860,14 +857,6 @@ public class DataGS implements ChannelData, JSONData {
 			System.err.println("# connectionThreads.size()=" + connectionThreads.size());
 		}
 
-
-		try {
-			Thread.sleep(100*1000);
-		} catch (InterruptedException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		
 		
 		if ( null != serverSocket ) {
 			System.err.print ("# DataGS shuting down server socket ... ");
