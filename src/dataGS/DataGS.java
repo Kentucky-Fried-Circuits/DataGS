@@ -97,13 +97,22 @@ public class DataGS implements ChannelData, JSONData {
 	LogLocal logLocal;
 
 
+	/*
+	 * this method is called by our HTTP server to get dynamic data from us
+	 */
 	public String getJSON(int resource) {
 		if ( JSON_NOW == resource ) {
-			return "{\"data\": [" + dataNowJSON + "]}";
+			synchronized ( dataNowJSON) {
+				return "{\"data\": [" + dataNowJSON + "]}";
+			}
 		} else if ( JSON_HISTORY == resource ) {
-			return "{\"history\":" + historyJSON.toString() + "}";
+			synchronized ( historyJSON) {
+				return "{\"history\":" + historyJSON.toString() + "}";				
+			}
 		} else if ( JSON_HISTORY_FILES == resource ) {
-			return "{\"history_files\": {" + historyFiles + "}}";
+			synchronized ( historyFiles ) {
+				return "{\"history_files\": {" + historyFiles + "}}";
+			}
 		} else if ( JSON_SUMMARY_STATS == resource ) {
 			if ( summaryReady ) {
 				return "{\"summary_stats\": [" + summaryJSON() + "]}";
@@ -117,15 +126,16 @@ public class DataGS implements ChannelData, JSONData {
 	}
 
 
+	/* track our connection threads for TCP incoming connections */
 	private void threadMaintenanceTimer() {
 		for ( int i=0 ; i<connectionThreads.size(); i++ ) {
 			DataGSServerThread conn=connectionThreads.elementAt(i);
 
+			/* delete dead threads */
 			if ( ! conn.isAlive() ) {
 				connectionThreads.remove(conn);
 			}
 		}
-
 	}
 
 	private void dataMaintenanceTimer() {
@@ -782,7 +792,7 @@ public class DataGS implements ChannelData, JSONData {
 					log,
 					dateFormat,
 					socketTimeout
-			);
+					);
 
 			connectionThreads.add(conn);
 			conn.addChannelDataListener(this);
