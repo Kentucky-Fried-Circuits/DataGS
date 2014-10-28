@@ -426,7 +426,7 @@ public class DataGS implements ChannelData, JSONData {
 				return;
 			}
 			
-			System.err.println("# whole packet took " + (started-now) + "ms to be ingested");
+			System.err.println("# whole packet took " + (now-started) + "ms to be ingested");
 			
 			return;
 		}
