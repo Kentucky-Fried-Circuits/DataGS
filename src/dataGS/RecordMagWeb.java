@@ -3,10 +3,10 @@ import java.util.Date;
 
 public class RecordMagWeb {
 	private static final boolean markDate=false;
-	
+
 	public static final int maxAgeCurrent=250;
 	private static final boolean debug=false;
-	private String serialNumber;
+//	private String serialNumber;
 	private int vScale;
 
 	/* save buffer for worldDataCollector support */
@@ -121,6 +121,7 @@ public class RecordMagWeb {
 	public double rtr_revision;
 
 	private int lCRC, rCRC;
+	@SuppressWarnings("unused")
 	private Date rxDate;
 
 
@@ -160,17 +161,19 @@ public class RecordMagWeb {
 			rxDate = new Date();
 		}
 
-		StringBuilder sb = new StringBuilder();
+		
+		//StringBuilder sb = new StringBuilder();
 
 		/* Serial number */
-		sb.append((char) buff[1]);
-		if ( 'M' == buff[1] ) {
-			sb.append('W');
-		}
-		sb.append( (int) (buff[2] << 8) + buff[3]); 
-		serialNumber=sb.toString();
+		//sb.append((char) buff[1]);
+		//if ( 'M' == buff[1] ) {
+		//	sb.append('W');
+		//}
+		//sb.append( (int) (buff[2] << 8) + buff[3]); 
+		//serialNumber=sb.toString();
 		//System.err.print("Serial Number=" + serialNumber + " ");
-
+		//}
+		
 		/* saving the buffer so we can change it */
 		buffer = buff;
 		
