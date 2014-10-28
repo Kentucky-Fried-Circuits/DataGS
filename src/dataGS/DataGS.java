@@ -57,7 +57,8 @@ public class DataGS implements ChannelData, JSONData {
 
 	/* channel description data */
 	protected Map<String, ChannelDescription> channelDesc;
-
+	protected boolean processAllData;
+	
 	/* data to summarize and send */
 	protected Map<String, SynchronizedSummaryData> data;
 	protected Map<String, DataPoint> dataLast;
@@ -418,17 +419,22 @@ public class DataGS implements ChannelData, JSONData {
 
 
 		/* we don't need to do anything if we aren't using the channel */
-		if ( ! channelDesc.containsKey(ch) || (! channelDesc.get(ch).log && ! channelDesc.get(ch).history) ) {
+		if ( ! processAllData && (! channelDesc.containsKey(ch) || (! channelDesc.get(ch).log && ! channelDesc.get(ch).history)) ) {
 			return;
 		}
 
 
 
 		/* if data hashtable doesn't have the key for this channel, we add it
-		 * the mode (sampled or averaged) is read from channel description  */
-		if ( ! data.containsKey(ch) && channelDesc.containsKey(ch) ) {
+		 * the mode (sampled or averaged) is read from channel description or defaults to sample  */
+		if ( ! data.containsKey(ch) ) {
 			System.err.println("# Putting to data (" + ch + " as SynchronizedSummaryData with mode " + channelDesc.get(ch).mode + ")");
-			data.put(ch, new SynchronizedSummaryData( channelDesc.get(ch).mode ) );
+			
+			if ( channelDesc.containsKey(ch) ) {
+				data.put(ch, new SynchronizedSummaryData( channelDesc.get(ch).mode ) );
+			} else {
+				data.put(ch, new SynchronizedSummaryData( Modes.SAMPLE ) );
+			}
 		}
 
 
@@ -437,7 +443,6 @@ public class DataGS implements ChannelData, JSONData {
 			try {
 				d=new Double(s);
 				data.get(ch).addValue(d);
-				//			System.err.println("# ingested " + ch + " as double with value=" + d);
 			} catch ( NumberFormatException e ) {
 				System.err.println("# error ingesting s=" + s + " as a double. Giving up");
 				return;
@@ -481,10 +486,10 @@ public void run(String[] args) throws IOException {
 	boolean memcachedDebug=false;
 	int databaseType=DATABASE_TYPE_NONE;
 	String channelMapFile="www/channels.json";
-
 	int dataHistoryJSONHours=24;
 
 
+	processAllData=false;
 	intervalSummary = 1000;
 	data = new HashMap<String, SynchronizedSummaryData>();
 	dataLast = new HashMap<String, DataPoint>();
@@ -508,6 +513,7 @@ public void run(String[] args) throws IOException {
 	options.addOption("T", "station-timeout",true, "DataGSCollector station history timeout");
 	options.addOption("m", "memcacheDebug", false, "Debug messages written to memcached per station");
 	options.addOption("c", "channel-map", true, "Location of channel map JSON file");
+	options.addOption("a", "process-all-data",false,"Process all data, even if it isn't in channel map");
 
 	/* serial port data source options */
 	options.addOption("r", "serialPortWorldData",true,"Serial Port to listen for worldData packets");
@@ -560,6 +566,10 @@ public void run(String[] args) throws IOException {
 		if ( line.hasOption("channel-map") ) {
 			channelMapFile=line.getOptionValue("channel-map");
 		}
+		if ( line.hasOption("process-all-data") ) {
+			processAllData=true;
+		}
+			
 
 		/* serial port */
 		if ( line.hasOption("serialPortWorldData") ) {
