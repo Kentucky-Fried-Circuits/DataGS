@@ -111,10 +111,7 @@ public class HTTPServerJSON extends NanoHTTPD {
 		} 
 		
 		/* dynamically generated */
-		else if ( uri.endsWith( "live.json" ) ) {
-			/* absolutely latest samples */
-			response = new NanoHTTPD.Response( Response.Status.OK, MIME_JSON, data.getJSON( DataGS.JSON_LIVE ), gzipAllowed );
-		} else if ( uri.endsWith( "now.json" ) ) {
+		else if ( uri.endsWith( "now.json" ) ) {
 			/* interval averaged or sampled */
 			response = new NanoHTTPD.Response( Response.Status.OK, MIME_JSON, data.getJSON( DataGS.JSON_NOW ), gzipAllowed );
 		} else if ( uri.endsWith( "history.json" ) ) {
@@ -135,9 +132,7 @@ public class HTTPServerJSON extends NanoHTTPD {
 		
 		
 		/* dynamically generated for internet explorer */
-		else if ( uri.endsWith( "live.dat" ) ) {
-			response = new NanoHTTPD.Response( Response.Status.OK, MIME_PLAINTEXT, data.getJSON( DataGS.JSON_LIVE ), gzipAllowed );
-		} else if ( uri.endsWith( "now.dat" ) ) {
+		else if ( uri.endsWith( "now.dat" ) ) {
 			response = new NanoHTTPD.Response( Response.Status.OK, MIME_PLAINTEXT, data.getJSON( DataGS.JSON_NOW ), gzipAllowed );
 		} else if ( uri.endsWith( "history.dat" ) ) {
 			response = new NanoHTTPD.Response( Response.Status.OK, MIME_PLAINTEXT, data.getJSON( DataGS.JSON_HISTORY ), gzipAllowed );

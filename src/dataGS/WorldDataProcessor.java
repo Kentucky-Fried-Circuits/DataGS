@@ -20,7 +20,7 @@ public class WorldDataProcessor implements WorldDataListener {
 
 	}
 
-	@SuppressWarnings("unchecked")
+
 	protected void reflectToDataGS(Object o) {
 
 		/* use reflection to send off the public variables from the Record */
@@ -44,6 +44,8 @@ public class WorldDataProcessor implements WorldDataListener {
 					System.err.println("# Exception while sending data to channelDataListener(s)...");
 					e.printStackTrace();
 				}
+				
+				/* send a null to ingest to let it know that we have sent the complete record */
 				channelDataListeners.elementAt(j).ingest(null, null);
 
 			}
