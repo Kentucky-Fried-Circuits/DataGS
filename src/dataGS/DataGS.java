@@ -92,7 +92,7 @@ public class DataGS implements ChannelData, JSONData {
 	public static final int JSON_HISTORY=1;
 	public static final int JSON_HISTORY_FILES = 2;
 	public static final int JSON_SUMMARY_STATS = 3;
-	public static final int JSON_LIVE = 4;
+
 
 
 	/* loglocal */
@@ -112,10 +112,6 @@ public class DataGS implements ChannelData, JSONData {
 			} else {
 				return "invalid";
 			}
-		} else if ( JSON_LIVE == resource ) {
-
-			return "{\"data\": [" + dataLastJSON + "]}";
-
 		}
 
 
@@ -412,8 +408,10 @@ public class DataGS implements ChannelData, JSONData {
 
 
 
-	@SuppressWarnings("unused")
 	public void ingest(String ch, String s) {
+
+		/* null is used as a flag that we have a complete measurement set and we can publish to 
+		 * "live" page that shows that absolutely latest set of samples */ 
 
 		if ( null == ch )
 			return;
