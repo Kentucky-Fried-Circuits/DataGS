@@ -665,6 +665,8 @@ public class DataGS implements ChannelData, JSONData {
 
 		}
 
+		/* stub so we drop out for profiling channel file loading */
+		System.exit(10);
 
 
 		historyJSON=null;
