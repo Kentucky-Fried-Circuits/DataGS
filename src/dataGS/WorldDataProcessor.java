@@ -53,7 +53,7 @@ public class WorldDataProcessor implements WorldDataListener {
 	}
 
 	public void WorldDataPacketReceived(int[] rawBuffer) {
-		System.err.print("# WorldDataProcessor received packet ");
+		System.err.print("# WorldDataProcessor received packet @ " + System.currentTimeMillis() + " " );
 
 		switch ( rawBuffer[5] ) {
 		case 25:
@@ -72,6 +72,8 @@ public class WorldDataProcessor implements WorldDataListener {
 			System.err.println("(Un-implemented / incorrect WorldData format)");
 		}
 
+		System.err.flush();
+		
 	}
 
 }
