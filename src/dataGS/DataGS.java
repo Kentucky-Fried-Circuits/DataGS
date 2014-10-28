@@ -156,14 +156,12 @@ public class DataGS implements ChannelData, JSONData {
 
 			/* last (ie current) data JSON */
 			Iterator<Entry<String, SynchronizedSummaryData>> it = data.entrySet().iterator();
-			//System.out.println("DGS iterate");
-			//System.out.flush();
+
 			while (it.hasNext()) {
 				Map.Entry<String, SynchronizedSummaryData> pairs = (Map.Entry<String, SynchronizedSummaryData>)it.next();
 
 				dataNow.put(pairs.getKey(),new DataPoint(pairs.getKey(),now,pairs.getValue()));
-				//System.out.println(pairs.getKey()+"="+pairs.getValue());
-
+			
 				if ( summaryReady ){
 					today = summaryStatsFromHistory.get( sdf.format( date ) );
 					String ch = pairs.getKey();	 
@@ -176,7 +174,6 @@ public class DataGS implements ChannelData, JSONData {
 							try {
 								d=new Double(s);
 								today.get(ch).addValue(d);
-								//			System.err.println("# ingested " + ch + " as double with value=" + d);
 							} catch ( NumberFormatException e ) {
 								System.err.println("# error ingesting s=" + s + " as a double. Giving up");
 								return;
@@ -187,8 +184,6 @@ public class DataGS implements ChannelData, JSONData {
 						}
 					}
 				}
-
-				//today.put();
 			}
 
 			/* create a JSON data history point and put into limited length FIFO */
@@ -434,7 +429,7 @@ public class DataGS implements ChannelData, JSONData {
 		/* if data hashtable doesn't have the key for this channel, we add it
 		 * the mode (sampled or averaged) is read from channel description or defaults to sample  */
 		if ( ! data.containsKey(ch) ) {
-			System.err.println("# Putting to data (" + ch + " as SynchronizedSummaryData with mode " + channelDesc.get(ch).mode + ")");
+			//System.err.println("# Putting to data (" + ch + " as SynchronizedSummaryData with mode " + channelDesc.get(ch).mode + ")");
 
 			if ( channelDesc.containsKey(ch) ) {
 				data.put(ch, new SynchronizedSummaryData( channelDesc.get(ch).mode ) );
@@ -444,6 +439,7 @@ public class DataGS implements ChannelData, JSONData {
 		}
 
 
+		/* actually add the value to data structure */
 		if ( data.get(ch).mode == Modes.AVERAGE ) {
 			Double d;
 			try {
