@@ -3,6 +3,44 @@
 ## Summary
 Gather data from TCP/IP (simple ASCII format) or serial port (WorldData format) and process and make available
 
+## Data served via HTTP
+
+### favicon.ico
+Little icon for web browser to display. Loaded from `www/favicon.ico`
+
+### history/YYYYMMDD.csv or history/YYYYMMDD.txt 
+Logged history file from file system. Return as MIME type `test/csv` if the URI ends with `.csv` or as 
+`text/plain` if the URI ends with `.txt`. 
+History files are stored in the log local directory which is set with the -w argument
+
+### channels.json
+Channel description map as loaded from filesystem. File system location is set with the -c argument.
+Returned as MIME type `application/json`.
+
+### now.json
+Interval statistics or sample of the last batch of data processed. Data is process at interval
+specified by the -i argument.
+
+### history.json or history.dat
+Time series data covering from now to the number of hours specified by the -H argument.
+
+Returned as `application/json` if URI ends with `.json` or as `text/plain` if the URI ends with `.dat`
+
+### historyFiles.json or historyFiles.dat
+Listing of the log files available in the log local directory.
+
+Returned as `application/json` if URI ends with `.json` or as `text/plain` if the URI ends with `.dat`
+
+### summaryStats.json or summaryStats.dat
+Daily statistics that summarize the values of all of the files in the log local directory. 
+Statistics are generated on all of the columns that have `history` set to true in the channel description map.
+
+Computing the results is done at startup and then continually updated. If the results aren't yet available, 
+will return an HTTP response of `NO CONTENT` (HTTP result code 204).
+
+Returned as `application/json` if URI ends with `.json` or as `text/plain` if the URI ends with `.dat`
+
+
 ## Command line arguments
 
 ### MySQL related arguments
