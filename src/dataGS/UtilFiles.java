@@ -62,7 +62,7 @@ public class UtilFiles {
 		 * token is each character read in and 
 		 * toSplit is to end up as a string representation of the array of json objects */
 		char token;
-		String toSplit="";
+		StringBuilder toSplit=new StringBuilder();
 		boolean start = false;
 		try{
 			br = new BufferedReader( new FileReader(filename) );
@@ -84,7 +84,7 @@ public class UtilFiles {
 				/* If we have found the beginning of the json object array, then we
 				 * add the token to the toSplit string */
 				if ( start ) {
-					toSplit+=token;
+					toSplit.append(token);
 				}
 
 				/* This bracket indicates that we have found the beginning of the json object array */
@@ -102,7 +102,7 @@ public class UtilFiles {
 		 * 
 		 * 
 		 *  */
-		String[] split = toSplit.split( "},");
+		String[] split = toSplit.toString().split( "},");
 
 		
 		/* iterate through the split array and add the '}' bracket back without the ',' comma */
