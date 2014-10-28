@@ -8,6 +8,9 @@ Gather data from TCP/IP (simple ASCII format) or serial port (WorldData format) 
 ### favicon.ico
 Little icon for web browser to display. Loaded from `www/favicon.ico`
 
+### json.html
+Simple page with links to the different files. Read from file system.
+
 ### history/YYYYMMDD.csv or history/YYYYMMDD.txt 
 Logged history file from file system. Return as MIME type `test/csv` if the URI ends with `.csv` or as 
 `text/plain` if the URI ends with `.txt`. 

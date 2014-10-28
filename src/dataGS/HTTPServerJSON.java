@@ -64,6 +64,13 @@ public class HTTPServerJSON extends NanoHTTPD {
 			} catch ( FileNotFoundException e ) {
 				response = new NanoHTTPD.Response( Response.Status.NOT_FOUND, MIME_PLAINTEXT, "Not Found" );
 			}
+		} else if ( uri.endsWith( "json.html" ) ) {
+			try {
+				response = new NanoHTTPD.Response( Response.Status.OK, MIME_HTML,
+						new FileInputStream( "www/json.html" ) );
+			} catch ( FileNotFoundException e ) {
+				response = new NanoHTTPD.Response( Response.Status.NOT_FOUND, MIME_PLAINTEXT, "Not Found" );
+			}			
 		} else if ( uri.startsWith( "/history/") && uri.endsWith (".csv") ) {
 			/* logged history file from filesystem. Return as MIME_CSV */
 			/* only if the stuff between /history/ and .csv is numeric */
