@@ -9,22 +9,15 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Scanner;
 import java.util.Vector;
 
 import javax.swing.Timer;
-
-
-
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -37,7 +30,6 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -47,6 +39,8 @@ import dataGS.ChannelDescription.Modes;
 /* JSON */
 
 public class DataGS implements ChannelData, JSONData {
+	private final boolean debug=false;
+	
 	private Log log;
 	private Timer threadMaintenanceTimer;
 
@@ -65,8 +59,8 @@ public class DataGS implements ChannelData, JSONData {
 	/* data for the historical data page */
 	protected Map<String, HashMap<String, SynchronizedSummaryData>> summaryStatsFromHistory;
 	protected boolean summaryReady=false;
-	Date date;
-	SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+	protected Date date;
+	protected SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 
 	protected int intervalSummary;
 	protected Timer dataTimer;
@@ -141,6 +135,7 @@ public class DataGS implements ChannelData, JSONData {
 		}
 	}
 
+	/* take are accumulating samples and publish them */
 	private void dataMaintenanceTimer() {
 		long now = System.currentTimeMillis();
 
@@ -250,44 +245,7 @@ public class DataGS implements ChannelData, JSONData {
 
 
 
-	public String[] listFilesForFolder(String dirName) {
-		return listFilesForFolder( dirName, false );
-	}
-	/** 
-	 * 
-	 * @param dirName is a String of the directory name to get files from
-	 * @param absolute is a boolean that decideds to return just the filename or the absolute path
-	 * @return String array of filenames
-	 */
-	public String[] listFilesForFolder(String dirName, boolean absolute) {
 
-		/* go through a directory and return a string[] with every filename in directory, ignoring sub directories */
-		try{
-			final File directory = new File(dirName);
-			List<String> files = new ArrayList<String>();
-			for ( final File fileEntry : directory.listFiles() ) {
-				/* if  not a directory */
-				String fn = fileEntry.getName();
-				if ( !fileEntry.isDirectory() && !fn.contains("~") ) {
-					if ( NumberUtils.isNumber(FilenameUtils.getBaseName( fn )) ) {
-						if ( absolute ) {
-							files.add( fileEntry.getAbsolutePath() );
-						} else {
-							files.add( fileEntry.getName() );
-						}
-					}
-
-				}
-			}
-			String[] sort = files.toArray( new String[ files.size() ] );
-			Arrays.sort(sort, Collections.reverseOrder());
-			return  sort;
-		} catch (Exception e) {
-			System.err.println("Directory does not exist");
-			return new String[] {"does-not-exist"};
-		}
-
-	}
 
 
 
@@ -428,7 +386,10 @@ public class DataGS implements ChannelData, JSONData {
 				return;
 			}
 			
-			System.err.println("# whole packet took " + (now-started) + "ms to be ingested");
+			if ( debug ) {
+				System.err.println("# whole packet took " + (now-started) + "ms to be ingested");
+				System.err.flush();
+			}
 			
 			return;
 		}
@@ -472,6 +433,26 @@ public class DataGS implements ChannelData, JSONData {
 	}
 
 
+	protected void loadHistoryFromFiles() {
+		/* get array of all filenames from logLocalDir */
+		String[] files = new UtilFiles().listFilesForFolder( logLocalDir );
+
+		if ( null == files || 0==files.length ) {
+			historyFiles="\"files\":[]";
+		} else {
+			historyFiles="\"files\":["+filesToJson( files )+"]";
+		}
+		System.err.println("# " + files.length + " files listed for historyFiles.json");
+		System.err.flush();
+		
+
+		System.err.println("# Starting thread to read logLocal files and summarize for history.json");
+		/* Create summary in another thread */
+		(new Thread(new summaryHistoryThread())).start();
+
+	
+	}
+	
 
 	public void run(String[] args) throws IOException {
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
@@ -499,12 +480,12 @@ public class DataGS implements ChannelData, JSONData {
 		portNumber=0;
 		int httpPort=0;
 		int socketTimeout=62;
-		boolean logConnection=false;
 		int databaseType=DATABASE_TYPE_NONE;
 		String channelMapFile="www/channels.json";
 		int dataHistoryJSONHours=24;
 
-
+		
+		logLocalDir=null;
 		processAllData=false;
 		intervalSummary = 1000;
 		data = new HashMap<String, SynchronizedSummaryData>();
@@ -595,8 +576,8 @@ public class DataGS implements ChannelData, JSONData {
 			if ( line.hasOption("loglocal-directory") ) {
 				logLocalDir = line.getOptionValue("loglocal-directory");
 				logLocal = new LogLocal( logLocalDir, true );
-
 			} 
+
 
 
 
@@ -711,24 +692,7 @@ public class DataGS implements ChannelData, JSONData {
 		}
 
 
-		/* socket for DataGS packets */
-		ServerSocket serverSocket = null;
-		boolean listening = false;
 
-		if ( 0 != portNumber ) {
-			System.err.println("# Listening on port " + portNumber + " with " + socketTimeout + " second socket timeout");
-			System.err.flush();
-			try {
-				serverSocket = new ServerSocket(portNumber);
-				listening=true;
-			} catch (IOException e) {
-				System.err.println("# Could not listen on port: " + portNumber);
-				System.exit(-1);
-			}
-		} else {
-			System.err.println("# DataGS socket disabled because portNumber=0");
-			System.err.flush();
-		}
 
 
 
@@ -743,28 +707,17 @@ public class DataGS implements ChannelData, JSONData {
 		dataTimer.start();
 
 
-
-
-		/* get array of all filenames from logLocalDir */
-		String[] files = listFilesForFolder( logLocalDir );
-
-		/* if files are returned, create the JSON file with all the loglocal files in it */
-		if ( !files[0].equals("does-not-exist") ){
-			historyFiles="\"files\":["+filesToJson( files )+"]";
-		} else {
-			historyFiles="\"files\":[]";
+		/* attempt to load history from files if logLocalDir is set */
+		if ( null != logLocalDir ) {
+			System.err.println("# Loading History from LogLocal directory " + logLocalDir );
+			System.err.flush();
+			loadHistoryFromFiles();
 		}
 
-		/* Create summary in another thread */
-		(new Thread(new summaryHistoryThread())).start();
+	
 
-		/* start status update thread */
 		dataLastJSON="";
 		dataNowJSON="";
-
-		DataGSStatus status = new DataGSStatus(log,portNumber);
-		status.start();
-		status.updateStatus();
 
 
 
@@ -779,25 +732,36 @@ public class DataGS implements ChannelData, JSONData {
 			System.err.flush();
 		}
 
+		/* socket for DataGS packets */
+		ServerSocket serverSocket = null;
+		boolean listening = false;
+
+		if ( 0 != portNumber ) {
+			System.err.println("# Listening on port " + portNumber + " with " + socketTimeout + " second socket timeout");
+			System.err.flush();
+			try {
+				serverSocket = new ServerSocket(portNumber);
+				listening=true;
+			} catch (IOException e) {
+				System.err.println("# Could not listen on port: " + portNumber);
+				System.exit(-1);
+			}
+			
+			/* start status update thread */
+			DataGSStatus status = new DataGSStatus(log,portNumber);
+			status.start();
+			status.updateStatus();
+		} else {
+			System.err.println("# DataGS socket disabled because portNumber=0");
+			System.err.flush();
+		}
+		
 		/* spin through and accept new connections as quickly as we can ... in DataGS format. */
 		while ( listening ) {
 			Socket socket=serverSocket.accept();
 			/* setup our sockets to send RST as soon as close() is called ... this is the default action */
 			socket.setSoLinger (true, 0);
 
-
-			if ( logConnection ) {
-				/* Log the connection before starting the new thread */
-				status.addConnection(socket);
-				String sql = "INSERT INTO connection (logdate,localPort,remoteIP,remotePort,status) VALUES (" +
-						"'" +  dateFormat.format(new Date()) + "', " +
-						socket.getLocalPort() + ", " + 
-						"'" + socket.getInetAddress().getHostAddress() + "', " +
-						socket.getPort() + ", " + 
-						"'accept'" +
-						")";
-				log.queryAutoCreate(sql, "DataGSProto.connection", "connection");
-			}
 
 			DataGSServerThread conn = new DataGSServerThread(
 					socket,
@@ -965,27 +929,6 @@ public class DataGS implements ChannelData, JSONData {
 
 		return "\""+check+"\"";
 	}
-	public String NaNcheck( String check ){
-
-		return "\""+check+"\"";
-	}
-
-	/* thread that runs the method to create the summary stats json */
-	public class summaryHistoryThread implements Runnable {
-
-		public void run() {
-			long timer = System.currentTimeMillis();
-			String[] files = listFilesForFolder(logLocalDir, true);
-			if ( !files[0].equals( "does-not-exist" ) ) {
-				createSummaryStatsFromHistory( files );
-				System.out.println("summary creation took: "+((System.currentTimeMillis()-timer)/1000)+" seconds");
-				summaryReady = true;
-			} else {
-				summaryReady = false;
-			}
-		}
-
-	}
 
 	/* Main method */
 	public static void main(String[] args) throws IOException {
@@ -995,5 +938,29 @@ public class DataGS implements ChannelData, JSONData {
 		DataGS d=new DataGS();
 		d.run(args);
 	}
+
+	
+	/* thread that runs the method to create the summary stats json */
+	/* TODO: get rid of inner class ... doesn't meet APRS World's coding standards */
+	public class summaryHistoryThread implements Runnable {
+
+		public void run() {
+			long startTime = System.currentTimeMillis();
+			
+			String[] files = new UtilFiles().listFilesForFolder(logLocalDir, true);
+			
+			if ( null != files && 0 != files.length ) {
+				
+				createSummaryStatsFromHistory( files );
+				
+				System.err.println("# SummaryHistoryThread completed summarizing logLocalFiles in "+((System.currentTimeMillis()-startTime)/1000)+" seconds");
+				summaryReady = true;
+			} else {
+				summaryReady = false;
+			}
+		}
+
+	}
+
 
 }
