@@ -858,6 +858,15 @@ public class DataGS implements ChannelData, JSONData {
 			System.err.println("# connectionThreads.size()=" + connectionThreads.size());
 		}
 
+
+		try {
+			Thread.sleep(100*1000);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		
 		if ( null != serverSocket ) {
 			System.err.print ("# DataGS shuting down server socket ... ");
 			serverSocket.close();
@@ -1033,7 +1042,7 @@ public class DataGS implements ChannelData, JSONData {
 
 	/* Main method */
 	public static void main(String[] args) throws IOException {
-		System.err.println("# Major version: 2014-10-27 (ian laptop)");
+		System.err.println("# Major version: 2014-10-28 (precision)");
 		System.err.println("# java.library.path: " + System.getProperty( "java.library.path" ));
 
 		DataGS d=new DataGS();
