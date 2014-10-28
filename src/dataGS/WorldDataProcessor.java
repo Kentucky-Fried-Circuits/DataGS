@@ -22,11 +22,14 @@ public class WorldDataProcessor implements WorldDataListener {
 
 
 	protected void reflectToDataGS(Object o) {
-
+		long now = System.currentTimeMillis();
+				
 		/* use reflection to send off the public variables from the Record */
 		Class rmw = o.getClass();
 		Field rmwf[] = rmw.getFields();
 
+		
+		
 		for ( int i=0 ; i<rmwf.length ; i++ ) {
 			Field f = rmwf[i];
 
@@ -46,7 +49,7 @@ public class WorldDataProcessor implements WorldDataListener {
 				}
 				
 				/* send a null to ingest to let it know that we have sent the complete record */
-				channelDataListeners.elementAt(j).ingest(null, null);
+				channelDataListeners.elementAt(j).ingest(null, new Long(now).toString());
 
 			}
 			
