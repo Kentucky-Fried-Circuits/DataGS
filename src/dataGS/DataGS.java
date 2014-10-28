@@ -186,8 +186,8 @@ public class DataGS implements ChannelData, JSONData {
 
 				//today.put();
 			}
-		//	System.out.println("finished DGS iterate");
-		//	System.out.flush();
+			//	System.out.println("finished DGS iterate");
+			//	System.out.flush();
 			/* create a JSON data history point and put into limited length FIFO */
 			if ( null != historyJSON ) {
 
@@ -412,6 +412,7 @@ public class DataGS implements ChannelData, JSONData {
 
 
 
+	@SuppressWarnings("unused")
 	public void ingest(String ch, String s) {
 
 		/* if we get a null, that means that we have received a complete "record" and can make it available as the absolutely
@@ -445,19 +446,21 @@ public class DataGS implements ChannelData, JSONData {
 						dataLastJSON += pairs.getValue().toJSON() + ", ";
 
 
-						/* insert into MySQL */
-						String table = "adc_" + pairs.getKey();
-						DataPoint a = pairs.getValue();
-						String sql = String.format("INSERT INTO %s VALUES(now(), %d, %f, %f, %f, %f)",
-								table,
-								a.n,
-								a.avg,
-								a.min,
-								a.max,
-								a.stddev
-								);
+						if ( false ) {
+							/* insert into MySQL */
+							String table = "adc_" + pairs.getKey();
+							DataPoint a = pairs.getValue();
+							String sql = String.format("INSERT INTO %s VALUES(now(), %d, %f, %f, %f, %f)",
+									table,
+									a.n,
+									a.avg,
+									a.min,
+									a.max,
+									a.stddev
+									);
 
-						log.queryAutoCreate(sql, "dataGSProto.analogDoubleSummarized", table);
+							log.queryAutoCreate(sql, "dataGSProto.analogDoubleSummarized", table);
+						}
 
 					}
 
@@ -469,6 +472,12 @@ public class DataGS implements ChannelData, JSONData {
 
 
 
+				return;
+			}
+			
+			
+			/* we don't need to do anything if we aren't using the channel */
+			if ( ! channelDesc.containsKey(ch) || (! channelDesc.get(ch).log && ! channelDesc.get(ch).history) ) {
 				return;
 			}
 
@@ -857,7 +866,7 @@ public class DataGS implements ChannelData, JSONData {
 			System.err.println("# connectionThreads.size()=" + connectionThreads.size());
 		}
 
-		
+
 		if ( null != serverSocket ) {
 			System.err.print ("# DataGS shuting down server socket ... ");
 			serverSocket.close();
