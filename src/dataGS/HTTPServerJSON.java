@@ -123,16 +123,16 @@ public class HTTPServerJSON extends NanoHTTPD {
 			response = new NanoHTTPD.Response( Response.Status.OK, MIME_JSON, data.getJSON( DataGS.JSON_NOW ), gzipAllowed );
 		} else if ( uri.endsWith( "history.json" ) ) {
 			/* time series data */
-			response = new NanoHTTPD.Response( Response.Status.OK, MIME_JSON, data.getJSON( DataGS.JSON_HISTORY ), gzipAllowed );
+			response = new NanoHTTPD.Response( Response.Status.OK, MIME_JSON, data.getJSON( DataGS.JSON_RECENT_DATA ), gzipAllowed );
 		} else if ( uri.endsWith( "historyFiles.json" ) ) {
 			/* listing of log files from filesystem */
 			response = new NanoHTTPD.Response( Response.Status.OK, MIME_JSON, data.getJSON( DataGS.JSON_HISTORY_FILES ), gzipAllowed );
 		} else if ( uri.endsWith( "summaryStats.json" ) ) {
 			/* daily summaries from local log files */
-			if ( data.getJSON( DataGS.JSON_SUMMARY_STATS ).equals( "invalid" ) ) {
+			if ( data.getJSON( DataGS.JSON_HISTORY_BY_DAY ).equals( "invalid" ) ) {
 				response = new NanoHTTPD.Response( Response.Status.NO_CONTENT, MIME_PLAINTEXT, "Not Found" );
 			}else{
-				response = new NanoHTTPD.Response( Response.Status.OK, MIME_JSON, data.getJSON( DataGS.JSON_SUMMARY_STATS ), gzipAllowed );
+				response = new NanoHTTPD.Response( Response.Status.OK, MIME_JSON, data.getJSON( DataGS.JSON_HISTORY_BY_DAY ), gzipAllowed );
 			}
 		} 
 		
@@ -142,14 +142,14 @@ public class HTTPServerJSON extends NanoHTTPD {
 		else if ( uri.endsWith( "now.dat" ) ) {
 			response = new NanoHTTPD.Response( Response.Status.OK, MIME_PLAINTEXT, data.getJSON( DataGS.JSON_NOW ), gzipAllowed );
 		} else if ( uri.endsWith( "history.dat" ) ) {
-			response = new NanoHTTPD.Response( Response.Status.OK, MIME_PLAINTEXT, data.getJSON( DataGS.JSON_HISTORY ), gzipAllowed );
+			response = new NanoHTTPD.Response( Response.Status.OK, MIME_PLAINTEXT, data.getJSON( DataGS.JSON_RECENT_DATA ), gzipAllowed );
 		} else if ( uri.endsWith( "historyFiles.dat" ) ) {
 			response = new NanoHTTPD.Response( Response.Status.OK, MIME_PLAINTEXT, data.getJSON( DataGS.JSON_HISTORY_FILES ), gzipAllowed );
 		} else if ( uri.endsWith( "summaryStats.dat" ) ) {
-			if ( data.getJSON( DataGS.JSON_SUMMARY_STATS ).equals( "invalid" ) ) {
+			if ( data.getJSON( DataGS.JSON_HISTORY_BY_DAY ).equals( "invalid" ) ) {
 				response = new NanoHTTPD.Response( Response.Status.NO_CONTENT, MIME_PLAINTEXT, "Not Found" );
 			}else{
-				response = new NanoHTTPD.Response( Response.Status.OK, MIME_PLAINTEXT, data.getJSON( DataGS.JSON_SUMMARY_STATS ), gzipAllowed );
+				response = new NanoHTTPD.Response( Response.Status.OK, MIME_PLAINTEXT, data.getJSON( DataGS.JSON_HISTORY_BY_DAY ), gzipAllowed );
 			}
 		} 
 		
