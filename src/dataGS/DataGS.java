@@ -92,6 +92,7 @@ public class DataGS implements ChannelData, JSONData {
 	LogLocal logLocal;
 
 
+
 	/*
 	 * this method is called by our HTTP server to get dynamic data from us
 	 */
@@ -282,14 +283,14 @@ public class DataGS implements ChannelData, JSONData {
 		Iterator<Entry<String, ChannelDescription>> it = channelDesc.entrySet().iterator();
 		while ( it.hasNext() ) {
 			Map.Entry<String, ChannelDescription> pairs = (Map.Entry<String, ChannelDescription>)it.next();
-			
+
 			/* instantiate the SynchronizedSummaryData for that channel */
 			if ( pairs.getValue().summaryStatsFromHistory ) {
 				thisFileStats.put( pairs.getValue().id, new SynchronizedSummaryData(pairs.getValue().mode) );
 			}
 		}
 
-		 
+
 		File csvDataFile = new File(fileAbsolutePath);
 		CSVParser parser = null;
 		try {
@@ -303,19 +304,19 @@ public class DataGS implements ChannelData, JSONData {
 		/* fieldsToParse is an array of fields we are interested in parsing, terminated by -1 */
 		int fieldsToParse[]=null;
 		String[] headerTokens=null;
-		
+
 		for (CSVRecord csvRecord : parser) {
 			/* first record is header */
 			if ( null == headerTokens ) {
 				headerTokens = new String[csvRecord.size()];
 				fieldsToParse=new int[csvRecord.size()+1];
 				int j=0;
-				
+
 				for ( int i=0 ; i<csvRecord.size() ; i++ ) {
 					headerTokens[i]=csvRecord.get(i);
 					headerTokens[i]=headerTokens[i].replace( " ", "" );
 					headerTokens[i]=headerTokens[i].replace( "\"", "" );
-					
+
 
 					/* add to a list of fields we are interested in parsing */
 					if ( thisFileStats.containsKey(headerTokens[i]) ) {
@@ -324,16 +325,16 @@ public class DataGS implements ChannelData, JSONData {
 						j++;
 					}
 				}
-				
-//				for ( int i=0 ; i<fieldsToParse.length && fieldsToParse[i] != -1 ; i++ ) {
-//					System.out.printf("fieldsToParse[%d]=%d (key for that field is headerTokens[%d]='%s')\n",
-//							i,
-//							fieldsToParse[i],
-//							fieldsToParse[i],
-//							headerTokens[fieldsToParse[i]]
-//					);
-//				}
-					
+
+				//				for ( int i=0 ; i<fieldsToParse.length && fieldsToParse[i] != -1 ; i++ ) {
+				//					System.out.printf("fieldsToParse[%d]=%d (key for that field is headerTokens[%d]='%s')\n",
+				//							i,
+				//							fieldsToParse[i],
+				//							fieldsToParse[i],
+				//							headerTokens[fieldsToParse[i]]
+				//					);
+				//				}
+
 
 				continue;
 			}
@@ -341,36 +342,36 @@ public class DataGS implements ChannelData, JSONData {
 			/* data record */
 			for ( int i=0 ; i<fieldsToParse.length && fieldsToParse[i] != -1 ; i++ ) {
 				Double d=0.0;
-		
+
 				/* skip lines that don't have enough columns */
 				if ( fieldsToParse[i] >= csvRecord.size() )
 					break;
-				
+
 				try {
 					/* get rid of anything besides numbers and decimal point */
 					String v=csvRecord.get(fieldsToParse[i]).replaceAll( "[^0-9.]", "" );
-					
+
 					/* skip parsing if we have null or empty string */
 					if ( null == v || 0 == v.length() )
 						continue;
-					
+
 					d=Double.parseDouble(v);
 				} catch ( Exception e ) {
 					System.err.println("# Exception on field " + fieldsToParse[i] + ": " + csvRecord.get(fieldsToParse[i]));
 					e.printStackTrace();
 				}
-				
+
 				thisFileStats.get(headerTokens[fieldsToParse[i]]).addValue(d);
 			}
 		}
 
-		
+
 		/* debug dump of what we gathered for the day */
-//		for (Map.Entry<String, SynchronizedSummaryData> entry : thisFileStats.entrySet()) {
-//		    String key = entry.getKey();
-//		    SynchronizedSummaryData value = entry.getValue();
-//		    System.err.println("# key=" + key + " min: " + value.getMin() + " max: " + value.getMax() + " mean:" + value.getMean());
-//		}
+		//		for (Map.Entry<String, SynchronizedSummaryData> entry : thisFileStats.entrySet()) {
+		//		    String key = entry.getKey();
+		//		    SynchronizedSummaryData value = entry.getValue();
+		//		    System.err.println("# key=" + key + " min: " + value.getMin() + " max: " + value.getMax() + " mean:" + value.getMean());
+		//		}
 
 
 		return (HashMap<String, SynchronizedSummaryData>) thisFileStats;
@@ -391,10 +392,10 @@ public class DataGS implements ChannelData, JSONData {
 
 		System.err.println("# Starting thread to read logLocal files and summarize for history.json");
 		/* Create summary in another thread */
-		(new Thread(new summaryHistoryThread(),"LoadHistoryFromFiles")).start();
+		(new Thread(new summaryHistoryThread())).start();
 	}
 
-	
+
 
 	public void ingest(String ch, String s) {
 
@@ -814,79 +815,75 @@ public class DataGS implements ChannelData, JSONData {
 		System.err.flush();
 	}
 
+	
 
+	public String dailySummaryJSON() {
+		StringBuilder json = new StringBuilder();
 
+		/*
+		 {
+    		"day": 20130503,
+    		"n": "2835.0",
+    		"i_temp_battery_avg": "15.727689594356253",
+    		"i_temp_battery_max": "18.0",
+    		"i_temp_battery_min": "14.0",
+    		"i_dc_volts_avg": "25.078483245149886",
+    		"i_dc_volts_max": "26.0",
+    		"i_dc_volts_min": "24.2",
+    		"b_state_of_charge_min": "79.0",
+    		"b_state_of_charge_max": "89.0",
+    		"b_state_of_charge_avg": "82.01657848324525"
+		},
+		 */
+		
+		Iterator<Entry<String,HashMap<String, SynchronizedSummaryData>>> ite = summaryStatsFromHistory.entrySet().iterator();
+		
+		while ( ite.hasNext() ) {
+			Entry<String,HashMap<String, SynchronizedSummaryData>> entry = ite.next();
+			
+			json.append("{");
+			json.append( UtilJSON.putString("day", entry.getKey()) + "," );
+		
+		
+			boolean firstEntry=true;
+			/* iterator for this day */
+	        Iterator<Entry<String, SynchronizedSummaryData>> itd = entry.getValue().entrySet().iterator();
+	        while ( itd.hasNext() ) {
+	        	Entry<String, SynchronizedSummaryData> day = itd.next();
+	        	
+	        	if ( firstEntry ) {
+	        		/* we get our "n" for the day from the first entry in the map */
+	        		json.append("\"n\": " + day.getValue().getN() + ",");
+	        		firstEntry=false;
+	        	}
+	        	
+//	        	int precision = channelDesc.get(entry.getKey()).precision;
+	        	
+	        	json.append( UtilJSON.putDouble(day.getKey() + "_min", day.getValue().getMin()) + ",");
+	        	json.append( UtilJSON.putDouble(day.getKey() + "_max", day.getValue().getMax()) + ",");
+	        	json.append( UtilJSON.putDouble(day.getKey() + "_avg", day.getValue().getMean()) );
+	        	
+	        	/* add the last comma only if we have something else coming */
+	        	if ( itd.hasNext() ) {
+	        		json.append(",\n");
+	        	}
+	        }
+			
+			json.append("}");
+			json.append("\n");
 
-
-	public String dailySummaryJSON(){
-		/* The string to be returned */
-		String json = "";
-		/* part is used to avoid having to remove the last comma for each day */
-		String part = "";
-
-		/* @Ian - what in here would throw an exception? Is that normal flow */
-		try {
-			/* iterator for the Map with date (string) as key and Map as value */
-			Iterator<Entry<String,HashMap<String, SynchronizedSummaryData>>> itS;
-			itS = summaryStatsFromHistory.entrySet().iterator();
-
-			/* the map with columnNames (string) as key and SyncSumData as value */
-			HashMap<String,SynchronizedSummaryData> ssd;
-			/* iterator for the columnName (string) with date as key and SyncSumData as value */
-			Iterator<Entry<String, SynchronizedSummaryData>> it;
-			/* The key value pair that uses the columnName (string) as a key */
-			Map.Entry<String, SynchronizedSummaryData> pairs;
-
-
-			/* The key value pair that uses the date (string) as a key */
-			Map.Entry<String,HashMap<String, SynchronizedSummaryData>> dateMap;
-
-			/* iterate through summaryStatsFrom History */
-			while ( itS.hasNext() ) {
-
-				dateMap = (Map.Entry<String,HashMap<String, SynchronizedSummaryData>>)itS.next();
-				json += "{";
-				/* The map that has a SyncSumData */
-				ssd= summaryStatsFromHistory.get( dateMap.getKey() );
-				it = ssd.entrySet().iterator();
-				if ( it.hasNext() ){
-					pairs = (Map.Entry<String, SynchronizedSummaryData>)it.next();
-
-					json+="\"day\":"+dateMap.getKey()+",";
-					json+="\"n\":"+NaNcheck(ssd.get( pairs.getKey() ).getN())+",";
-
-
-					/* get the first SyncSumData */
-					part="\""+pairs.getKey()+"_min\":"+NaNcheck(ssd.get( pairs.getKey() ).getMin())+",";
-					part+="\""+pairs.getKey()+"_max\":"+NaNcheck(ssd.get( pairs.getKey() ).getMax())+",";
-					part+="\""+pairs.getKey()+"_avg\":"+NaNcheck(ssd.get( pairs.getKey() ).getMean())+"";
-				}
-				while ( it.hasNext() ) {
-					pairs = (Map.Entry<String, SynchronizedSummaryData>)it.next();
-					part="\""+pairs.getKey()+"_min\":"+NaNcheck(ssd.get( pairs.getKey() ).getMin())+","+part;
-					part="\""+pairs.getKey()+"_max\":"+NaNcheck(ssd.get( pairs.getKey() ).getMax())+","+part;
-					part="\""+pairs.getKey()+"_avg\":"+NaNcheck(ssd.get( pairs.getKey() ).getMean())+","+part;
-				}
-				json += part+"},";
-
-			}
-
-			/* remove the last comma */
-			return json.substring( 0, json.length()-1 );
-		} catch (Exception e) {
-			/* if syncSumData isn't ready, set to initializing*/
-			return null;
+        	/* add the last comma only if we have something else coming */
+        	if ( ite.hasNext() ) {
+        		json.append(",\n");
+        	}
 		}
+		
+		
+		return json.toString();
 	}
 
-	/* check if NaN */
-	public String NaNcheck( double check ){
-		if ( Double.isNaN( check ) ){
-			return "null";
-		}
 
-		return "\""+check+"\"";
-	}
+
 
 	/* Main method */
 	public static void main(String[] args) throws IOException {
