@@ -24,7 +24,7 @@ Returned as MIME type `application/json`.
 Interval statistics or sample of the last batch of data processed. Data is process at interval
 specified by the -i argument.
 
-### history.json or history.dat
+### recent.json or recent.dat
 Time series data covering from now to the number of hours specified by the -H argument.
 
 Returned as `application/json` if URI ends with `.json` or as `text/plain` if the URI ends with `.dat`
@@ -34,7 +34,7 @@ Listing of the log files available in the log local directory.
 
 Returned as `application/json` if URI ends with `.json` or as `text/plain` if the URI ends with `.dat`
 
-### summaryStats.json or summaryStats.dat
+### historyByDay.json or historyByDay.dat
 Daily statistics that summarize the values of all of the files in the log local directory. 
 Statistics are generated on all of the columns that have `history` set to true in the channel description map.
 

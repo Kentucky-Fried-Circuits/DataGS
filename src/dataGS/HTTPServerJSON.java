@@ -121,13 +121,13 @@ public class HTTPServerJSON extends NanoHTTPD {
 		else if ( uri.endsWith( "now.json" ) ) {
 			/* interval averaged or sampled */
 			response = new NanoHTTPD.Response( Response.Status.OK, MIME_JSON, data.getJSON( DataGS.JSON_NOW ), gzipAllowed );
-		} else if ( uri.endsWith( "history.json" ) ) {
+		} else if ( uri.endsWith( "recent.json" ) ) {
 			/* time series data */
 			response = new NanoHTTPD.Response( Response.Status.OK, MIME_JSON, data.getJSON( DataGS.JSON_RECENT_DATA ), gzipAllowed );
 		} else if ( uri.endsWith( "historyFiles.json" ) ) {
 			/* listing of log files from filesystem */
 			response = new NanoHTTPD.Response( Response.Status.OK, MIME_JSON, data.getJSON( DataGS.JSON_HISTORY_FILES ), gzipAllowed );
-		} else if ( uri.endsWith( "summaryStats.json" ) ) {
+		} else if ( uri.endsWith( "historyByDay.json" ) ) {
 			/* daily summaries from local log files */
 			if ( data.getJSON( DataGS.JSON_HISTORY_BY_DAY ).equals( "invalid" ) ) {
 				response = new NanoHTTPD.Response( Response.Status.NO_CONTENT, MIME_PLAINTEXT, "Not Found" );
@@ -141,11 +141,11 @@ public class HTTPServerJSON extends NanoHTTPD {
 		/* dynamically generated for internet explorer */
 		else if ( uri.endsWith( "now.dat" ) ) {
 			response = new NanoHTTPD.Response( Response.Status.OK, MIME_PLAINTEXT, data.getJSON( DataGS.JSON_NOW ), gzipAllowed );
-		} else if ( uri.endsWith( "history.dat" ) ) {
+		} else if ( uri.endsWith( "recent.dat" ) ) {
 			response = new NanoHTTPD.Response( Response.Status.OK, MIME_PLAINTEXT, data.getJSON( DataGS.JSON_RECENT_DATA ), gzipAllowed );
 		} else if ( uri.endsWith( "historyFiles.dat" ) ) {
 			response = new NanoHTTPD.Response( Response.Status.OK, MIME_PLAINTEXT, data.getJSON( DataGS.JSON_HISTORY_FILES ), gzipAllowed );
-		} else if ( uri.endsWith( "summaryStats.dat" ) ) {
+		} else if ( uri.endsWith( "historyByDay.dat" ) ) {
 			if ( data.getJSON( DataGS.JSON_HISTORY_BY_DAY ).equals( "invalid" ) ) {
 				response = new NanoHTTPD.Response( Response.Status.NO_CONTENT, MIME_PLAINTEXT, "Not Found" );
 			}else{
