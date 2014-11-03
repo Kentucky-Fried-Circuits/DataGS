@@ -720,18 +720,18 @@ public abstract class NanoHTTPD {
 	 */
 	/* If gzip allowed, gzip the data and add header. If not, then send the */
 	public Response(IStatus status, String mimeType, String txt, boolean gzp) {
-
 	    this.status = status;
 	    this.mimeType = mimeType;
+	    
 	    if ( gzp ) {
-		this.data = txt != null ? new ByteArrayInputStream( gzip( txt ) ) : null;
-		this.addHeader( "content-encoding", "gzip" );
+	    	this.data = txt != null ? new ByteArrayInputStream( gzip( txt ) ) : null;
+	    	this.addHeader( "content-encoding", "gzip" );
 	    } else {
-		try {
-		    this.data = txt != null ? new ByteArrayInputStream( txt.getBytes( "UTF-8" ) ) : null;
-		} catch ( java.io.UnsupportedEncodingException uee ) {
-		    uee.printStackTrace();
-		}
+	    	try {
+	    		this.data = txt != null ? new ByteArrayInputStream( txt.getBytes( "UTF-8" ) ) : null;
+	    	} catch ( java.io.UnsupportedEncodingException uee ) {
+	    		uee.printStackTrace();
+	    	}
 	    }
 	}
 
@@ -740,13 +740,13 @@ public abstract class NanoHTTPD {
 	    byte[] dataToCompress = msg.getBytes();
 
 	    try {
-		ByteArrayOutputStream byteStream = new ByteArrayOutputStream( dataToCompress.length );
+	    	ByteArrayOutputStream byteStream = new ByteArrayOutputStream( dataToCompress.length );
 		try {
-		    GZIPOutputStream zipStream = new GZIPOutputStream( byteStream );
+		    	GZIPOutputStream zipStream = new GZIPOutputStream( byteStream );
 		    try {
-			zipStream.write( dataToCompress );
+		    	zipStream.write( dataToCompress );
 		    } finally {
-			zipStream.close();
+		    	zipStream.close();
 		    }
 		} finally {
 		    byteStream.close();
@@ -755,10 +755,10 @@ public abstract class NanoHTTPD {
 		return byteStream.toByteArray();
 
 	    } catch ( Exception e ) {
-		e.printStackTrace();
+	    	e.printStackTrace();
 	    }
+	    
 	    return null;
-
 	}
 
 	/**
