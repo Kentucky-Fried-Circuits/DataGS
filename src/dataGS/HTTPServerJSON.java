@@ -64,14 +64,14 @@ public class HTTPServerJSON extends NanoHTTPD {
 			} catch ( FileNotFoundException e ) {
 				response = new NanoHTTPD.Response( Response.Status.NOT_FOUND, MIME_PLAINTEXT, "Not Found" );
 			}
-		} else if ( uri.endsWith( "json.html" ) ) {
+		} else if ( uri.endsWith( "/data/json.html" ) ) {
 			try {
 				response = new NanoHTTPD.Response( Response.Status.OK, MIME_HTML,
 						new FileInputStream( "www/json.html" ) );
 			} catch ( FileNotFoundException e ) {
 				response = new NanoHTTPD.Response( Response.Status.NOT_FOUND, MIME_PLAINTEXT, "Not Found" );
 			}			
-		} else if ( uri.startsWith( "/history/") && uri.endsWith (".csv") ) {
+		} else if ( uri.startsWith( "/data/history/") && uri.endsWith (".csv") ) {
 			/* logged history file from filesystem. Return as MIME_CSV */
 			/* only if the stuff between /history/ and .csv is numeric */
 			
@@ -90,7 +90,7 @@ public class HTTPServerJSON extends NanoHTTPD {
 				response = new NanoHTTPD.Response( Response.Status.NOT_FOUND, MIME_PLAINTEXT, "Not Found" );
 			}
 
-		} else if ( uri.startsWith( "/history/") && uri.endsWith (".txt") ) {
+		} else if ( uri.startsWith( "/data/history/") && uri.endsWith (".txt") ) {
 			/* logged history file from filesystem. Return as MIME_PLAIN */
 			/* only if the stuff between /history/ and .csv is numeric */
 			if( FilenameUtils.getBaseName( uri ) != null &&
@@ -108,7 +108,7 @@ public class HTTPServerJSON extends NanoHTTPD {
 				response = new NanoHTTPD.Response( Response.Status.NOT_FOUND, MIME_PLAINTEXT, "Not Found" );
 			}
 
-		} else if ( uri.endsWith( "channels.json" ) ) {
+		} else if ( uri.endsWith( "/data/channels.json" ) ) {
 			/* channel description file from filesystem */
 			try {
 				response = new NanoHTTPD.Response( Response.Status.OK, MIME_JSON, new FileInputStream( channelMapFile ) );
@@ -118,16 +118,16 @@ public class HTTPServerJSON extends NanoHTTPD {
 		} 
 		
 		/* dynamically generated */
-		else if ( uri.endsWith( "now.json" ) ) {
+		else if ( uri.endsWith( "/data/now.json" ) ) {
 			/* interval averaged or sampled */
 			response = new NanoHTTPD.Response( Response.Status.OK, MIME_JSON, data.getJSON( DataGS.JSON_NOW ), gzipAllowed );
-		} else if ( uri.endsWith( "recent.json" ) ) {
+		} else if ( uri.endsWith( "/data/recent.json" ) ) {
 			/* time series data */
 			response = new NanoHTTPD.Response( Response.Status.OK, MIME_JSON, data.getJSON( DataGS.JSON_RECENT_DATA ), gzipAllowed );
-		} else if ( uri.endsWith( "historyFiles.json" ) ) {
+		} else if ( uri.endsWith( "/data/historyFiles.json" ) ) {
 			/* listing of log files from filesystem */
 			response = new NanoHTTPD.Response( Response.Status.OK, MIME_JSON, data.getJSON( DataGS.JSON_HISTORY_FILES ), gzipAllowed );
-		} else if ( uri.endsWith( "historyByDay.json" ) ) {
+		} else if ( uri.endsWith( "/data/historyByDay.json" ) ) {
 			/* daily summaries from local log files */
 			if ( data.getJSON( DataGS.JSON_HISTORY_BY_DAY ).equals( "invalid" ) ) {
 				response = new NanoHTTPD.Response( Response.Status.NO_CONTENT, MIME_PLAINTEXT, "Not Found" );
@@ -139,13 +139,13 @@ public class HTTPServerJSON extends NanoHTTPD {
 		
 		
 		/* dynamically generated for internet explorer */
-		else if ( uri.endsWith( "now.dat" ) ) {
+		else if ( uri.endsWith( "/data/now.dat" ) ) {
 			response = new NanoHTTPD.Response( Response.Status.OK, MIME_PLAINTEXT, data.getJSON( DataGS.JSON_NOW ), gzipAllowed );
-		} else if ( uri.endsWith( "recent.dat" ) ) {
+		} else if ( uri.endsWith( "/data/recent.dat" ) ) {
 			response = new NanoHTTPD.Response( Response.Status.OK, MIME_PLAINTEXT, data.getJSON( DataGS.JSON_RECENT_DATA ), gzipAllowed );
-		} else if ( uri.endsWith( "historyFiles.dat" ) ) {
+		} else if ( uri.endsWith( "/data/historyFiles.dat" ) ) {
 			response = new NanoHTTPD.Response( Response.Status.OK, MIME_PLAINTEXT, data.getJSON( DataGS.JSON_HISTORY_FILES ), gzipAllowed );
-		} else if ( uri.endsWith( "historyByDay.dat" ) ) {
+		} else if ( uri.endsWith( "/data/historyByDay.dat" ) ) {
 			if ( data.getJSON( DataGS.JSON_HISTORY_BY_DAY ).equals( "invalid" ) ) {
 				response = new NanoHTTPD.Response( Response.Status.NO_CONTENT, MIME_PLAINTEXT, "Not Found" );
 			}else{

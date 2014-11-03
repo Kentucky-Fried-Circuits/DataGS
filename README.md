@@ -5,36 +5,33 @@ Gather data from TCP/IP (simple ASCII format) or serial port (WorldData format) 
 
 ## Data served via HTTP
 
-### favicon.ico
-Little icon for web browser to display. Loaded from `www/favicon.ico`
-
-### json.html
+### /data/json.html
 Simple page with links to the different files. Read from file system.
 
-### history/YYYYMMDD.csv or history/YYYYMMDD.txt 
+### /data/history/YYYYMMDD.csv or /data/history/YYYYMMDD.txt 
 Logged history file from file system. Return as MIME type `test/csv` if the URI ends with `.csv` or as 
 `text/plain` if the URI ends with `.txt`. 
 History files are stored in the log local directory which is set with the -w argument
 
-### channels.json
+### /data/channels.json
 Channel description map as loaded from filesystem. File system location is set with the -c argument.
 Returned as MIME type `application/json`.
 
-### now.json
+### /data/now.json
 Interval statistics or sample of the last batch of data processed. Data is process at interval
 specified by the -i argument.
 
-### recent.json or recent.dat
+### /data/recent.json or /data/recent.dat
 Time series data covering from now to the number of hours specified by the -H argument.
 
 Returned as `application/json` if URI ends with `.json` or as `text/plain` if the URI ends with `.dat`
 
-### historyFiles.json or historyFiles.dat
+### /data/historyFiles.json or /data/historyFiles.dat
 Listing of the log files available in the log local directory.
 
 Returned as `application/json` if URI ends with `.json` or as `text/plain` if the URI ends with `.dat`
 
-### historyByDay.json or historyByDay.dat
+### /data/historyByDay.json or /data/historyByDay.dat
 Daily statistics that summarize the values of all of the files in the log local directory. 
 Statistics are generated on all of the columns that have `history` set to true in the channel description map.
 
