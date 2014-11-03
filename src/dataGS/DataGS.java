@@ -1,18 +1,23 @@
 package dataGS;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Scanner;
 import java.util.Vector;
 
 import javax.swing.Timer;
@@ -27,10 +32,12 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.CharSet;
 import org.apache.commons.lang3.StringEscapeUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.sun.org.apache.bcel.internal.generic.IXOR;
 
 import dataGS.ChannelDescription.Modes;
 /* Command line parsing from Apache */
@@ -260,96 +267,119 @@ public class DataGS implements ChannelData, JSONData {
 		return json.substring( 0, json.length()-1 );
 	}
 
-	
+
 
 
 
 	/**
 	 * This method returns a hashmap of the summary of the file
-	 * @param absolutePath The path to the files that need to be opened and summarized
+	 * @param fileAbsolutePath The path to the files that need to be opened and summarized
 	 * @return HashMap with the channel name as the key and SynchronizedSummaryData as the value
 	 */
-	public HashMap<String, SynchronizedSummaryData> getSyncSumDatEntry(String absolutePath){
+	public HashMap<String, SynchronizedSummaryData> getSyncSumDatEntry(String fileAbsolutePath){
 		/* hashmap to be returned */
-		Map<String, SynchronizedSummaryData> tempSummaryStat = new HashMap<String, SynchronizedSummaryData>();
+		Map<String, SynchronizedSummaryData> thisFileStats = new HashMap<String, SynchronizedSummaryData>();
 
-		System.err.println("----->getSyncSumDatEntry working on " + absolutePath);
-		
-		
-		
+		System.err.println("----->getSyncSumDatEntry working on " + fileAbsolutePath);
+
+
+
 		/* iterate through channelDesc, finding every channel that contains the key summaryStatsFromHistory */
 
 		Iterator<Entry<String, ChannelDescription>> it = channelDesc.entrySet().iterator();
-
 		while ( it.hasNext() ) {
-
 			Map.Entry<String, ChannelDescription> pairs = (Map.Entry<String, ChannelDescription>)it.next();
+			
+			/* instantiate the SynchronizedSummaryData for that channel */
 			if ( pairs.getValue().summaryStatsFromHistory ) {
-				//System.out.println(pairs.getValue().id);
-				tempSummaryStat.put( pairs.getValue().id, new SynchronizedSummaryData(pairs.getValue().mode) );
+				thisFileStats.put( pairs.getValue().id, new SynchronizedSummaryData(pairs.getValue().mode) );
 			}
 		}
 
-		/* open file from absolutePath and use apache commons csv parser to get info and summarize it */
-		File file = new File(absolutePath);
-		//	System.out.println(absolutePath);
-		/* Scanner is being used to read in the csv file line by line */
-		Scanner scanner;
-		CSVParser parser;
-		try { 
-			Iterator<Entry<String, SynchronizedSummaryData>> itS;
-			Map.Entry<String, SynchronizedSummaryData> pairs;
-			/* open the file */
-			scanner = new Scanner(file);
-			/* first line of the csv file is the header */
-			String header=scanner.nextLine();
-			//parser = CSVParser.parse(header, CSVFormat.DEFAULT);
-			/* We have to remove the quotes and the spaces in the header line */
-			header= header.replace( "\"", "" );
-			header= header.replace( " ", "" );	
-			String line = "";
-			while (scanner.hasNext()){
+		 
+		File csvDataFile = new File(fileAbsolutePath);
+		CSVParser parser = null;
+		try {
+			parser = CSVParser.parse(csvDataFile, Charset.defaultCharset(), CSVFormat.DEFAULT);
+		} catch ( IOException e ) {
+			System.err.println("# IOException while working on: " + fileAbsolutePath);
+			return null;
+		}
 
-				line = scanner.nextLine();
-				line= line.replace( "\"", "" );
-				line= line.replace( " ", "" );
-				parser = CSVParser.parse(line, CSVFormat.DEFAULT.withHeader( header.split( "," ) ));
-				/* parse each csv line */
-				for (CSVRecord csvRecord : parser) {
-					/* iterate through tempSumStat and add each csv value needed to it's SyncSumData */
-					itS = tempSummaryStat.entrySet().iterator();
-					while(itS.hasNext()){
-						try{
-							pairs = (Map.Entry<String, SynchronizedSummaryData>)itS.next();
-							String sVal = csvRecord.get(pairs.getKey()).replace( "\"", "" );
-							if ( !sVal.contains( "NULL" )  ){
 
-								/* convert String value into a double. Originally done in one line but broken apart for readability. */
-								double dval = Double.parseDouble(sVal);
+		/* fieldsToParse is an array of fields we are interested in parsing, terminated by -1 */
+		int fieldsToParse[]=null;
+		String[] headerTokens=null;
+		
+		for (CSVRecord csvRecord : parser) {
+			/* first record is header */
+			if ( null == headerTokens ) {
+				headerTokens = new String[csvRecord.size()];
+				fieldsToParse=new int[csvRecord.size()+1];
+				int j=0;
+				
+				for ( int i=0 ; i<csvRecord.size() ; i++ ) {
+					headerTokens[i]=csvRecord.get(i);
+					headerTokens[i]=headerTokens[i].replace( " ", "" );
+					headerTokens[i]=headerTokens[i].replace( "\"", "" );
+					
 
-								/* add double */
-								pairs.getValue().addValue( dval );
-							}
-						}catch(Exception e){
-							System.err.println(e);
-							System.err.println("header: " + header);
-							System.err.println("line: " + line);
-						}
+					/* add to a list of fields we are interested in parsing */
+					if ( thisFileStats.containsKey(headerTokens[i]) ) {
+						fieldsToParse[j]=i;
+						fieldsToParse[j+1]=-1;
+						j++;
 					}
 				}
+				
+//				for ( int i=0 ; i<fieldsToParse.length && fieldsToParse[i] != -1 ; i++ ) {
+//					System.out.printf("fieldsToParse[%d]=%d (key for that field is headerTokens[%d]='%s')\n",
+//							i,
+//							fieldsToParse[i],
+//							fieldsToParse[i],
+//							headerTokens[fieldsToParse[i]]
+//					);
+//				}
+					
 
+				continue;
 			}
-			/* close scanner */
-			scanner.close();
 
-		} catch ( IOException e ) {
-			e.printStackTrace();
-			System.err.println("error occured on this day: " + absolutePath);
+			/* data record */
+			for ( int i=0 ; i<fieldsToParse.length && fieldsToParse[i] != -1 ; i++ ) {
+				Double d=0.0;
+				
+				if ( fieldsToParse[i] >= csvRecord.size() )
+					break;
+				
+				try {
+					/* get rid of anything besides numbers and decimal point */
+					String v=csvRecord.get(fieldsToParse[i]).replaceAll( "[^0-9.]", "" );
+					
+					/* skip parsing if we have null or empty string */
+					if ( null == v || 0 == v.length() )
+						continue;
+					
+					d=Double.parseDouble(v);
+				} catch ( Exception e ) {
+					System.err.println("# Exception on field " + fieldsToParse[i] + ": " + csvRecord.get(fieldsToParse[i]));
+					e.printStackTrace();
+				}
+				
+				thisFileStats.get(headerTokens[fieldsToParse[i]]).addValue(d);
+			}
 		}
 
+		
+		/* debug dump of what we gathered for the day */
+//		for (Map.Entry<String, SynchronizedSummaryData> entry : thisFileStats.entrySet()) {
+//		    String key = entry.getKey();
+//		    SynchronizedSummaryData value = entry.getValue();
+//		    System.err.println("# key=" + key + " min: " + value.getMin() + " max: " + value.getMax() + " mean:" + value.getMean());
+//		}
 
 
-		return (HashMap<String, SynchronizedSummaryData>) tempSummaryStat;
+		return (HashMap<String, SynchronizedSummaryData>) thisFileStats;
 	}
 
 
@@ -433,13 +463,13 @@ public class DataGS implements ChannelData, JSONData {
 		/* Create summary in another thread */
 		(new Thread(new summaryHistoryThread())).start();
 	}
-	
+
 	protected void loadChannelMapFile(String channelMapFile) {
 		long startTime = System.currentTimeMillis();
 		System.err.println("# channel map file is " + channelMapFile);
 		File cmf = new File(channelMapFile);
-		
-		
+
+
 		if ( cmf.exists() && ! cmf.isDirectory() ) {
 
 			System.err.println("# Loading channel description from " + channelMapFile + " ...");
@@ -452,7 +482,7 @@ public class DataGS implements ChannelData, JSONData {
 			/* get string array of json objects to deserialize  */
 			String[] jsonStrArray = UtilFiles.getJsonFromFile(channelMapFile);
 			System.err.println(	"# " + (System.currentTimeMillis()-startTime) + " ms to read file ... ");
-			
+
 			/* iterate through jsonStrArray and create a ChannelDescription object 
 			 * and add it to the hash map */
 			for ( int i = 0; i<jsonStrArray.length; i++ ) {
@@ -896,7 +926,7 @@ public class DataGS implements ChannelData, JSONData {
 			// System.out.println("Files all traveled. Took "+((System.currentTimeMillis()-time)/1000)+" seconds");
 
 		}
-		
+
 		public void run() {
 			long startTime = System.currentTimeMillis();
 
