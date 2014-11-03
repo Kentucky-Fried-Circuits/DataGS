@@ -1,5 +1,6 @@
 package dataGS;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
@@ -19,17 +20,75 @@ public class HTTPServerJSON extends NanoHTTPD {
 	public static final String MIME_JSON = "application/json";
 	public static final String MIME_CSV = "text/csv";
 	public static final String MIME_PLAIN = "text/plain";
+	public static final String MIME_WAV = "audio/x-wav";
+	public static final String MIME_MPEG = "audio/mpeg";
+	public static final String MIME_HTML = "text/html";
 
 	protected JSONData data;
 	protected String channelMapFile;
 	protected String logLocalDirectory;
+	protected File documentRoot;
 
-	public HTTPServerJSON(int port, JSONData s, String c, String logLocalDirectory) {
+	public HTTPServerJSON(int port, JSONData s, String c, String logLocalDirectory, File  w) {
 		super( port );
 		data = s;
 		channelMapFile = c;
 		this.logLocalDirectory = logLocalDirectory;
+		documentRoot=w;
 	}
+
+
+	public Response serveFromFilesystem(String uri) {
+		if ( uri.contains("..") ) {
+			return new NanoHTTPD.Response( Response.Status.FORBIDDEN, MIME_PLAINTEXT, ".. in URI not permitted" );
+		}
+
+		File file = new File(documentRoot,uri);
+	
+		
+		//System.err.println("# Checking if " + file.getAbsoluteFile() + " exists and is not a directory");
+		
+		
+		if ( ! file.exists() || file.isDirectory() ) {
+			return new NanoHTTPD.Response( Response.Status.NOT_FOUND, MIME_PLAINTEXT, "Not Found" );
+		}
+
+		String luri = uri.toLowerCase();
+		String mime = "";
+		if ( luri.endsWith("js") )
+			mime=MIME_JAVASCRIPT;
+		else if ( luri.endsWith("css") ) 
+			mime=MIME_CSS;
+		else if ( luri.endsWith("jpg") )
+			mime=MIME_JPEG;
+		else if ( luri.endsWith("gif") )
+			mime=MIME_GIF;
+		else if ( luri.endsWith("png") )
+			mime=MIME_PNG;
+		else if ( luri.endsWith("svg") )
+			mime=MIME_SVG;
+		else if ( luri.endsWith("json") )
+			mime=MIME_JSON;
+		else if ( luri.endsWith("csv") )
+			mime=MIME_CSV;
+		else if ( luri.endsWith("wav") )
+			mime=MIME_WAV;
+		else if ( luri.endsWith("mp3") )
+			mime=MIME_MPEG;
+		else if ( luri.endsWith("html") )
+			mime=MIME_HTML;
+		else
+			mime=MIME_PLAIN;
+
+		try {
+			return new NanoHTTPD.Response( Response.Status.OK, mime,new FileInputStream(file) );
+		} catch ( FileNotFoundException e ) {
+			e.printStackTrace();
+		}
+		
+		return new NanoHTTPD.Response( Response.Status.NOT_FOUND, MIME_PLAINTEXT, "Not Found" );
+	}
+
 
 	@Override
 	public Response serve(IHTTPSession session) {
@@ -52,9 +111,9 @@ public class HTTPServerJSON extends NanoHTTPD {
 		}
 
 
-		
+
 		Response response = null;
-		
+
 		/* choose which document to return */
 		/* file system */
 		if ( uri.endsWith( "favicon.ico" ) ) {
@@ -74,11 +133,11 @@ public class HTTPServerJSON extends NanoHTTPD {
 		} else if ( uri.startsWith( "/data/history/") && uri.endsWith (".csv") ) {
 			/* logged history file from filesystem. Return as MIME_CSV */
 			/* only if the stuff between /history/ and .csv is numeric */
-			
+
 			if( FilenameUtils.getBaseName( uri ) != null &&
 					/* If all chars of basename are a number */
 					NumberUtils.isNumber( FilenameUtils.getBaseName( uri ) ) ){
-		
+
 				try {
 
 					response = new NanoHTTPD.Response( Response.Status.OK, MIME_CSV,
@@ -116,7 +175,7 @@ public class HTTPServerJSON extends NanoHTTPD {
 				response = new NanoHTTPD.Response( Response.Status.NOT_FOUND, MIME_PLAINTEXT, "Not Found" );
 			}
 		} 
-		
+
 		/* dynamically generated */
 		else if ( uri.endsWith( "/data/now.json" ) ) {
 			/* interval averaged or sampled */
@@ -135,9 +194,9 @@ public class HTTPServerJSON extends NanoHTTPD {
 				response = new NanoHTTPD.Response( Response.Status.OK, MIME_JSON, data.getJSON( DataGS.JSON_HISTORY_BY_DAY ), gzipAllowed );
 			}
 		} 
-		
-		
-		
+
+
+
 		/* dynamically generated for internet explorer */
 		else if ( uri.endsWith( "/data/now.dat" ) ) {
 			response = new NanoHTTPD.Response( Response.Status.OK, MIME_PLAINTEXT, data.getJSON( DataGS.JSON_NOW ), gzipAllowed );
@@ -152,12 +211,16 @@ public class HTTPServerJSON extends NanoHTTPD {
 				response = new NanoHTTPD.Response( Response.Status.OK, MIME_PLAINTEXT, data.getJSON( DataGS.JSON_HISTORY_BY_DAY ), gzipAllowed );
 			}
 		} 
-		
-		/* not found */
+		/* serve from filesystem */
 		else {
-			response = new NanoHTTPD.Response( Response.Status.NOT_FOUND, MIME_PLAINTEXT, "Not Found" );
+			return serveFromFilesystem(uri);
 		}
-		
+
+		//		/* not found */
+		//		else {
+		//			response = new NanoHTTPD.Response( Response.Status.NOT_FOUND, MIME_PLAINTEXT, "Not Found" );
+		//		}
+
 
 		/*
 		 * this allows the website with the AJAX page to be on a different
@@ -167,7 +230,7 @@ public class HTTPServerJSON extends NanoHTTPD {
 
 		return response;
 	}
-	
+
 
 
 }

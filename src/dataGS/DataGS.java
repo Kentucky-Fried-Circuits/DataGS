@@ -72,6 +72,8 @@ public class DataGS implements ChannelData, JSONData {
 
 	protected String summaryStatsJson;
 
+	protected File documentRoot;
+	
 	/* history data */
 	protected CircularFifoQueue<String> historyJSON;
 
@@ -520,9 +522,9 @@ public class DataGS implements ChannelData, JSONData {
 		int httpPort=0;
 		int socketTimeout=62;
 		int databaseType=DATABASE_TYPE_NONE;
-		String channelMapFile="www/channels.json";
+		String channelMapFile="channelDescriptions/channels.json";
 		int dataHistoryJSONHours=24;
-
+		String documentRootName="www/";
 
 		logLocalDir=null;
 		processAllData=false;
@@ -557,6 +559,7 @@ public class DataGS implements ChannelData, JSONData {
 
 
 		/* built-in web server options */
+		options.addOption("b", "http-document-root", true, "webserver document root directory");
 		options.addOption("j", "http-port", true, "webserver port, 0 to disable");
 		options.addOption("H", "json-history-hours", true, "hours of history data to make available, 0 to disable");
 
@@ -579,6 +582,9 @@ public class DataGS implements ChannelData, JSONData {
 			if ( line.hasOption("SQLite-proto-URL") ) sqliteProtoURL= line.getOptionValue("SQLite-proto-URL");
 
 			/* web server */
+			if ( line.hasOption("http-document-root") ) {
+				documentRootName=line.getOptionValue("http-document-root");
+			}
 			if ( line.hasOption("http-port") ) {
 				httpPort = Integer.parseInt(line.getOptionValue("http-port"));
 			}
@@ -638,7 +644,7 @@ public class DataGS implements ChannelData, JSONData {
 			System.err.println("# " + channelMapFile + " not found. Using empty channel map");
 		}
 
-
+		
 		historyJSON=null;
 		if ( dataHistoryJSONHours > 0 ) {
 			int nPoints=(dataHistoryJSONHours*60*60)/(intervalSummary/1000);
@@ -742,10 +748,17 @@ public class DataGS implements ChannelData, JSONData {
 
 		/* built in http server to provide data */
 		if ( 0 != httpPort ) {
-			System.err.println("# HTTP server listening on port " + httpPort);
-			System.err.flush();
-			HTTPServerJSON httpd = new HTTPServerJSON(httpPort, this, channelMapFile, logLocalDir);
-			httpd.start();
+
+			documentRoot=new File(documentRootName);
+			if ( ! documentRoot.exists() || ! documentRoot.isDirectory()  ) {
+				System.err.println("# HTTP server document root is invalid: " + documentRootName);
+				System.err.println("# HTTP server not starting");
+			} else {
+				System.err.println("# HTTP server listening on port " + httpPort + " with document root absolute path " + documentRoot.getAbsolutePath());
+				System.err.flush();
+				HTTPServerJSON httpd = new HTTPServerJSON(httpPort, this, channelMapFile, logLocalDir, documentRoot);
+				httpd.start();
+			}
 		} else {
 			System.err.println("# HTTP server disabled.");
 			System.err.flush();

@@ -74,6 +74,7 @@ options.addOption("R", "serialPortWorldDataSpeed",true,"Serial port speed");
 
 ### Data output (JSON) arguments
 ```
+options.addOption("b", "http-document-root", true, "webserver document root directory");
 options.addOption("j", "http-port", true, "webserver port, 0 to disable");
 options.addOption("H", "json-history-hours", true, "hours of history data to make available, 0 to disable");
 ```
