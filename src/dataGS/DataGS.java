@@ -81,10 +81,10 @@ public class DataGS implements ChannelData, JSONData {
 	public static final int DATABASE_TYPE_NONE = 2;
 
 	/* supported JSON resource requests */
-	public static final int JSON_NOW=0;
-	public static final int JSON_HISTORY=1;
-	public static final int JSON_HISTORY_FILES = 2;
-	public static final int JSON_SUMMARY_STATS = 3;
+	public static final int JSON_NOW            = 0;
+	public static final int JSON_RECENT_DATA    = 1;
+	public static final int JSON_HISTORY_FILES  = 2;
+	public static final int JSON_HISTORY_BY_DAY = 3;
 
 
 
@@ -101,7 +101,7 @@ public class DataGS implements ChannelData, JSONData {
 			synchronized ( dataNowJSON) {
 				return "{\"data\": [" + dataNowJSON + "]}";
 			}
-		} else if ( JSON_HISTORY == resource ) {
+		} else if ( JSON_RECENT_DATA == resource ) {
 			synchronized ( historyJSON) {
 				return "{\"history\":" + historyJSON.toString() + "}";				
 			}
@@ -109,9 +109,9 @@ public class DataGS implements ChannelData, JSONData {
 			synchronized ( historyFiles ) {
 				return "{\"history_files\": {" + historyFiles + "}}";
 			}
-		} else if ( JSON_SUMMARY_STATS == resource ) {
+		} else if ( JSON_HISTORY_BY_DAY == resource ) {
 			if ( summaryReady ) {
-				return "{\"summary_stats\": [" + dailySummaryJSON() + "]}";
+				return dailySummaryJSON();
 			} else {
 				return "invalid";
 			}
@@ -820,6 +820,8 @@ public class DataGS implements ChannelData, JSONData {
 	public String dailySummaryJSON() {
 		StringBuilder json = new StringBuilder();
 
+		json.append("{\"summary_stats\": [");
+		
 		/*
 		 {
     		"day": 20130503,
@@ -878,6 +880,7 @@ public class DataGS implements ChannelData, JSONData {
         	}
 		}
 		
+		json.append("]}");
 		
 		return json.toString();
 	}
@@ -887,7 +890,7 @@ public class DataGS implements ChannelData, JSONData {
 
 	/* Main method */
 	public static void main(String[] args) throws IOException {
-		System.err.println("# Major version: 2014-10-28 (precision)");
+		System.err.println("# Major version: 2014-11-03 (precision)");
 		System.err.println("# java.library.path: " + System.getProperty( "java.library.path" ));
 
 		DataGS d=new DataGS();
