@@ -1,21 +1,16 @@
 package dataGS;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Vector;
@@ -32,12 +27,10 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.CharSet;
 import org.apache.commons.lang3.StringEscapeUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.sun.org.apache.bcel.internal.generic.IXOR;
 
 import dataGS.ChannelDescription.Modes;
 /* Command line parsing from Apache */
@@ -276,7 +269,7 @@ public class DataGS implements ChannelData, JSONData {
 	 * @param fileAbsolutePath The path to the files that need to be opened and summarized
 	 * @return HashMap with the channel name as the key and SynchronizedSummaryData as the value
 	 */
-	public HashMap<String, SynchronizedSummaryData> getSyncSumDatEntry(String fileAbsolutePath){
+	public HashMap<String, SynchronizedSummaryData> loadHistoryDayFromFile(String fileAbsolutePath){
 		/* hashmap to be returned */
 		Map<String, SynchronizedSummaryData> thisFileStats = new HashMap<String, SynchronizedSummaryData>();
 
@@ -348,7 +341,8 @@ public class DataGS implements ChannelData, JSONData {
 			/* data record */
 			for ( int i=0 ; i<fieldsToParse.length && fieldsToParse[i] != -1 ; i++ ) {
 				Double d=0.0;
-				
+		
+				/* skip lines that don't have enough columns */
 				if ( fieldsToParse[i] >= csvRecord.size() )
 					break;
 				
@@ -382,7 +376,25 @@ public class DataGS implements ChannelData, JSONData {
 		return (HashMap<String, SynchronizedSummaryData>) thisFileStats;
 	}
 
+	protected void loadHistoryFromFiles() {
+		/* get array of all filenames from logLocalDir */
+		String[] files = new UtilFiles().listFilesForFolder( logLocalDir );
 
+		if ( null == files || 0==files.length ) {
+			historyFiles="\"files\":[]";
+		} else {
+			historyFiles="\"files\":["+filesToJson( files )+"]";
+		}
+		System.err.println("# " + files.length + " files listed for historyFiles.json");
+		System.err.flush();
+
+
+		System.err.println("# Starting thread to read logLocal files and summarize for history.json");
+		/* Create summary in another thread */
+		(new Thread(new summaryHistoryThread(),"LoadHistoryFromFiles")).start();
+	}
+
+	
 
 	public void ingest(String ch, String s) {
 
@@ -445,24 +457,6 @@ public class DataGS implements ChannelData, JSONData {
 
 	}
 
-
-	protected void loadHistoryFromFiles() {
-		/* get array of all filenames from logLocalDir */
-		String[] files = new UtilFiles().listFilesForFolder( logLocalDir );
-
-		if ( null == files || 0==files.length ) {
-			historyFiles="\"files\":[]";
-		} else {
-			historyFiles="\"files\":["+filesToJson( files )+"]";
-		}
-		System.err.println("# " + files.length + " files listed for historyFiles.json");
-		System.err.flush();
-
-
-		System.err.println("# Starting thread to read logLocal files and summarize for history.json");
-		/* Create summary in another thread */
-		(new Thread(new summaryHistoryThread())).start();
-	}
 
 	protected void loadChannelMapFile(String channelMapFile) {
 		long startTime = System.currentTimeMillis();
@@ -914,17 +908,13 @@ public class DataGS implements ChannelData, JSONData {
 		public void createSummaryStatsFromHistory(String[] files){
 
 			/* initialize summaryStatsFromHistory hashmap NOTE: this may need to move somewhere else*/
-			long time = System.currentTimeMillis();
 			summaryStatsFromHistory = new HashMap<String, HashMap<String, SynchronizedSummaryData>>();
 
 			String date;
 			for ( int i = 0 ; i < files.length ; i++ ) {
-				date=FilenameUtils.getBaseName( files[i] );//FilenameUtils.removeExtension(files[i]);
-				//System.out.println(files[i]);
-				summaryStatsFromHistory.put( date, getSyncSumDatEntry( files[i] ) );
+				date=FilenameUtils.getBaseName( files[i] );
+				summaryStatsFromHistory.put( date, loadHistoryDayFromFile( files[i] ) );
 			}
-			// System.out.println("Files all traveled. Took "+((System.currentTimeMillis()-time)/1000)+" seconds");
-
 		}
 
 		public void run() {
