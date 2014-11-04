@@ -65,7 +65,7 @@ public class DataGS implements ChannelData, JSONData {
 	protected String dataLastJSON;
 
 	/* JSON array of our latest completed data */
-	protected String dataNowJSON;
+	protected StringBuilder dataNowJSON;
 
 	protected String historyFiles;
 	protected String logLocalDir;
@@ -101,7 +101,7 @@ public class DataGS implements ChannelData, JSONData {
 	public String getJSON(int resource) {
 		if ( JSON_NOW == resource ) {
 			synchronized ( dataNowJSON) {
-				return "{\"data\": [" + dataNowJSON + "]}";
+				return dataNowJSON.toString();
 			}
 		} else if ( JSON_RECENT_DATA == resource ) {
 			synchronized ( historyJSON) {
@@ -146,8 +146,6 @@ public class DataGS implements ChannelData, JSONData {
 		synchronized (data) {
 			dataNow.clear();
 
-
-
 			/* TODO get today's syncSumData from summaryStatsFromHistory if ready */
 			Map<String, SynchronizedSummaryData> today;
 			date = new Date();
@@ -161,10 +159,21 @@ public class DataGS implements ChannelData, JSONData {
 
 				dataNow.put(pairs.getKey(),new DataPoint(pairs.getKey(),now,pairs.getValue()));
 
-				if ( summaryReady ){
+				if ( summaryReady ) {
+					String todayDateKey = sdf.format( date );
+					
+					if ( ! summaryStatsFromHistory.containsValue( todayDateKey) ) {
+						/* we don't have today in history ... initialize today */
+						
+					}
+					
 					today = summaryStatsFromHistory.get( sdf.format( date ) );
+					
+					
+					
 					String ch = pairs.getKey();	 
 
+					
 
 					if ( today.containsKey( ch ) ) {
 						if ( today.get(ch).mode == Modes.AVERAGE ) {
@@ -185,11 +194,9 @@ public class DataGS implements ChannelData, JSONData {
 				}
 			}
 
-			/* create a JSON data history point and put into limited length FIFO */
 			if ( null != historyJSON ) {
-
+				/* create a JSON data history point and put into limited length FIFO */
 				historyJSON.add(HistoryPointJSON.toJSON(now, data, channelDesc));
-				//	System.err.println("# historyJSON is " + historyJSON.size() + " of " + historyJSON.maxSize() + " maximum.");
 			}
 
 			/* loglocal */
@@ -204,39 +211,37 @@ public class DataGS implements ChannelData, JSONData {
 
 
 		synchronized ( dataNowJSON ) {
-			dataNowJSON="";
+			dataNowJSON=new StringBuilder("{\"data\": [");
 
 			Iterator<Entry<String, DataPoint>> it = dataNow.entrySet().iterator();
 			while (it.hasNext()) {
 				Map.Entry<String, DataPoint> pairs = (Map.Entry<String, DataPoint>)it.next();
 
-				/* debugging */
-				//System.out.println(pairs.getKey() + " = " + pairs.getValue());
 
 				/* use the DataPoint.toJSON() method to encode the members we care about into JSON */
-				dataNowJSON += pairs.getValue().toJSON() + ", ";
-
+				dataNowJSON.append(pairs.getValue().toJSON());
+				
+				if ( it.hasNext() ) 
+					dataNowJSON.append(", ");
+				
+				
 
 				/* insert into MySQL */
-				String table = "adc_" + pairs.getKey();
-				DataPoint a = pairs.getValue();
-				String sql = String.format("INSERT INTO %s VALUES(now(), %d, %f, %f, %f, %f)",
-						table,
-						a.n,
-						a.avg,
-						a.min,
-						a.max,
-						a.stddev
-						);
-
-				log.queryAutoCreate(sql, "dataGSProto.analogDoubleSummarized", table);
+//				String table = "adc_" + pairs.getKey();
+//				DataPoint a = pairs.getValue();
+//				String sql = String.format("INSERT INTO %s VALUES(now(), %d, %f, %f, %f, %f)",
+//						table,
+//						a.n,
+//						a.avg,
+//						a.min,
+//						a.max,
+//						a.stddev
+//						);
+//
+//				log.queryAutoCreate(sql, "dataGSProto.analogDoubleSummarized", table);
 
 			}
-
-			/* remove last comma */
-			if ( dataNowJSON.length() >= 2 ) {
-				dataNowJSON = dataNowJSON.substring(0, dataNowJSON.length()-2);
-			}
+			dataNowJSON.append("]}");
 		}
 
 
@@ -533,7 +538,7 @@ public class DataGS implements ChannelData, JSONData {
 		dataLast = new HashMap<String, DataPoint>();
 		dataNow = new HashMap<String, DataPoint>();
 		dataLastJSON="";
-		dataNowJSON="";
+		dataNowJSON=new StringBuilder("");
 
 
 		/* MySQL options */
@@ -903,7 +908,7 @@ public class DataGS implements ChannelData, JSONData {
 
 	/* Main method */
 	public static void main(String[] args) throws IOException {
-		System.err.println("# Major version: 2014-11-03 (precision)");
+		System.err.println("# Major version: 2014-11-04 (precision)");
 		System.err.println("# java.library.path: " + System.getProperty( "java.library.path" ));
 
 		DataGS d=new DataGS();
