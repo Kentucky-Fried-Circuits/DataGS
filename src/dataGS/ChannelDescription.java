@@ -1,5 +1,10 @@
 package dataGS;
 
+/**
+ * Description of a measurement channel.
+ * @author James Jarvis
+ *
+ */
 public class ChannelDescription {
 /*
 id: numeric value
