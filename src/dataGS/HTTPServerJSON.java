@@ -43,11 +43,17 @@ public class HTTPServerJSON extends NanoHTTPD {
 			return new NanoHTTPD.Response( Response.Status.FORBIDDEN, MIME_PLAINTEXT, ".. in URI not permitted" );
 		}
 
+		/* try index.html if we have a trailing slash */
+		if ( uri.endsWith("/") ) {
+			uri = uri + "index.html";
+		}
+		
 		File file = new File(documentRoot,uri);
 	
 		
-		//System.err.println("# Checking if " + file.getAbsoluteFile() + " exists and is not a directory");
+		System.err.println("# Checking if " + file.getAbsoluteFile() + " exists and is not a directory");
 		
+	
 		
 		if ( ! file.exists() || file.isDirectory() ) {
 			return new NanoHTTPD.Response( Response.Status.NOT_FOUND, MIME_PLAINTEXT, "Not Found" );
