@@ -39,9 +39,11 @@ import dataGS.ChannelDescription.Modes;
 public class DataGS implements ChannelData, JSONData {
 	private final boolean debug=false;
 
+	/* database log */
 	private Log log;
-	private Timer threadMaintenanceTimer;
 
+	/* TCP/IP */
+	private Timer threadMaintenanceTimer;
 	private Vector<DataGSServerThread> connectionThreads;
 	private int portNumber;
 
@@ -51,27 +53,31 @@ public class DataGS implements ChannelData, JSONData {
 
 	/* data to summarize and send */
 	protected Map<String, SynchronizedSummaryData> data;
-	protected Map<String, DataPoint> dataLast;
 	protected Map<String, DataPoint> dataNow;
 
 	/* data for the historical data page */
+	protected Date date;
+	protected final SimpleDateFormat sdfYYYYMMDD = new SimpleDateFormat("yyyyMMdd");
+	
+	/* data for the min, max, average data that is generated for each day */
 	protected Map<String, HashMap<String, SynchronizedSummaryData>> historyStatsByDay;
 	protected boolean historyStatsByDayReady=false;
-	protected Date date;
-	protected SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+	/* JSON array of log local files */
+	protected String historyDayLogFilesJSON;
 
+	
 	protected int intervalSummary;
 	protected Timer dataTimer;
-	protected String dataLastJSON;
+
 
 	/* JSON array of our latest completed data */
 	protected StringBuilder dataNowJSON;
 
-	protected String historyFiles;
+	/* log local (CSV) */
+	protected LogLocal logLocal;
 	protected String logLocalDir;
 
-	protected String summaryStatsJson;
-
+	/* web server */
 	protected File documentRoot;
 	
 	/* history data */
@@ -90,11 +96,6 @@ public class DataGS implements ChannelData, JSONData {
 
 
 
-	/* loglocal */
-	LogLocal logLocal;
-
-
-
 	/*
 	 * this method is called by our HTTP server to get dynamic data from us
 	 */
@@ -108,8 +109,8 @@ public class DataGS implements ChannelData, JSONData {
 				return "{\"history\":" + historyJSON.toString() + "}";				
 			}
 		} else if ( JSON_HISTORY_FILES == resource ) {
-			synchronized ( historyFiles ) {
-				return "{\"history_files\": {" + historyFiles + "}}";
+			synchronized ( historyDayLogFilesJSON ) {
+				return "{\"history_files\": {" + historyDayLogFilesJSON + "}}";
 			}
 		} else if ( JSON_HISTORY_BY_DAY == resource ) {
 			if ( historyStatsByDayReady ) {
@@ -160,14 +161,14 @@ public class DataGS implements ChannelData, JSONData {
 				dataNow.put(pairs.getKey(),new DataPoint(pairs.getKey(),now,pairs.getValue()));
 
 				if ( historyStatsByDayReady ) {
-					String todayDateKey = sdf.format( date );
+					String todayDateKey = sdfYYYYMMDD.format( date );
 					
 					if ( ! historyStatsByDay.containsValue( todayDateKey) ) {
 						/* we don't have today in history ... initialize today */
 						
 					}
 					
-					today = historyStatsByDay.get( sdf.format( date ) );
+					today = historyStatsByDay.get( sdfYYYYMMDD.format( date ) );
 					
 					
 					
@@ -389,9 +390,9 @@ public class DataGS implements ChannelData, JSONData {
 		String[] files = new UtilFiles().listFilesForFolder( logLocalDir );
 
 		if ( null == files || 0==files.length ) {
-			historyFiles="\"files\":[]";
+			historyDayLogFilesJSON="\"files\":[]";
 		} else {
-			historyFiles="\"files\":["+filesToJson( files )+"]";
+			historyDayLogFilesJSON="\"files\":["+filesToJson( files )+"]";
 		}
 		System.err.println("# " + files.length + " files listed for historyFiles.json");
 		System.err.flush();
@@ -535,9 +536,7 @@ public class DataGS implements ChannelData, JSONData {
 		processAllData=false;
 		intervalSummary = 1000;
 		data = new HashMap<String, SynchronizedSummaryData>();
-		dataLast = new HashMap<String, DataPoint>();
 		dataNow = new HashMap<String, DataPoint>();
-		dataLastJSON="";
 		dataNowJSON=new StringBuilder("");
 
 

@@ -2,6 +2,11 @@ package dataGS;
 
 import java.util.Vector;
 
+/**
+ * Calculate CRC using Modbus CRC format.
+ * @author James Jarvis
+ *
+ */
 public class CRC {
 	
 	public static int crc_chk(int data[],int start, int length) {
@@ -42,17 +47,4 @@ public class CRC {
 			return reg_crc;
 	}
 
-	public static void main(String[] args) {
-		int[] buff=new int[8];
-
-		buff[0]='#';
-		buff[1]='A';
-		buff[2]=0x00;
-		buff[3]=0x00;
-		buff[4]=0x08;
-		buff[5]=0x02;
-		
-		System.err.println("CRC=" + crc_chk(buff,1,5));
-
-	}
 }

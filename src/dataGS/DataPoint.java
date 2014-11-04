@@ -3,6 +3,11 @@ package dataGS;
 
 import dataGS.ChannelDescription.Modes;
 
+/**
+ * DataPoint is used to store the results of a sample or a SummaryStatistic 
+ * @author James Jarvis
+ *
+ */
 public class DataPoint {
 	public String channel;
 	public long time;

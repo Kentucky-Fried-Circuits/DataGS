@@ -7,73 +7,80 @@ import java.util.Map.Entry;
 import org.apache.commons.lang3.StringEscapeUtils;
 
 
-
+/**
+ * static class for converting a HistoryPoint into JSON or CSV
+ * @author James Jarvis
+ */
 public class HistoryPointJSON {
 
 	
 	public static String toJSON(long time, Map<String, SynchronizedSummaryData> data, Map<String, ChannelDescription> chanDesc) {
-		String json;
+		StringBuilder json=new StringBuilder();
 
-		json = "{\"time\":" + time + ","; /* open data element and add the timestamp */
+		/* open data element and add the timestamp */
+		json.append("{\"time\":" + time + ","); 
 
-		json += "\"data\": {"; /* open data array */
-		Map.Entry<String, SynchronizedSummaryData> pairs;
-		Iterator<Entry<String, SynchronizedSummaryData>> it = data.entrySet().iterator();
-		//System.out.println("HPJ iterate");
-		//System.out.flush();
+		 /* open data array */
+		json.append("\"data\": {");
+		
+
+		/* if we have any data points, we dump them */
 		if ( ! data.isEmpty() ) {
+			Map.Entry<String, SynchronizedSummaryData> pairs;
+			Iterator<Entry<String, SynchronizedSummaryData>> it = data.entrySet().iterator();
+
+			/* iterate through and add to JSON points that have history==true in channel description */
 			while (it.hasNext()) {
-				
 				pairs = (Map.Entry<String, SynchronizedSummaryData>)it.next();
-				//System.out.println("HPJ success: "+pairs.getKey());
+
+
 				if ( false==chanDesc.get(pairs.getKey()).history ) {
-				//	System.err.println("## HistoryPointJSON is skipping " + pairs.getKey() + " because history is false");
+					/* skip adding because channelDescription history is false */
 					continue;
 				}
 				
-				//System.err.println("## HistoryPointJSON is adding " + pairs.getKey() + " because history is true");
-				//System.err.flush();
-				
+
 				/* if we have have this key in the channel description map, we use the precision from there. Otherwise we
 				 * just go with default precision.
 				 */
 				if ( pairs.getValue().mode==ChannelDescription.Modes.SAMPLE ) {
 					/* just dump the current value */
-					json += "\"" + StringEscapeUtils.escapeJson( pairs.getKey() ) + "\": \"" + StringEscapeUtils.escapeJson( pairs.getValue().sampleValue ) + "\"";
+					json.append("\"" + StringEscapeUtils.escapeJson( pairs.getKey() ) + "\": \"" + StringEscapeUtils.escapeJson( pairs.getValue().sampleValue ) + "\"");
+
 				} else if ( chanDesc.containsKey(pairs.getKey() )) {
 					double mean = pairs.getValue().getMean();
 					if ( Double.isNaN( mean ) ) {
-						json += "\"" + StringEscapeUtils.escapeJson( pairs.getKey() ) + "\":null,";
+						json.append("\"" + StringEscapeUtils.escapeJson( pairs.getKey() ) + "\":null,");
 					} else {
-						json += "\"" + StringEscapeUtils.escapeJson( pairs.getKey() ) + "\":" + StringEscapeUtils.escapeJson( numberPrecision(pairs.getValue().getMean(), chanDesc.get( pairs.getKey() ).precision ) );
+						json.append("\"" + StringEscapeUtils.escapeJson( pairs.getKey() ) + "\":" + StringEscapeUtils.escapeJson( numberPrecision(pairs.getValue().getMean(), chanDesc.get( pairs.getKey() ).precision ) ));
 					}
+					
 				} else {
 					System.err.println("# No channel description found for " + pairs.getKey() + " using default double.");
 					double mean = pairs.getValue().getMean();
 					if ( Double.isNaN( mean ) ) {
-						json += "\"" + pairs.getKey() + "\":null," ;
+						json.append("\"" + pairs.getKey() + "\":null,");
 					}else {
-
-						json += "\"" + pairs.getKey() + "\":" + pairs.getValue().getMean() ;
+						json.append("\"" + pairs.getKey() + "\":" + pairs.getValue().getMean());
 					}
 				}
-
-				json += ",";
-
 			}
-			/* remove the last comma */
+			
+			/* remove the last comma, if it exists */
 			if ( ',' == json.charAt(json.length()-1) ) {
-				json = json.substring(0,json.length()-2);
+				json.deleteCharAt(json.length()-1);
 			}
 		}
-		//System.out.println("finish HPJ iterate");
-		//System.out.flush();
-		
-		json += "}"; /* close data array */
 
-		json += "}"; /* close whole data point element */
-		return json;
+		 /* close data array */
+		json.append("}");
+		
+		/* close whole data point element */
+		json.append("}");
+
+		return json.toString();
 	}
+	
 	/**
 	 * 
 	 * @param data hash map to convert to csv
@@ -83,6 +90,9 @@ public class HistoryPointJSON {
 	public static String[] toCSV(Map<String, SynchronizedSummaryData> data, Map<String, ChannelDescription> chanDesc) {
 		/* csv[0] will be the data line and csv[1] will be the header line */
 		String[] csv={"",""};
+		
+		StringBuilder csvHeader=new StringBuilder();
+		StringBuilder csvData=new StringBuilder();
 
 		Iterator<Entry<String, SynchronizedSummaryData>> it = data.entrySet().iterator();
 		if ( ! data.isEmpty() ) {
@@ -90,7 +100,6 @@ public class HistoryPointJSON {
 				Map.Entry<String, SynchronizedSummaryData> pairs = (Map.Entry<String, SynchronizedSummaryData>)it.next();
 
 				if ( false==chanDesc.get(pairs.getKey()).log ) {
-				//	System.err.println("## HistoryPointJSON is skipping " + pairs.getKey() + " because history is false");
 					continue;
 				}
 				
@@ -101,27 +110,29 @@ public class HistoryPointJSON {
 				 */
 				if ( pairs.getValue().mode==ChannelDescription.Modes.SAMPLE ) {
 					/* just dump the current value */
-					csv[0] +="\"" + StringEscapeUtils.escapeCsv(pairs.getValue().sampleValue) + "\"";
+					csvData.append("\"" + StringEscapeUtils.escapeCsv(pairs.getValue().sampleValue) + "\"");
 				} else if ( chanDesc.containsKey(pairs.getKey() )) {
-					csv[0] += "" + StringEscapeUtils.escapeCsv(numberPrecision(pairs.getValue().getMean(), chanDesc.get( pairs.getKey() ).precision ))+"";
+					csvData.append("" + StringEscapeUtils.escapeCsv(numberPrecision(pairs.getValue().getMean(), chanDesc.get( pairs.getKey() ).precision ))+"");
 				} else {
 					System.err.println("# No channel description found for " + pairs.getKey() + " using default double.");
-					csv[0] += "" + pairs.getValue().getMean() + "" ;
+					csvData.append("" + pairs.getValue().getMean() + "");
 				}
-				csv[1] +="\"" +StringEscapeUtils.escapeCsv(pairs.getKey())+"\",";
-				csv[0] += ",";
-	
+				csvHeader.append("\"" + StringEscapeUtils.escapeCsv(pairs.getKey()) + "\",");
+				csvData.append(",");
 			}
-			/* remove the last comma */
-			if ( ',' == csv[0].charAt(csv[0].length()-1) ) {
-				csv[0] = csv[0].substring(0,csv[0].length()-1);
-			}
-			if ( ',' == csv[1].charAt(csv[1].length()-1) ) {
-				csv[1] = csv[1].substring(0,csv[1].length()-1);
-			}
+			
+			
+			/* remove the last commas */
+			if ( ',' == csvHeader.charAt(csvHeader.length()-1) )
+				csvHeader.deleteCharAt(csvHeader.length()-1);
+			if ( ',' == csvData.charAt(csvData.length()-1) )
+				csvData.deleteCharAt(csvData.length()-1);
+			
 		}
 
-
+		csv[0]=csvData.toString();
+		csv[1]=csvHeader.toString();
+		
 		return csv;
 	}
 	
@@ -135,7 +146,6 @@ public class HistoryPointJSON {
 		if ( prec >= 0 ) {
 			format = String.format("%."+prec+"f",val);
 		} else {
-			//format = String.format();
 			format=String.format( "%s",Math.round(Math.pow( 10, -prec ) * Math.round(val/Math.pow( 10, -prec ))));
 
 		}

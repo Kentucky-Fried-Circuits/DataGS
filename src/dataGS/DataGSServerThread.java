@@ -9,7 +9,12 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.Vector;
 
-
+/**
+ * TCP/IP socket thread for getting data into DataGS
+ * accepts single character keys and string values. Terminated with \n
+ * @author James Jarvis
+ *
+ */
 public class DataGSServerThread extends Thread {
 	protected Socket socket = null;
 	protected InputStream inputStream;

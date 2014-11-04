@@ -4,6 +4,11 @@ import java.awt.event.ActionListener;
 import java.net.Socket;
 import java.util.Vector;
 
+/**
+ * track DataGSServerThread status
+ * @author James Jarvis
+ *
+ */
 public class DataGSStatus extends Thread {
 	private Log db;
 	private int port;
