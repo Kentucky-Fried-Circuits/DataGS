@@ -55,8 +55,8 @@ public class DataGS implements ChannelData, JSONData {
 	protected Map<String, DataPoint> dataNow;
 
 	/* data for the historical data page */
-	protected Map<String, HashMap<String, SynchronizedSummaryData>> summaryStatsFromHistory;
-	protected boolean summaryReady=false;
+	protected Map<String, HashMap<String, SynchronizedSummaryData>> historyStatsByDay;
+	protected boolean historyStatsByDayReady=false;
 	protected Date date;
 	protected SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 
@@ -112,7 +112,7 @@ public class DataGS implements ChannelData, JSONData {
 				return "{\"history_files\": {" + historyFiles + "}}";
 			}
 		} else if ( JSON_HISTORY_BY_DAY == resource ) {
-			if ( summaryReady ) {
+			if ( historyStatsByDayReady ) {
 				return dailySummaryJSON();
 			} else {
 				return "invalid";
@@ -159,15 +159,15 @@ public class DataGS implements ChannelData, JSONData {
 
 				dataNow.put(pairs.getKey(),new DataPoint(pairs.getKey(),now,pairs.getValue()));
 
-				if ( summaryReady ) {
+				if ( historyStatsByDayReady ) {
 					String todayDateKey = sdf.format( date );
 					
-					if ( ! summaryStatsFromHistory.containsValue( todayDateKey) ) {
+					if ( ! historyStatsByDay.containsValue( todayDateKey) ) {
 						/* we don't have today in history ... initialize today */
 						
 					}
 					
-					today = summaryStatsFromHistory.get( sdf.format( date ) );
+					today = historyStatsByDay.get( sdf.format( date ) );
 					
 					
 					
@@ -856,7 +856,7 @@ public class DataGS implements ChannelData, JSONData {
 		},
 		 */
 		
-		Iterator<Entry<String,HashMap<String, SynchronizedSummaryData>>> ite = summaryStatsFromHistory.entrySet().iterator();
+		Iterator<Entry<String,HashMap<String, SynchronizedSummaryData>>> ite = historyStatsByDay.entrySet().iterator();
 		
 		while ( ite.hasNext() ) {
 			Entry<String,HashMap<String, SynchronizedSummaryData>> entry = ite.next();
@@ -926,12 +926,12 @@ public class DataGS implements ChannelData, JSONData {
 		public void createSummaryStatsFromHistory(String[] files){
 
 			/* initialize summaryStatsFromHistory hashmap NOTE: this may need to move somewhere else*/
-			summaryStatsFromHistory = new HashMap<String, HashMap<String, SynchronizedSummaryData>>();
+			historyStatsByDay = new HashMap<String, HashMap<String, SynchronizedSummaryData>>();
 
 			String date;
 			for ( int i = 0 ; i < files.length ; i++ ) {
 				date=FilenameUtils.getBaseName( files[i] );
-				summaryStatsFromHistory.put( date, loadHistoryDayFromFile( files[i] ) );
+				historyStatsByDay.put( date, loadHistoryDayFromFile( files[i] ) );
 			}
 		}
 
@@ -945,9 +945,9 @@ public class DataGS implements ChannelData, JSONData {
 				createSummaryStatsFromHistory( files );
 
 				System.err.println("# SummaryHistoryThread completed summarizing logLocalFiles in "+((System.currentTimeMillis()-startTime)/1000)+" seconds");
-				summaryReady = true;
+				historyStatsByDayReady = true;
 			} else {
-				summaryReady = false;
+				historyStatsByDayReady = false;
 			}
 		}
 
