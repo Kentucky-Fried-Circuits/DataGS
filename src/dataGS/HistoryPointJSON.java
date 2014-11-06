@@ -64,6 +64,7 @@ public class HistoryPointJSON {
 						json.append("\"" + pairs.getKey() + "\":" + pairs.getValue().getMean());
 					}
 				}
+				json.append( "," );
 			}
 			
 			/* remove the last comma, if it exists */
