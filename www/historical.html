@@ -1,0 +1,357 @@
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta charset="UTF-8">
+		<title>PRO-Verter RMK: Historical Data</title>
+	
+	<link href="res/css/solar.css" rel="stylesheet" type="text/css" />
+	<link rel="icon" type="images/favicon" href="res/images/favicon_s.ico" />
+	
+
+
+</head>
+<body style="background-color: #ffffff; margin-top: 0px;">
+<div id="wrapper" style="width: 100%; margin-left: auto; margin-right: auto; background-color:#ffffff;">
+	
+
+<div>
+		<div id = "header" style = "width:100%;">
+			
+				
+			<a href="http://www.solarstik.com/"><img src="res/images/logo_s.png" alt="Magnum Energy" style = "text-decoration: none; border: none; outline: none; padding-bottom: 5px; padding-top: 30px; padding-left: 5px;" /></a>
+	
+			<b style = "padding-left: 20px" >24/7 Support: 800-793-4364 Ext 102</b>
+	
+			
+				
+			
+		</div>
+<!--
+			<tr>
+				<td class="right" style="border: none;"></th>
+				<td class="right" style="padding-right: 10px; border: none;"></th>
+				<td rowspan="2" style="width: 240px; border: none;">
+					<form method="post" action="/">
+						<table style="float: right;">
+							<tr>
+								<td>
+									<span style="font-size: 0.7em;">username:</span><br />
+									<input type="text" name="username" size="12" value="" />
+								</td>
+								<td>
+									<span style="font-size: 0.7em;">password:</span><br />
+									<input type="password" name="password" size="12" />
+								</td>
+								<td>
+									<input type="submit" value="login" />
+								</td>
+								</tr>
+						</table>
+					</form>
+				</th> 
+			</tr>
+			<tr>
+				<td class="right" style="padding-right: 10px; border: none;"></th>
+				<td class="right" style="padding-right: 10px; border: none;"><a href="/" class="thlinkheader">Home</a> or <a href="/newuser/" class="thlinkheader">Create Account</a></th>
+			</tr>
+-->
+
+			
+		<table style="border: none; width:100%; border-spacing: 0px;">
+			<tr>
+				
+				<th class="navinner">
+					<a class="thlink" href="index.html">Current Conditions</a>
+				</th>
+				<th class="navinner">
+					<a class="thlink" href="currentSettings.html">Current Settings</a>
+				</th>
+				<th class="navinnerselected">
+					<a class="thlink" href="historical.html">Historical Data</a>
+				</th>
+				
+			</tr>	
+				
+
+					</table>
+	</div>
+	<div style="text-align: center;">
+		<h1>PRO-Verter RMK: Historical Data</h1>
+				<!--Note: This server will be down for scheduled maintenance from 7PM to 9PM CST today.-->
+
+		<br />
+	</div>
+
+	<script>if (!window.console){ console = {log: function() {}};}//IE doesn't like calls to console if debugger is not open</script>
+	<script type="text/javascript" >function checkAll(field,val) { for (i = 0; i < field.length; i++) field[i].checked = val ; } </script>
+
+	<script type="text/javascript" src="res/js/jquery-1.11.1.min.js"></script>
+	<script type="text/javascript" src="res/js/excanvas.min.js"></script>
+
+
+	<script type="text/javascript" src="res/js/jquery.flot.js"></script>
+	<script type="text/javascript" src="res/js/jquery.flot.threshold.js"></script>
+	<script type="text/javascript" src="res/js/date.js"></script>
+	<script type="text/javascript" src="res/js/magnum.js"></script>
+	<script type="text/javascript" src="res/js/jsonUrls.js"></script>
+	<script>
+
+	var tenMinAvg=[];
+	var now=0;
+	var domain = "magnum-dev.aprsworld.com";
+/*	var root = "http://192.168.10.216:8080/";
+
+	var urlHist = root+"history.json";
+	var urlNow = root+"now.json";
+	var urlFiles = root+"historyFiles.json";
+	var urlSummary = root+"summaryStats.json";
+	var urlChannel = root+"channels.json";
+	var urlLive = root+"live.json";
+*/
+	var isIE = msieversion();
+
+	$(document).ready(function(){
+			
+	
+
+			
+		/* The bar doesn't like to work on ipods */
+		if ( navigator.platform == 'iPhone' || navigator.platform == 'iPod' ) { 
+			$("#bar").hide();
+		
+		};
+		/* window refocus listener  */
+		$(window).focus(function() {
+			//console.log("welcome back");
+			//loadData();
+		});
+
+		/* ajax error listener */
+		$( document ).ajaxError(function(event){
+			//console.log("no response from json");
+			//console.log(event);
+			$("#connection_warn").show();
+			$("#connection_warn").append(event);
+
+			//$("#cover").hide();
+			//clearInterval(loadTimerVar);
+		});
+		getFiles();
+
+	});
+	/* Currently this has no point. It is just holding every object with it's timestamp as the key. */
+	var dataAr = [];
+	/* used to convert the timestamp into something human readable */
+	var date;
+	/* oldestTime is used to create the tableTitle */
+	var oldestTime;
+	var mostRecentTime;
+	var chargeAr=[];
+	var calMonths = ["Not A Month","January","Feburary","March","April","May","June","July","August","September","October","November","December"];
+	
+	function getFiles() {
+		console.log(urlFiles);
+		    // If internet explorer, use Microsoft XDR
+		console.log(isIE)
+		if ( isIE ){
+		    var xdr = new XDomainRequest();
+		    xdr.open("get", urlFiles + "?t="+new Date().getTime());
+		    xdr.onload = function() {
+		       
+			data = $.parseJSON(xdr.responseText);
+			//console.log(data);
+			processResponse(data);
+		    };
+		    
+		    xdr.send();
+		} else {
+			/* if not IE we use ajax */
+		  	$.ajaxSetup({ cache: false });
+			$.ajax({
+				type: "GET",
+				url: urlFiles,
+				dataType: "html",
+				crossDomain : true
+			})
+			.done(function( data ) {
+				data = $.parseJSON(data);
+				processResponse(data);
+			});
+
+		}
+
+	}
+
+	
+	/* only pass data as an object, not as a plain text response */
+	function processResponse(data){
+		console.log("got here");
+		var fileAr = data.history_files.files;
+			//console.log(fileAr);
+			var lastYear = "";
+			var lastMonth = "";
+			var years = [];
+			var months = [];
+			/* iterate through all file names */
+			fileAr.sort();
+			fileAr.reverse();
+			for ( var i = 0 ; i < fileAr.length ; i++) {
+				/* check the year */
+				if (!isNaN(fileAr[i].substr(0,4))) {				
+					if (lastYear != fileAr[i].substr(0,4)){
+						/* set to current year */
+						lastYear = fileAr[i].substr(0,4);
+						/* add to the year array */
+						years.push( fileAr[i].substr(0,4) );
+					}
+					/* check the month */
+					//console.log(fileAr[i].substr(4,2));
+					if (lastMonth != fileAr[i].substr(4,2)){
+						//console.log("next month");
+						/* set to current month */
+						lastMonth = fileAr[i].substr(4,2);
+						/* add to the month array */
+						if ( null == months[lastYear] ) 						
+							months[lastYear]=[];					
+						months[lastYear].push( fileAr[i].substr(4,2) );
+					}
+				}
+				
+				
+			}
+			//console.log(months);
+			/* iterate through years array and add headers */
+			var table = "<tr>";
+			for ( var j = 0 ; j < years.length ; j++ ) {
+				table+="<th><input type=\"checkbox\" onclick=\"checkYear("+years[j]+")\">"+years[j]+"</th>";
+			}
+			table +="</tr>"
+			$("#files").append(table);
+			/* iterate through years again with months to add checkboxes */
+			table = "<tr>";
+			for ( var j = 0 ; j < years.length ; j++ ) {
+				table +="<td style=\"vertical-align: top;\">";				
+				for ( var i = 0 ; i < months[years[j]].length ; i++ ) {
+					table+="<input type=\"checkbox\" name=\"months[]\" value=\""+years[j]+""+months[years[j]][i]+"\">"+calMonths[parseInt(months[years[j]][i],10)]+"<br>";				
+				}
+				table +="</td>";
+			}
+			$("#files").append(table);
+			$("#files").append("<tr><th colspan="+years.length+"><input onclick=\"checkSubmit()\" type=\"button\" value=\"View Historical Data\" ></th></tr>");
+
+	}
+	
+	function setCookie(cname, cvalue, exdays) {
+		var d = new Date();
+		d.setTime(d.getTime() + (exdays*24*60*60*1000));
+		var expires = "expires="+d.toUTCString();
+		document.cookie = cname + "=" + cvalue + "; " + expires;
+	}
+
+	/*function setMonths(){
+		
+		var checkedValues = $('input:checkbox:checked').map(function() {
+		    return this.value;
+		}).get();
+		//console.log(checkedValues);
+		setCookie("months", checkedValues, 30);
+
+	}*/
+
+	function checkYear(year){
+		var months=document.getElementsByName('months[]');
+		var val=true;
+		var found=false;
+		var j=0;
+		/* iterate throught the array of checkboxes until we find the year we are looking for */
+		while ( !found ) {
+			if ( months[j].value.indexOf(year) != -1 ) {
+				found=true;
+				/* check if it is checked or not */
+				if ( months[j].checked ) {
+					val=true;
+				}else{
+					val=false;
+				}
+			}
+			j++;
+		}
+		/* go through the array again and check or uncheck each box containing the year in it's value */
+		for ( var i = 0 ; i < months.length ; i++ ) {
+			if ( months[i].value.indexOf(year) != -1 ) {
+				months[i].checked = !val;
+			}
+			
+		}
+	}
+
+	function hideWarn(){
+		$("#connection_warn").hide();
+	}
+
+
+	/* This script kindly provided by Microsoft */
+	function msieversion(){
+		var ua = window.navigator.userAgent
+		var msie = ua.indexOf ( "MSIE " )
+
+		if ( msie > 0 )      // If Internet Explorer, return version number
+			return parseInt (ua.substring (msie+5, ua.indexOf (".", msie )))
+		else                 // If another browser, return 0
+			return 0
+
+	}
+	
+	function checkSubmit(){
+		var count = 0;
+		var months=document.getElementsByName('months[]');
+		for (var j = 0 ; j < months.length ; j++) {
+			if ( months[j].checked ) count++;
+		}
+		if ( count <= 12 ) {
+			$("#monthF").submit();
+			//console.log(count);
+			
+		} else {
+			alert("Please do not exceed 12 months");
+		}
+	}
+
+	</script>
+
+
+	<div class="caution" style="display: none;" >
+		<p>
+		This station is marked as supplying live data, however the data appears to be old. Please check the age of the data carefully before using it!
+		</p>
+	</div>
+
+	<div id="connection_warn" style="text-align: center; width: 800px; margin-right: auto; margin-left: auto; background-color: orange; color: white; display: none;" onclick="hideWarn()">
+			<h1>No Response From Server. Please check to make sure you are still connected to the internet</h1>
+	</div>
+	
+	<!--<table id="historyTable" style="width:60%;margin-right: auto; margin-left: auto;">
+		<tr><th colspan=4 id="tableTitle">Loading...</th></tr>
+		<tr><th>time</th><th>volts</th><th>amps</th><th>charge</th></tr>
+	</table>  
+this goes in the submit input if GET doesn't cut it
+onclick="setMonths()"
+-->
+	<form style="text-align: center;" method="GET" action="historicalMonth.html" name="monthForm" id="monthF" >
+		<input  type="button" name="CheckAll" value="Un-Select All" onClick="checkAll(document.monthForm.elements['months[]'],false)" >
+		<table style="margin-left:auto; margin-right: auto;" id="files"></table>
+		<div style="text-align: center; margin-left:auto; margin-right: auto;">
+			
+		</div>
+	</form>
+	
+<br>
+<br>
+	<div style="text-align:center; padding-bottom: 50px;">
+
+	</div>
+</div>
+
+</body>
+</html>

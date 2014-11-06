@@ -1,0 +1,329 @@
+div.titlePage {
+		text-align: center;
+		font-size: 1.5em; 
+	}
+	img.logo {
+		border: none;
+		float: left;
+		padding-right: 25px;
+	}
+
+	div.liveIcon {
+		text-align: center;
+		border: none;
+	}
+	div.liveIcon img {
+		border: none;
+	}
+
+	a.monthButton:visited {
+	
+		color: #ffffff;
+	
+	}
+	a.monthButton:link {
+	
+		color: #ffffff;
+	
+	}
+	
+	div.caution {
+		/* Exclamation point icon created by Ken Saunder and is available from:
+		http://www.mouserunner.com/Spheres_ColoCons1_Free_Icons.html
+		as of 16 Septemer 2006. It is licensed under the creative commons license.
+		*/
+		background-image: url(../images/Exclamation.64.png);
+		background-repeat: no-repeat;
+		background-position: 10px 50%;
+		/* padding: 20px; */
+		padding: 10px;
+		margin: 10px; 
+		background-color: #ff6419;
+}
+	div.caution p {
+		font-size: 1.5em;
+		margin: 0px;
+		margin-left: 75px;
+		font-weight: bold;
+	}
+
+	div.alarm p {
+		font-size: 1.5em;
+		margin: 0px;
+		margin-left: 75px;
+		font-weight: bold;
+	}
+
+
+	div.cws {
+		text-align: center;
+		float: right;
+		border: solid 1px #e0e0e0;
+		padding: 5px;
+		font-family: sans-serif;
+		color: #e05a26;
+		font-weight: bold;
+	}
+
+	/* show on printed version only */
+	div.printOnly {
+		display: none;
+	}
+
+	span.subtitle {
+		font-family: sans-serif;
+		font-weight: bold;
+		font-size: 1.5em;
+		color: #e05a26;
+	}
+
+	div.choiceBox {
+		border: solid 1px black;
+		background-color: #d4e5f7;
+		margin-left: 50px;
+		margin-right: 50px;
+		margin-top: 10px;
+		margin-bottom: 10px;
+		padding: 5px;
+	}
+
+
+	/* navigational bar */
+	ul.nav {
+		clear: both;
+		list-style-type: none;
+		background-color: #e05a26;
+		border: solid 1px #e0e0e0;
+		padding: 10px;
+	}
+	ul.nav li {
+		border-right: solid 3px white;
+		padding: 10px 10px 10px 10px;
+		display: inline;
+		font-family: sans-serif;
+		font-weight: bold;
+		color: white;
+	}
+	ul.nav a {
+		color: white;
+		border: none;
+/*		text-decoration: none; */
+	}
+
+	h1, h2, h3, h4, h5, h6 { 
+		font-family: sans-serif;
+		color: #e05a26;
+		margin-top: 10px;
+		margin-bottom: 0px;
+	} 
+
+	A:link {
+		text-decoration: underline;
+		text-align: left;
+		font-family: Arial, Helvetica, sans-serif;
+		vertical-align: bottom;
+	}
+
+	table {
+		border-collapse: collapse;
+		border: solid 1px black;  
+	}
+
+	table.data {
+		border: inset;
+	}
+
+	TR {
+		background: white; 
+	}
+	TR.highlightone { 
+		background: #d6b4e8; 
+	}
+	TR.highlighttwo { 
+		background: #e8e7b4; 
+	}
+	TR.stripe { 
+		background: #e0e0e0; 
+	}
+
+	TH {
+		vertical-align: middle;
+		background: #e05a26;
+		color: white;
+		border: solid 1px gray;  
+		padding: 5px;
+		font-family: Arial, Helvetica, sans-serif;
+	}
+	TH.right {
+		text-align: right;
+		width: 250px;
+	}
+	TD.right {
+		text-align: right;
+	}
+	TH.nav {
+		font-family: sans-serif;
+		vertical-align: middle;
+		background: #666;
+		color: white;
+		padding: 5px;
+		
+	}
+	TH.navinner {
+		font-family: sans-serif;
+		vertical-align: middle;
+		background: #666;
+		color: white;
+		padding: 5px;
+		border: none;
+		
+	}
+	TH.navinnerLabel {
+		font-family: sans-serif;
+		vertical-align: middle;
+		background: #666;
+		color: white;
+		padding: 5px;
+		border: none;
+		
+	}
+	TH.navinner:hover {
+		font-family: sans-serif;
+		vertical-align: middle;
+		background: #838383;
+		color: black;
+		padding: 5px;
+		border: none;
+		
+	}
+	
+
+	TH.navselected {
+		font-family: sans-serif;
+		vertical-align: middle;
+		background: #101010;
+		color: white;
+		padding: 5px;
+		
+	}
+
+	TH.navinnerselected {
+		font-family: sans-serif;
+		vertical-align: middle;
+		background: #303030;
+		color: white;
+		padding: 5px;
+		border: none;
+		
+	}
+	TH.navinnerselected:hover {
+		font-family: sans-serif;
+		vertical-align: middle;
+		background: #838383;
+		color: black;
+		padding: 5px;
+		border: none;
+		
+	}
+	A.thlink {
+		color: white;
+		font-family: Arial, Helvetica, sans-serif;
+		text-decoration:none;
+		display: block;
+		width: 100%;
+		height: 100%;
+		text-align: center;
+		
+	}
+	A.thlinkheader {
+		color:  #e05a26;
+		font-family: Arial, Helvetica, sans-serif;
+		
+	}
+	TD { 
+		vertical-align: middle ;
+		color: black;
+		border: solid 1px gray; 
+		padding: 5px;
+		font-family: Arial, Helvetica, sans-serif;
+		text-align: left;
+	}
+
+	TD.bottom {
+		vertical-align: bottom;
+	}
+
+	TD.top {
+		vertical-align: top;
+	}
+
+	td.quantity {
+		text-align: center;
+	}
+	TD.blue { 
+		background-color: #fff; 
+		border: none;
+		padding-top: 30px;
+	}
+	
+	p {
+		font-family: Arial, Helvetica, sans-serif;
+	}
+	.dailyExport{
+		color: #ffffff;
+		font-size:.75em;
+	}
+
+	.histChart{
+		width: 800px;
+		height:200px;
+		margin-left: auto;
+		margin-right: auto;
+	}
+
+	.topCat{
+		border-top: solid #000000;
+		border-left: solid #000000;
+		border-right: solid #000000;
+	}
+	.bodCat{
+		border-left:  solid #000000;
+		border-right:  solid #000000;
+	}
+	.endCat{
+		border-bottom:  solid #000000;
+		border-left:  solid #000000;
+		border-right:  solid #000000;
+	}
+	#preloadedImages
+	{
+	    width: 0px;
+	    height: 0px;
+	    display: inline;
+	    background-image: url(../images/greenLed.png);
+	    background-image: url(../images/greenLedOff.png);
+
+	}
+
+	#alarm{
+		margin: 10px;
+	}
+
+	#alarmControl{
+		
+		background-color: #e05a26;
+		text-align: center;
+		padding: 10px;
+		border-radius: 10px;
+		float: right;
+
+
+	}
+	.controlButton{
+		width: 150px;
+		height: 50px;
+		margin-top: 5px;
+		border-radius: 15px;
+	}
+
+

@@ -110,6 +110,7 @@ public class DataGS implements ChannelData, JSONData {
 			}
 		} else if ( JSON_HISTORY_FILES == resource ) {
 			synchronized ( historyDayLogFilesJSON ) {
+				loadHistoryFromFiles();
 				return "{\"history_files\": {" + historyDayLogFilesJSON + "}}";
 			}
 		} else if ( JSON_HISTORY_BY_DAY == resource ) {
@@ -163,9 +164,10 @@ public class DataGS implements ChannelData, JSONData {
 				if ( historyStatsByDayReady ) {
 					String todayDateKey = sdfYYYYMMDD.format( date );
 					
-					if ( ! historyStatsByDay.containsValue( todayDateKey) ) {
+					if ( ! historyStatsByDay.containsKey( todayDateKey ) ) {
 						/* we don't have today in history ... initialize today */
-						
+						historyStatsByDay.put( todayDateKey,  createNewSummaryData());
+
 					}
 					
 					today = historyStatsByDay.get( sdfYYYYMMDD.format( date ) );
@@ -250,7 +252,27 @@ public class DataGS implements ChannelData, JSONData {
 	}
 
 
+	/**TODO
+	 * 
+	 * @return a fully instantiated hash map containing SynchronizedSummaryData by channel
+	 */
+	protected HashMap<String, SynchronizedSummaryData> createNewSummaryData(){
+		/* initialize SynchronizedSummaryData */
+		HashMap<String, SynchronizedSummaryData> ssd = new HashMap<String, SynchronizedSummaryData>();
+		
+		/* iterate through channelDesc */
+		Iterator<Entry<String, ChannelDescription>> it = channelDesc.entrySet().iterator();
+		while ( it.hasNext() ) {
+			Map.Entry<String, ChannelDescription> pairs = (Map.Entry<String, ChannelDescription>)it.next();
 
+			/* instantiate the SynchronizedSummaryData for that channel */
+			if ( pairs.getValue().summaryStatsFromHistory ) {
+				ssd.put( pairs.getValue().id, new SynchronizedSummaryData(pairs.getValue().mode) );
+			}
+		}
+		/* return instantiated  SynchronizedSummaryData hashmap*/
+		return ssd;
+	}
 
 
 
@@ -398,9 +420,8 @@ public class DataGS implements ChannelData, JSONData {
 		System.err.flush();
 
 
-		System.err.println("# Starting thread to read logLocal files and summarize for history.json");
-		/* Create summary in another thread */
-		(new Thread(new summaryHistoryThread())).start();
+		
+		
 	}
 
 
@@ -730,6 +751,10 @@ public class DataGS implements ChannelData, JSONData {
 			System.err.println("# Loading History from LogLocal directory " + logLocalDir );
 			System.err.flush();
 			loadHistoryFromFiles();
+			
+			System.err.println("# Starting thread to read logLocal files and summarize for history.json");
+			/* Create summary in another thread */
+			(new Thread(new summaryHistoryThread())).start();
 		}
 
 
