@@ -932,7 +932,7 @@ public class DataGS implements ChannelData, JSONData {
 
 	/* Main method */
 	public static void main(String[] args) throws IOException {
-		System.err.println("# Major version: 2014-11-04 (precision)");
+		System.err.println("# Major version: 2014-11-06 (Ian's Laptop)");
 		System.err.println("# java.library.path: " + System.getProperty( "java.library.path" ));
 
 		DataGS d=new DataGS();
