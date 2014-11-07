@@ -219,7 +219,7 @@ public class HTTPServerJSON extends NanoHTTPD {
 			}else{
 				response = new NanoHTTPD.Response( Response.Status.OK, MIME_PLAINTEXT, data.getJSON( DataGS.JSON_HISTORY_BY_DAY ), gzipAllowed );
 			}
-		} else if ( uri.endsWith( "/data/dayStats.json" ) ) {
+		} else if ( uri.endsWith( "/data/dayStats.dat" ) ) {
 			/* summarized 24 hour data */
 			response = new NanoHTTPD.Response( Response.Status.OK, MIME_PLAINTEXT, data.getJSON( DataGS.JSON_DAY_STATS ), gzipAllowed );
 		}

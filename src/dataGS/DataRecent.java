@@ -106,6 +106,10 @@ public class DataRecent {
 		
 		return s.toString();
 	}
+	
+	public String toRecentStats() {
+		return "foobar";
+	}
 
 	public String toString() {
 		String s;

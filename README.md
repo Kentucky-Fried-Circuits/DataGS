@@ -40,6 +40,9 @@ will return an HTTP response of `NO CONTENT` (HTTP result code 204).
 
 Returned as `application/json` if URI ends with `.json` or as `text/plain` if the URI ends with `.dat`
 
+### /data/dayStats.json or /data/dayStats.dat
+
+
 
 ## Command line arguments
 
