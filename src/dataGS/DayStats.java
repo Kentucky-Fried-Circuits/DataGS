@@ -3,7 +3,7 @@ package dataGS;
 import java.util.Iterator;
 
 import org.apache.commons.collections4.queue.CircularFifoQueue;
-import org.apache.commons.math3.stat.StatUtils;
+
 
 /**
  * 
@@ -12,6 +12,7 @@ import org.apache.commons.math3.stat.StatUtils;
  * an object that holds a CircularFifoQueue of data points with easy to access statistics
  * 
  */
+
 public class DayStats {
 
 	protected CircularFifoQueue<Stat> stats;

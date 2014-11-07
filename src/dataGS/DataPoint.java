@@ -16,7 +16,7 @@ public class DataPoint {
 	public double min;
 	public double max;
 	public double stddev;
-	public String sampleValue; 
+	public double sampleValue; 
 	public ChannelDescription.Modes mode;
 
 
@@ -31,7 +31,7 @@ public class DataPoint {
 			min=s.getMin();
 			max=s.getMax();
 			stddev=s.getStandardDeviation();
-			sampleValue=null;
+			sampleValue=Double.NaN;
 		} else {
 			n=1;
 			sampleValue=s.sampleValue;
@@ -68,25 +68,25 @@ public class DataPoint {
 			s += "\"n\": " + n + ",";
 
 			/* JSON doesn't have a way of representing NaN properly. So we make the as non-quoted nulls */
-			if ( avg == Double.NaN ) {
+			if ( Double.isNaN(avg) ) {
 				s += "\"avg\": null,";
 			} else {
 				s += "\"avg\": " + Double.toString(avg) + ",";
 			}
 
-			if ( min == Double.NaN ) {
+			if ( Double.isNaN(min) ) {
 				s += "\"min\": null,";
 			} else {
 				s += "\"min\": " + Double.toString(min) + ",";
 			}
 
-			if ( max == Double.NaN ) {
+			if ( Double.isNaN(max) ) {
 				s += "\"max\": null,";
 			} else {
 				s += "\"max\": " + Double.toString(max) + ",";
 			}
 
-			if ( stddev == Double.NaN ) {
+			if ( Double.isNaN(stddev) ) {
 				s += "\"stddev\": null,";
 			} else {
 				s += "\"stddev\": " + Double.toString(stddev) + ",";

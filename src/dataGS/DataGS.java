@@ -8,7 +8,6 @@ import java.net.Socket;
 import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -23,7 +22,6 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
-import org.apache.commons.collections4.queue.CircularFifoQueue;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -84,22 +82,22 @@ public class DataGS implements ChannelData, JSONData {
 	protected File documentRoot;
 
 	/* history data */
-	protected CircularFifoQueue<String> historyJSON;
+	protected DataRecent dataRecent;
 
 	/* 24 hour min, max, and averaged data with channel as the key */ 
 	protected Map<String, DescriptiveStatistics> dayStats;
 
 	/* supported databases */
-	public static final int DATABASE_TYPE_MYSQL = 0;
+	public static final int DATABASE_TYPE_MYSQL  = 0;
 	public static final int DATABASE_TYPE_SQLITE = 1;
-	public static final int DATABASE_TYPE_NONE = 2;
+	public static final int DATABASE_TYPE_NONE   = 2;
 
 	/* supported JSON resource requests */
 	public static final int JSON_NOW            = 0;
 	public static final int JSON_RECENT_DATA    = 1;
 	public static final int JSON_HISTORY_FILES  = 2;
 	public static final int JSON_HISTORY_BY_DAY = 3;
-	public static final int JSON_DAY_STATS = 4;
+	public static final int JSON_DAY_STATS      = 4;
 
 
 
@@ -112,8 +110,8 @@ public class DataGS implements ChannelData, JSONData {
 				return dataNowJSON.toString();
 			}
 		} else if ( JSON_RECENT_DATA == resource ) {
-			synchronized ( historyJSON) {
-				return "{\"history\":" + historyJSON.toString() + "}";				
+			synchronized ( dataRecent) {
+				return dataRecent.toJSON();				
 			}
 		} else if ( JSON_HISTORY_FILES == resource ) {
 			synchronized ( historyDayLogFilesJSON ) {
@@ -160,6 +158,7 @@ public class DataGS implements ChannelData, JSONData {
 
 		synchronized (data) {
 			dataNow.clear();
+			dataRecent.startPoint(now);
 
 			/* get today's syncSumData from summaryStatsFromHistory if ready */
 			Map<String, SynchronizedSummaryData> today;
@@ -173,6 +172,10 @@ public class DataGS implements ChannelData, JSONData {
 				Map.Entry<String, SynchronizedSummaryData> pairs = (Map.Entry<String, SynchronizedSummaryData>)it.next();
 				String channel = pairs.getKey();
 				dataNow.put(channel,new DataPoint(channel,now,pairs.getValue()));
+
+				if ( null != dataRecent ) {
+					dataRecent.addChannel(channel, pairs.getValue().getValueSampleOrAverage());
+				}
 
 				/* add data to dayStats */
 
@@ -202,36 +205,28 @@ public class DataGS implements ChannelData, JSONData {
 					today = historyStatsByDay.get( sdfYYYYMMDD.format( date ) );
 
 
-
-					String ch = pairs.getKey();	 
-
-
-
-					if ( today.containsKey( ch ) ) {
-						if ( today.get(ch).mode == Modes.AVERAGE ) {
+					if ( today.containsKey( channel ) ) {
+						if ( today.get(channel).mode == Modes.AVERAGE ) {
 							Double s = pairs.getValue().getMean();
 							Double d;
 							try {
 								d=new Double(s);
-								today.get(ch).addValue(d);
+								today.get(channel).addValue(d);
 							} catch ( NumberFormatException e ) {
 								System.err.println("# error ingesting s=" + s + " as a double. Giving up");
 								return;
 							}
-						} else if ( today.get(ch).mode == Modes.SAMPLE ) {
-							String s = pairs.getValue().sampleValue;
-							today.get(ch).addValue(s);	
+						} else if ( today.get(channel).mode == Modes.SAMPLE ) {
+							Double s = pairs.getValue().sampleValue;
+							today.get(channel).addValue(s);	
 						}
 					}
+
 
 
 				}
 			}
 
-			if ( null != historyJSON ) {
-				/* create a JSON data history point and put into limited length FIFO */
-				historyJSON.add(HistoryPointJSON.toJSON(now, data, channelDesc));
-			}
 
 			/* loglocal */
 			if ( null != logLocal) {
@@ -242,6 +237,7 @@ public class DataGS implements ChannelData, JSONData {
 			/* clear statistics for next pass */
 			data.clear();
 		}
+		dataRecent.endPoint();
 
 
 		synchronized ( dataNowJSON ) {
@@ -492,7 +488,7 @@ public class DataGS implements ChannelData, JSONData {
 		/* if data hashtable doesn't have the key for this channel, we add it
 		 * the mode (sampled or averaged) is read from channel description or defaults to sample  */
 		if ( ! data.containsKey(ch) ) {
-			//System.err.println("# Putting to data (" + ch + " as SynchronizedSummaryData with mode " + channelDesc.get(ch).mode + ")");
+			System.err.println("# Putting value " + s + " to data (" + ch + " as SynchronizedSummaryData with mode " + channelDesc.get(ch).mode + ")");
 
 			if ( channelDesc.containsKey(ch) ) {
 				data.put(ch, new SynchronizedSummaryData( channelDesc.get(ch).mode ) );
@@ -503,18 +499,15 @@ public class DataGS implements ChannelData, JSONData {
 
 
 		/* actually add the value to data structure */
-		if ( data.get(ch).mode == Modes.AVERAGE ) {
-			Double d;
-			try {
-				d=new Double(s);
-				data.get(ch).addValue(d);
-			} catch ( NumberFormatException e ) {
-				System.err.println("# error ingesting s=" + s + " as a double. Giving up");
-				return;
-			}
-		} else if ( data.get(ch).mode == Modes.SAMPLE ) {
-			data.get(ch).addValue(s);	
+		Double d;
+		try {
+			d=new Double(s);
+			data.get(ch).addValue(d);
+		} catch ( NumberFormatException e ) {
+			System.err.println("# error ingesting s=" + s + " as a double. Giving up");
+			return;
 		}
+
 
 
 
@@ -703,7 +696,7 @@ public class DataGS implements ChannelData, JSONData {
 		}
 
 
-		historyJSON=null;
+		dataRecent=null;
 		if ( dataHistoryJSONHours > 0 ) {
 			int nPoints=(dataHistoryJSONHours*60*60)/(intervalSummary/1000);
 
@@ -711,8 +704,8 @@ public class DataGS implements ChannelData, JSONData {
 					dataHistoryJSONHours,
 					nPoints,
 					intervalSummary);
-			historyJSON = new CircularFifoQueue<String>(nPoints);
-		
+			dataRecent = new DataRecent(nPoints,channelDesc);
+
 			/* create hashmap to contain 24 hour min max average stats by day */
 			dayStats = new HashMap<String, DescriptiveStatistics>();
 
@@ -721,7 +714,6 @@ public class DataGS implements ChannelData, JSONData {
 
 		} else {
 			System.err.println("# History JSON disabled");
-			historyJSON=null;
 		}
 
 		if ( processAllData ) {
@@ -898,7 +890,7 @@ public class DataGS implements ChannelData, JSONData {
 	}
 
 	private void instantiateDayStats(int nPoints){
-		
+
 		/* iterate through channels */
 
 		Iterator<Entry<String,ChannelDescription>> chIt = channelDesc.entrySet().iterator();
@@ -925,7 +917,7 @@ public class DataGS implements ChannelData, JSONData {
 
 		}
 	}
-	
+
 	/**
 	 * 
 	 * @return json string for the last 24 hours of summarized data
@@ -940,8 +932,8 @@ public class DataGS implements ChannelData, JSONData {
 			max: 34,
 			avg: 23
 		 },
-		*/
-		
+		 */
+
 		Iterator<Entry<String,DescriptiveStatistics>> DSit = dayStats.entrySet().iterator();
 		DescriptiveStatistics ds;
 		String ch;
@@ -964,11 +956,11 @@ public class DataGS implements ChannelData, JSONData {
 
 
 		}
-		
+
 		if ( ',' == json.charAt( json.length()-1 ) ) {
 			json.deleteCharAt( json.length()-1 );
 		}
-		
+
 		json.append("}}");
 		return json.toString();
 	}
@@ -1046,7 +1038,7 @@ public class DataGS implements ChannelData, JSONData {
 
 	/* Main method */
 	public static void main(String[] args) throws IOException {
-		System.err.println("# Major version: 2014-11-07 (Ian's Laptop)");
+		System.err.println("# Major version: 2014-11-08 (precision)");
 		System.err.println("# java.library.path: " + System.getProperty( "java.library.path" ));
 
 		DataGS d=new DataGS();
