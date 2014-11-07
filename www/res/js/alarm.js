@@ -1,8 +1,13 @@
+	// requires jquery
 
 	var alarmSound;
 	var flashCount = 0;
 	var booFlash = true;
 	var booFault = false;
+	var testAlr=false;
+	var noResponse = false;
+	var oldData = false;
+	var noData = false;
 	var faultMsg="The inverter has faulted!";
 
 	alarmSound = new Howl({
@@ -31,6 +36,16 @@
 		
 
 	}
+
+	function testAlarm() {
+
+		if ( !testAlr ) {
+			testAlr = true;
+			customFaults(null);
+		}
+
+	}
+
 	/* this toggles the background of a div to simulate flashing */
 	function screenFlash() {
 		booFlash = !booFlash;		
@@ -39,7 +54,7 @@
 		} else {
 			$("#alarm").css("background","red");	
 		}
-		if ( booFault ){		
+		if ( booFault ) {		
 			setTimeout(screenFlash,500);
 		}
 
@@ -94,12 +109,131 @@
 
 	/* dismisses the alarm */
 	function dismiss(){
-		silence = false;
-		$("#controlSilence").html("false");
+		testAlr = false;
+		//silence = false;
+		//$("#controlSilence").html("false");
 		booFault=false;
 		//$("#alarm").hide(); //This needs to be hidden outside of this function
 		//$("#alarmMessage").html("<p>"+faultMsg+"</p>");
 		$("#alarm").hide();
 		alarmSound.stop();	
+
+	}
+
+	function faultMessages(val){
+
+		var fault = "";
+
+		switch ( val ) {
+			case 0: 
+				fault = "LOW BATTERY, ATTACH TO CHARGING SOURCE IMEDIATELY";
+				break;
+			case 1: 
+				fault = "LOW BATTERY, ATTACH TO CHARGING SOURCE IMEDIATELY";
+				break;
+			case 2: 
+				fault = "LOST COMMUNICATION WITH PRO-VERTER<br><span style=\"font-size:.75em;\">PRO-VERTER APPEARS TO BE DISCONNECTED</span>";
+				break;
+			case 3: 
+				fault = "TRIGGERED BY TEST BUTTON<br><span style=\"font-size:.75em;\">CLICK DISMISS TO CLEAR</span>";
+				break;
+			case 4: 
+				fault = "NO RESPONSE FROM SERVER!<br><span style=\"font-size:.75em;\">PLEASE CHECK TO MAKE SURE YOU ARE STILL CONNECTED TO THE INTERNET!</span>";
+				break;
+			case 5: 
+				fault = "PRO-VERTER INTERNAL ERROR: DATA NOT UPDATING<br><span style=\"font-size:.75em;\">CONTACT SUPPORT OR POWER CYCLE PROVERTER</span>";
+				break;
+			default:
+				fault = "UNKNOWN FAULT";
+				break;
+		}
+			
+		return fault;
+	}
+
+	function customFaults(dataAr){
+
+		//console.log("custom");
+		/* return string */
+		var s = "";
+		if ( null != dataAr ) {
+			/* Check for inverter faults */
+			if ( 0x00 != parseInt(dataAr["i_fault"].sampleValue) ) {
+				s += "<hr>";
+				s += magnumInverterFault(parseInt(dataAr["i_fault"].sampleValue));
+			}
+
+			/* Check for AGS faults */
+			if ( -1 != magnumAGSStatus(parseInt(dataAr['a_status'].sampleValue)).indexOf("fault") ) {
+				s += "<hr>";
+				s += magnumAGSStatus(parseInt(dataAr['a_status'].sampleValue));
+			}
+
+		
+
+			/* Critical Battery */
+			if ( parseInt(dataAr["age_bmk"].sampleValue) < 100 ) {
+
+				if ( dataAr["b_dc_volts"].min - 1.0 <= parseFloat( dataAr["r_low_batt_cut_out"].sampleValue ) 
+										&& parseInt(dataAr["i_fault"].sampleValue) != 0x08 ) {
+					s += "<hr>";
+					s += faultMessages(0);
+				}
+
+			} else if ( parseInt(dataAr["age_inverter"].sampleValue) < 100 ) {
+
+				if ( dataAr["i_dc_volts"].min - 1.0 <= parseFloat( dataAr["r_low_batt_cut_out"].sampleValue ) 
+										&& parseInt(dataAr["i_fault"].sampleValue) != 0x08 ) {
+					s += "<hr>";
+					s += faultMessages(1);
+				}
+
+			}
+
+
+
+			//console.log(dataAr);
+			/* no connection with Inverter */
+			if ( parseInt(dataAr["age_inverter"].sampleValue) > 100 ) {
+				s += "<hr>";
+				s += faultMessages(2);
+			}
+
+			/* Data old */
+		}
+
+		/* test alarm */
+		if ( testAlr ) {
+			s += "<hr>";
+			s += faultMessages(3);
+		}
+
+		/* No response from server */
+		if ( noResponse ) {
+			s += "<hr>";
+			s += faultMessages(4);
+		}
+
+		/* same packet as last time */
+		if ( oldData ) {
+			s += "<hr>";
+			s += faultMessages(5);
+		}
+
+		/* empty array returned in JSON */
+		if ( noData ) {
+			s += "<hr>";
+			s += faultMessages(2);
+		}
+
+
+		if ( "" == s ) {
+			console.log("Fault Free");
+			dismiss();
+			return false;
+		} else {
+			warn(s);
+			return true;
+		}
 
 	}

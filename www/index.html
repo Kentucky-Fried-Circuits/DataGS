@@ -108,8 +108,10 @@
 	var isIE = msieversion();
 	var channels;
 
+
 	
 	$(document).ready(function(){
+		console.log("start");
 		/* The bar doesn't work well on ipods  */
 		if ( navigator.platform == 'iPhone' || navigator.platform == 'iPod' ) { 
 			$("#bar").hide();
@@ -130,6 +132,8 @@
 			console.log("no response from json");
 			//$("#connection_warn").show();
 			$("#connection_warn").append(event);
+			noResponse = true;
+			customFaults(null);
 		});
 		/* request data and start timer */
 		//loadData();
@@ -268,6 +272,15 @@
 			//console.log(data);
 			createTable(dataS, true);
 		    };
+		    xdr.onError = function() {
+		       
+			console.log("no response from json");
+			//$("#connection_warn").show();
+			$("#connection_warn").append(event);
+			noResponse = true;
+			customFaults(null);
+		    };
+			
 		    xdr.send();
 		} else {
 			/* if not IE we use ajax */
@@ -326,7 +339,9 @@
 
 	/* creates the current table */
 	function createTable(dataNow, create){
-	
+		
+		
+		
 		$. each (dataNow.data, function (key, value) {
 			dataAr[value.channel]=value;
 			lastCh = value.channel;	
@@ -335,30 +350,37 @@
 		if ( create )
 			$("#currentTable").html("");
 
-		/* Check for faults */		
-		customFaults(dataAr);
+		if ( dataNow.data.length != 0 ) {
+			noData = false;
+			/* Check for faults */		
+			customFaults(dataAr);
 
-		/* Data date row */
-		dateRows(dataAr,create);
+			/* Data date row */
+			dateRows(dataAr,create);
 
-		/* BMK rows */
-		batteryCharts(dataAr,create)
-		batteryRows(dataAr,create);
+			/* BMK rows */
+			batteryCharts(dataAr,create)
+			batteryRows(dataAr,create);
 
-		/* Inverter rows */
-		inverterRows(dataAr,create);
+			/* Inverter rows */
+			inverterRows(dataAr,create);
 
-		/* AGS rows */
-		agsRows(dataAr,create);
-	
-		/* 24hour data */
-		dailyStats(dataAr,create);
+			/* AGS rows */
+			agsRows(dataAr,create);
 
-		/* plot graphs */
-		if ( create ) plotGraphs();
+			/* 24hour data */
+			dailyStats(dataAr,create);
+
+			/* plot graphs */
+			if ( create && parseInt(dataAr["age_bmk"].sampleValue) < 100 ) plotGraphs();
+		} else {
+			noData = true;
+			customFaults(null);
+		}	
 	
 	}
 
+	/* not used for the time being */
 	function liveData(dataNow, create){
 	
 		$. each (dataNow.data, function (key, value) {
@@ -385,8 +407,6 @@
 		/* AGS rows */
 		agsRows(dataAr,create);
 	
-		
-	
 	}
 
 	/* 24 hour data */
@@ -399,7 +419,7 @@
 			
 			hourData.time = dataAr["i_fault"].time;
 
-			updatePlotArrays(dataAr,create);
+			if ( parseInt(dataAr["age_bmk"].sampleValue) < 100 )updatePlotArrays(dataAr,create);
 			batteryHourRows(dataAr,create);
 			inverterHourRows(dataAr,create);
 			agsHourRows(dataAr,create);
@@ -409,47 +429,7 @@
 
 	}
 
-	function customFaults(dataAr){
-
-		//console.log("custom");
-		/* return string */
-		var s = "";
-
-		/* Check for inverter faults */
-		if ( 0x00 != parseInt(dataAr["i_fault"].sampleValue) ) {
-			s += "<br>";
-			s += magnumInverterFault(parseInt(dataAr["i_fault"].sampleValue));
-		}
-
-		/* Check for AGS faults */
-		if ( -1 != magnumAGSStatus(parseInt(dataAr['a_status'].sampleValue)).indexOf("fault") ) {
-			s += "<br>";
-			s += magnumAGSStatus(parseInt(dataAr['a_status'].sampleValue));
-		}
-
-		
-
-		/* Critical Battery */
-		if ( parseInt(dataAr["age_bmk"].sampleValue) < 100 ) {
-			if ( dataAr["b_dc_volts"].min - 1.0 <= parseFloat( dataAr["r_low_batt_cut_out"].sampleValue ) && parseInt(dataAr["i_fault"].sampleValue) != 0x08 ) {
-				s += "<br>";
-				s += "LOW BATTERY, ATTACH TO CHARGING SOURCE IMEDIATELY";
-			}
-		} else {
-			if ( dataAr["i_dc_volts"].min - 1.0 <= parseFloat( dataAr["r_low_batt_cut_out"].sampleValue ) && parseInt(dataAr["i_fault"].sampleValue) != 0x08 ) {
-				s += "<br>";
-				s += "LOW BATTERY, ATTACH TO CHARGING SOURCE IMEDIATELY";
-			}
-
-		}
-
-		if ( "" == s ) {
-			console.log("Fault Free");
-		} else {
-			warn(s);
-		}
-
-	}
+	
 
 	/* create the human readable received report */
 	function dateRows(dataAr,create){
@@ -460,13 +440,15 @@
 		if ( lastTime != dataAr[lastCh].time ) {
 			seconds = 0;
 			lastTime = dataAr[lastCh].time;
-		}		
+			oldData = false;
+		} else if (seconds > 11) {
+			oldData = true;
+			customFaults(null);
+		}	
 		lastTime=dataAr[lastCh].time;
 		nowTimeStamp=dataAr[lastCh].time;
 
-		if ( Math.round(getAgeSeconds(nowTimeStamp)) > 120 ) {
-			console.log("age: "+Math.round(getAgeSeconds(nowTimeStamp)));
-		}
+	
 		addLine("currentTable","Data Date:","<span id=\"convDate\">"+getUTCTime(dataAr[lastCh].time)+"</span><br>Report received <span id=\"ageRep\">"+commaSeparateNumber(seconds)+"</span> seconds ago","date", create);
 	
 	}
@@ -477,7 +459,7 @@
 
 
 			if ( dataAr["b_state_of_charge"].avg <= 100 ) {			
-				$('#battCharge').html(dataAr["b_state_of_charge"].avg+"%");
+				$('#battCharge').html(dataAr["b_state_of_charge"].avg.toFixed(0)+"%");
 			} else {
 				$('#battCharge').html("Thinking...");
 			}
@@ -494,9 +476,9 @@
 
 		} else {
 
-			$('#battCharge').html( "No Data. Chart did not update" );
-			$('#voltsAmps').html( "No Data. Chart did not update" );
-			$('#ampHours').html( "No Data. Chart did not update" );
+			$('#battCharge').html( "No Data From BMK. Chart did not update" );
+			$('#voltsAmps').html( "No Data From BMK. Chart did not update" );
+			$('#ampHours').html( "No Data From BMK. Chart did not update" );
 
 		}
 	
@@ -613,8 +595,6 @@
 				" amps ("+ (dataAr['i_dc_volts'].avg * dataAr['i_dc_amps'].avg ).toFixed(0) +" watts)";
 			addLine("currentTable","DC volts / amps:<br><span style=\"font-size: 0.8em;\">(Values are approximate)</span>",s,"i_dcVoltsAmps", create);
 			
-			
-
 		}
 	
 	}
@@ -733,7 +713,7 @@
 			
 			addHourCat("hourTable","Data Supplied By Inverter ("+magnumInverterModel(parseInt(dataAr["i_model"].sampleValue),0)+")", create);
 			/* if no BMK, then show inverter dc volts and amps */
-			if ( dataAr['age_bmk'] > 250 ) {
+			if ( parseInt(dataAr['age_bmk'].sampleValue) > 250 ) {
 				/* unfortunately, we aren't keeping track of this in the history json  */
 				updateHourRow("i_dc_volts","DC Volts:", create);
 				updateHourRow("i_dc_amps","DC Amps:", create);
@@ -992,28 +972,29 @@
 		//console.log(key);
 
 		//hourData["n_b_state_of_charge_hours"] = 0;
+		if ( undefined != hourData["min_"+key+"_hours"] ) {
+			if ( 0 != hourData["n_"+key+"_hours"] ) {
 
-		if ( 0 != hourData["n_"+key+"_hours"] ) {
+				if ( create ) {	
+					$(tableID).append("<tr id=\"row_"+key+"\"><th class=\"right\">"+name+"</th>"+
+								"<td id=\""+key+"_min\">"+hourData["min_"+key+"_hours"].toFixed(prec)+unit+"</td>"+
+								"<td id=\""+key+"_max\">"+hourData["max_"+key+"_hours"].toFixed(prec)+unit+"</td>"+
+								"<td id=\""+key+"_avg\">"+hourData["avg_"+key+"_hours"].toFixed(prec)+unit+"</td></tr>");
+				} else {
+					$("#row_"+key).html("<th class=\"right\">"+name+"</th>"+
+								"<td id=\""+key+"_min\">"+hourData["min_"+key+"_hours"].toFixed(prec)+unit+"</td>"+
+								"<td id=\""+key+"_max\">"+hourData["max_"+key+"_hours"].toFixed(prec)+unit+"</td>"+
+								"<td id=\""+key+"_avg\">"+hourData["avg_"+key+"_hours"].toFixed(prec)+unit+"</td>");
+				}
 
-			if ( create ) {	
-				$(tableID).append("<tr id=\"row_"+key+"\"><th class=\"right\">"+name+"</th>"+
-							"<td id=\""+key+"_min\">"+hourData["min_"+key+"_hours"].toFixed(prec)+unit+"</td>"+
-							"<td id=\""+key+"_max\">"+hourData["max_"+key+"_hours"].toFixed(prec)+unit+"</td>"+
-							"<td id=\""+key+"_avg\">"+hourData["avg_"+key+"_hours"].toFixed(prec)+unit+"</td></tr>");
 			} else {
-				$("#row_"+key).html("<th class=\"right\">"+name+"</th>"+
-							"<td id=\""+key+"_min\">"+hourData["min_"+key+"_hours"].toFixed(prec)+unit+"</td>"+
-							"<td id=\""+key+"_max\">"+hourData["max_"+key+"_hours"].toFixed(prec)+unit+"</td>"+
-							"<td id=\""+key+"_avg\">"+hourData["avg_"+key+"_hours"].toFixed(prec)+unit+"</td>");
-			}
+				if ( key == "b_state_of_charge" ) {
+					if ( create )
+						$(tableID).append("<tr id=\"row_"+key+"\"><th class=\"right\">"+name+"</th><td colspan=\"3\">BMK Was Thinking...</td></tr>");
+				}
 
-		} else {
-			if ( key == "b_state_of_charge" ) {
-				if ( create )
-					$(tableID).append("<tr id=\"row_"+key+"\"><th class=\"right\">"+name+"</th><td colspan=\"3\">BMK Was Thinking...</td></tr>");
+				//console.log("n_"+key+"_hours had no data");
 			}
-
-			//console.log("n_"+key+"_hours had no data");
 		}
 	}
 
@@ -1144,17 +1125,17 @@
 					//console.log("adding"+channel);
 				}
 				
-				if ( "b_state_of_charge" == channel && chData <= 100 ) {
+				if ( "b_state_of_charge" == channel ) {
+					if ( chData <= 100 ) 
+						createHourData(channel , chData);
 
-					createHourData(channel , chData);
+				} else if ( "i_ac_volts_out" == channel ) {
+					if ( chData > 80 )
+						createHourData(channel , chData);
 
-				} else if ( "i_ac_volts_out" == channel && chData > 80) {
-					
-					createHourData(channel , chData);
-
-				} else if ( "a_temperature" == channel && 252 != chData && 0 != chData ) {
-					
-					createHourData(channel , chData);
+				} else if ( "a_temperature" == channel ) {
+					if ( 252 != chData && 0 != chData )
+						createHourData(channel , chData);
 
 				}  else {
 
@@ -1204,7 +1185,7 @@
 		
 		chData = parseFloat(chData);		
 
-		/* check if already exists */
+		/* check if it doesn't already exists */
 		if ( null == hourData["min_"+channel+"_hours"] ) {
 
 
@@ -1214,6 +1195,8 @@
 			hourData["n_"+channel+"_hours"] = 1;
 			
 		} else {
+
+			if ( channel == "a_temperature" && chData < 10 ) console.log(chData);
 
 			if ( hourData["min_"+channel+"_hours"] > chData )hourData["min_"+channel+"_hours"] = chData;
 			if ( hourData["max_"+channel+"_hours"] < chData ) hourData["max_"+channel+"_hours"] = chData;
@@ -1488,10 +1471,6 @@
 
 	}
 
-	/* trigger by clicking on the charts. */
-	function SOCtoggle(){ hoverSOC=!hoverSOC;}
-	function voltstoggle(){ hoverVolts=!hoverVolts;}
-	function amptoggle(){ hoverAmp=!hoverAmp;}
 
 	/* find the ten minute averages for flot charts */
 	function tenMinuteAverages(notAvgArray){
@@ -1612,7 +1591,6 @@
 		return now_utc.toString("yyyy-MM-dd HH:mm:ss");
 
 	}
-	var endAllTime = 0;
 
 
 
@@ -1631,11 +1609,6 @@
 		<h1>No Response From Server. Please check to make sure you are still connected to the internet</h1>
 </div>
 
-<div class="caution" style="width: 90%; padding: 20px; margin-left: auto; margin-right: auto; display: none;">
-	<p>
-		This station is marked as supplying live data, however the data appears to be old. Please check the age of the data carefully before using it!
-	</p>
-</div>
 
 <div id="notConnected" style="text-align: center; width: 800px; margin-right: auto; margin-left: auto;  color: white; display: none;">
 	<h1>MagWeb Online But Not Connected To Inverter System</h1>
@@ -1651,7 +1624,7 @@
 	<button class="controlButton" onclick="silenceAlarm(true)">Silence Alarm</button><br>
 	<button class="controlButton" onclick="silenceAlarm(false)">Unsilence Alarm</button><br>
 	<button class="controlButton" onclick="dismiss();">Dismiss</button><br>
-	<button class="controlButton" onclick="warn('<br>Triggered by test button');">Test Alarm</button><br>
+	<button class="controlButton" onclick="testAlarm();">Test Alarm</button><br>
 </div>
 
 
