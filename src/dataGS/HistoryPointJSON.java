@@ -45,7 +45,7 @@ public class HistoryPointJSON {
 				 */
 				if ( pairs.getValue().mode==ChannelDescription.Modes.SAMPLE ) {
 					/* just dump the current value */
-					json.append("\"" + StringEscapeUtils.escapeJson( pairs.getKey() ) + "\": \"" + StringEscapeUtils.escapeJson( pairs.getValue().sampleValue ) + "\"");
+					json.append("\"" + StringEscapeUtils.escapeJson( pairs.getKey() ) + "\": \"" + StringEscapeUtils.escapeJson( pairs.getValue().sampleValue + "" ) + "\"");
 
 				} else if ( chanDesc.containsKey(pairs.getKey() )) {
 					double mean = pairs.getValue().getMean();
@@ -111,7 +111,7 @@ public class HistoryPointJSON {
 				 */
 				if ( pairs.getValue().mode==ChannelDescription.Modes.SAMPLE ) {
 					/* just dump the current value */
-					csvData.append("\"" + StringEscapeUtils.escapeCsv(pairs.getValue().sampleValue) + "\"");
+					csvData.append("\"" + StringEscapeUtils.escapeCsv(pairs.getValue().sampleValue + "") + "\"");
 				} else if ( chanDesc.containsKey(pairs.getKey() )) {
 					csvData.append("" + StringEscapeUtils.escapeCsv(numberPrecision(pairs.getValue().getMean(), chanDesc.get( pairs.getKey() ).precision ))+"");
 				} else {

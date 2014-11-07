@@ -6,9 +6,6 @@ import java.util.Random;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.commons.math3.stat.descriptive.SynchronizedDescriptiveStatistics;
 
-import dataGS.DayStats;
-import dataGS.Stat;
-
 
 public class testStat {
 	
