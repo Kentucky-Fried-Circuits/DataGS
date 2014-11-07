@@ -87,7 +87,6 @@ public class DataGS implements ChannelData, JSONData {
 	protected CircularFifoQueue<String> historyJSON;
 
 	/* 24 hour min, max, and averaged data with channel as the key */ 
-	//TODO declare variable
 	protected Map<String, DescriptiveStatistics> dayStats;
 
 	/* supported databases */
@@ -175,7 +174,7 @@ public class DataGS implements ChannelData, JSONData {
 				String channel = pairs.getKey();
 				dataNow.put(channel,new DataPoint(channel,now,pairs.getValue()));
 
-				/* add data to dayStats TODO add data */
+				/* add data to dayStats */
 
 				if ( dayStats.containsKey( channel ) ) {
 
@@ -713,39 +712,11 @@ public class DataGS implements ChannelData, JSONData {
 					nPoints,
 					intervalSummary);
 			historyJSON = new CircularFifoQueue<String>(nPoints);
-
-			/* 24hour summaried stats TODO initialize*/
-
+		
 			/* create hashmap to contain 24 hour min max average stats by day */
 			dayStats = new HashMap<String, DescriptiveStatistics>();
 
-			/* iterate through channels */
-
-			Iterator<Entry<String,ChannelDescription>> chIt = channelDesc.entrySet().iterator();
-			DescriptiveStatistics ds;
-
-			while ( chIt.hasNext() ){
-
-				/* if history is true */
-				ChannelDescription cd = (ChannelDescription) chIt.next().getValue();
-
-				if ( cd.history && cd.mode == ChannelDescription.Modes.AVERAGE ){
-
-					/* create the SyncDescStat */
-					ds = new SynchronizedDescriptiveStatistics();
-
-					/* set the number of points to keep for summarizing */
-					ds.setWindowSize( nPoints );
-
-					/* put SyncDescStat in the hashmap with channel(id) as the key */
-					dayStats.put( cd.id, ds );
-				}
-
-
-
-			}
-
-
+			instantiateDayStats( nPoints );
 
 
 		} else {
@@ -926,12 +897,40 @@ public class DataGS implements ChannelData, JSONData {
 		System.err.flush();
 	}
 
+	private void instantiateDayStats(int nPoints){
+		
+		/* iterate through channels */
+
+		Iterator<Entry<String,ChannelDescription>> chIt = channelDesc.entrySet().iterator();
+		DescriptiveStatistics ds;
+
+		while ( chIt.hasNext() ){
+
+			/* if history is true */
+			ChannelDescription cd = (ChannelDescription) chIt.next().getValue();
+
+			if ( cd.history && cd.mode == ChannelDescription.Modes.AVERAGE ){
+
+				/* create the SyncDescStat */
+				ds = new SynchronizedDescriptiveStatistics();
+
+				/* set the number of points to keep for summarizing */
+				ds.setWindowSize( nPoints );
+
+				/* put SyncDescStat in the hashmap with channel(id) as the key */
+				dayStats.put( cd.id, ds );
+			}
+
+
+
+		}
+	}
+	
 	/**
 	 * 
 	 * @return json string for the last 24 hours of summarized data
 	 */
 	private String dayStatsJson(){ 
-		// TODO create json
 		StringBuilder json = new StringBuilder();
 		json.append( "{\"dayStats\": {" );
 		/*
