@@ -126,8 +126,11 @@ public class DataGS implements ChannelData, JSONData {
 			}
 		} else if ( JSON_DAY_STATS == resource ) {
 			//synchronized ( historyJSON ) {
-			return dayStatsJson();
+			//return dayStatsJson();
 			//}
+			synchronized ( dataRecent) {
+				return dataRecent.toRecentStats();				
+			}			
 		}
 
 
@@ -488,7 +491,7 @@ public class DataGS implements ChannelData, JSONData {
 		/* if data hashtable doesn't have the key for this channel, we add it
 		 * the mode (sampled or averaged) is read from channel description or defaults to sample  */
 		if ( ! data.containsKey(ch) ) {
-			System.err.println("# Putting value " + s + " to data (" + ch + " as SynchronizedSummaryData with mode " + channelDesc.get(ch).mode + ")");
+//			System.err.println("# Putting value " + s + " to data (" + ch + " as SynchronizedSummaryData with mode " + channelDesc.get(ch).mode + ")");
 
 			if ( channelDesc.containsKey(ch) ) {
 				data.put(ch, new SynchronizedSummaryData( channelDesc.get(ch).mode ) );
