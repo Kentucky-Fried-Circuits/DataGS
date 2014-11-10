@@ -85,14 +85,21 @@ public class DataRecent {
 				double[] point=points.get(i);
 				s.append("\n{ ");
 				
-				for ( int j=0 ; j<point.length ; j++ ) {
+				s.append( UtilJSON.putDouble("time", point[0]) + ",");
+				
+				s.append("\"data\": {");
+				for ( int j=1 ; j<point.length ; j++ ) {
 					s.append( UtilJSON.putDouble(channelNames[j], point[j]));
 					s.append(",\n");
 				}
-		
+				
 				if ( ',' == s.charAt( s.length()-2 ) ) {
 					s.deleteCharAt( s.length() - 2 );
 				}
+				
+				s.append("}");
+		
+				
 				
 				s.append("},");
 			}
@@ -130,7 +137,7 @@ public class DataRecent {
 				
 				for ( int j=0 ; j<point.length ; j++ ) {
 					if ( Double.isNaN(point[j]) ) {
-						/* skipp doing stats on Nan's */
+						/* skip doing stats on Nan's */
 						continue;
 					}
 					
