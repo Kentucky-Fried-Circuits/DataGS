@@ -124,7 +124,10 @@ public class RecordMagWeb {
 	@SuppressWarnings("unused")
 	private Date rxDate;
 
-
+	/* calculated values to make it easier for us to run statistics */
+	public double i_ac_volts_out_over_80,i_amps_out_inverting,i_amps_out_charging,b_dc_watts;
+	
+	
 	public RecordMagWeb() {
 		lCRC=-1;
 		rCRC=-2;
@@ -405,7 +408,46 @@ public class RecordMagWeb {
 		rCRC = (buff[125] << 8) + buff[126];
 		lCRC=crc_chk(buff,1,124);
 
-
+		/* special cases */
+	
+		
+		/* BMK watts */
+		b_dc_watts = b_dc_volts * b_dc_amps;
+		
+		/* if i_ac_volts is more than 80 */
+		if ( i_ac_volts_out > 80 ) {
+			
+			i_ac_volts_out_over_80 = i_ac_volts_out;
+			
+		} else {
+			
+			i_ac_volts_out_over_80 = Double.NaN;
+			
+		}
+		
+		/* i_amps_out when inverting */
+		if ( i_amps_out<100 && 0x01!=i_status && 0x02!=i_status && 0x04!=i_status && 0x08!=i_status ) {
+			
+			i_amps_out_inverting = i_amps_out;
+			
+		} else {
+			
+			i_amps_out_inverting = Double.NaN;
+			
+		}
+		
+		/* i_amps_out when charging */
+		if ( i_amps_out<100 && i_status>=0x01 && i_status<=0x08 ) {
+			
+			i_amps_out_charging = i_amps_out;
+			
+		} else {
+			
+			i_amps_out_charging = Double.NaN;
+			
+		}
+		
+		
 
 		if ( debug ) {
 			System.out.flush();
