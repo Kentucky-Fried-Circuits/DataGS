@@ -108,7 +108,80 @@ public class DataRecent {
 	}
 	
 	public String toRecentStats() {
-		return "foobar";
+		/* spin for the circular FIFO for each day and generate statistics for all channels within */
+		int n=channelIndexes.size();
+		
+		double[] min = new double[n];
+		double[] max = new double[n];
+		double[] avg = new double[n];
+		int[] count = new int[n];
+		
+		/* initialize our min max average values */
+		for ( int i=0 ; i < min.length ; i++ ) {
+			min[i]=Double.MAX_VALUE;
+			max[i]=Double.MIN_VALUE;
+			avg[i]=0.0;
+			count[i]=0;
+		}
+		
+		synchronized ( points ) {
+			for ( int i=0 ; i<points.size() ; i++ ) {
+				double[] point=points.get(i);
+				
+				for ( int j=0 ; j<point.length ; j++ ) {
+					if ( Double.isNaN(point[j]) ) {
+						/* skipp doing stats on Nan's */
+						continue;
+					}
+					
+					if ( point[j] < min[j] )
+						min[j]=point[j];
+					if ( point[j] > max[j] )
+						max[j]=point[j];
+					
+					avg[j] += point[j];
+					
+					count[j]++;
+				}
+			}
+		}
+		
+		for ( int i=0 ; i<avg.length ; i++ ) {
+			avg[i]=avg[i] / count[i];
+		}
+		
+		
+		/* stats are built ... now put into JSON */
+		StringBuilder sb=new StringBuilder();
+		sb.append("{\"dayStats\": {");
+		
+		for ( int i=0 ; i<min.length ; i++ ) {
+			sb.append("\n\"" + channelIndexes.get(i) + "\": {");
+
+			sb.append( UtilJSON.putInt("n", count[i]) + ",");
+			sb.append( UtilJSON.putDouble("min", min[i]) + ",");
+			sb.append( UtilJSON.putDouble("max", max[i]) + ",");
+			sb.append( UtilJSON.putDouble("avg", avg[i]) );
+
+			sb.append("},");
+		}
+		
+		if ( ',' == sb.charAt(sb.length()-1) ) {
+			sb.deleteCharAt(sb.length()-1);
+		}
+		
+		
+		sb.append("\n} }\n");
+		
+		
+//		sb.append("n(channels)=" + n + "\n");
+//		sb.append("n(points)=" + points.size() + "\n");
+//		
+//		for ( int i=0 ; i<min.length ; i++ ) {
+//			sb.append("\t[" + i + "] name=" + channelIndexes.get(i) + "min=" + min[i] + " max=" + max[i] + " avg[i]=" + avg[i] + " count[i]=" + count[i] + "\n");
+//		}
+		
+		return sb.toString();
 	}
 
 	public String toString() {
