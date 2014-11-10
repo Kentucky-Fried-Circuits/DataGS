@@ -934,6 +934,46 @@
             "precision": 2,
             "sortOrder": 0,
             "mode": "SAMPLE"
+        },
+        {
+            "id": "b_dc_watts",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "history": "true",
+            "mode": "AVERAGE"
+        },
+        {
+            "id": "i_ac_volts_out_over_80",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "history": "true",
+            "mode": "AVERAGE"
+        },
+        {
+            "id": "i_amps_out_inverting",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "history": "true",
+            "mode": "AVERAGE"
+        },
+        {
+            "id": "i_amps_out_charging",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "history": "true",
+            "mode": "AVERAGE"
         }
     ]
 
