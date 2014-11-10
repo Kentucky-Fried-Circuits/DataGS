@@ -241,28 +241,28 @@
 		
 		$("#connection_warn").hide();
 		$("#localDate").html(getUTCTime(dataAr[lastCh].time));
-		$("#i_model").html(dataAr["i_model"].sampleValue);
+		$("#i_model").html(magnumInverterModel(parseInt(dataAr["i_model"].sampleValue),0));
 		$("#i_revision").html(dataAr["i_revision"].sampleValue);
 		$("#i_stack_mode").html(magnumInverterStackMode(parseInt(dataAr["i_stack_mode"].sampleValue)));
 		$("#r_revision").html(dataAr["r_revision"].sampleValue);
 
-		if ( "0" == dataAr["r_search_watts"].sampleValue ) {
+		if ( 0 == parseFloat(dataAr["r_search_watts"].sampleValue) ) {
 			$("#r_search_watts").html("No Searching, Always On");
 		} else {
 			$("#r_search_watts").html(dataAr["r_search_watts"].sampleValue+" watts");
 		}
 
-		$("#r_input_amps").html(commaSeparateNumber(dataAr["r_input_amps"].sampleValue));
+		$("#r_input_amps").html(commaSeparateNumber(parseInt(dataAr["r_input_amps"].sampleValue)));
 
 		$("#low_vac_dropout").html(magnumLowVACDropout(parseFloat(dataAr["r_vac_cut_out"].sampleValue), dataAr["i_model"].sampleValue)+" VAC");
 
-		$("#r_charger_amps").html(dataAr["r_charger_amps"].sampleValue);
-		$("#r_auto_genstart").html(dataAr["r_auto_genstart"].sampleValue);
+		$("#r_charger_amps").html(parseInt(dataAr["r_charger_amps"].sampleValue));
+		$("#r_auto_genstart").html(magnumAGSMode(parseInt(dataAr["r_auto_genstart"].sampleValue)));
 
 		if ( parseInt(dataAr["age_bmk"].sampleValue) < 100 ) {	
-			$("#battery_size").html(commaSeparateNumber(dataAr["r_bmk_battery_size"].sampleValue)+" amp/hours");
+			$("#battery_size").html(commaSeparateNumber(parseInt(dataAr["r_bmk_battery_size"].sampleValue))+" amp/hours");
 		} else {
-			$("#battery_size").html(commaSeparateNumber(dataAr["r_battery_size"].sampleValue)+" amp/hours");
+			$("#battery_size").html(commaSeparateNumber(parseInt(dataAr["r_battery_size"].sampleValue))+" amp/hours");
 		}
 		$("#r_low_batt_cut_out").html(commaSeparateNumber(dataAr["r_low_batt_cut_out"].sampleValue)+" VDC");
 		$("#r_battery_type_conv").html(dataAr["r_battery_type"].sampleValue);
@@ -308,24 +308,24 @@
 				$("#RC_rev").html(dataAr["a_revision"].sampleValue);
 				//settingsLine('Quiet Time:',magnumAGSQuietTime($r['r_ags_quiet_time']));
 				if ( parseInt(dataAr["r_ags_quiet_time"].sampleValue) != 0 ) {
-					$("#RC_quietTime").html(("0"+dataAr["r_ags_quiet_time_begin_hour"].sampleValue).slice(-2) +
-						":"+ ("0"+dataAr["r_ags_quiet_time_begin_minute"].sampleValue).slice(-2)+" to "+
-						("0"+dataAr["r_ags_quiet_time_end_hour"].sampleValue).slice(-2) +
-						":"+ ("0"+dataAr["r_ags_quiet_time_end_minute"].sampleValue).slice(-2));
+					$("#RC_quietTime").html(("0"+parseInt(dataAr["r_ags_quiet_time_begin_hour"].sampleValue)).slice(-2) +
+						":"+ ("0"+parseInt(dataAr["r_ags_quiet_time_begin_minute"].sampleValue)).slice(-2)+" to "+
+						("0"+parseInt(dataAr["r_ags_quiet_time_end_hour"].sampleValue)).slice(-2) +
+						":"+ ("0"+parseInt(dataAr["r_ags_quiet_time_end_minute"].sampleValue)).slice(-2));
 				} else {	
 					$("#RC_qRow").hide();
 				}
 				if ( parseFloat(dataAr['r_ags_start_vdc'].sampleValue) > 0 ) {
-					var time ="00:"+("0"+dataAr['r_ags_gen_run_time_minutes'].sampleValue).slice(-2)+":00";
+					var time ="00:"+("0"+parseInt(dataAr['r_ags_gen_run_time_minutes'].sampleValue)).slice(-2)+":00";
 					var s="@ "+dataAr['r_ags_start_vdc'].sampleValue+
-						" volts, run for "+dataAr['r_ags_gen_run_time_minutes'].sampleValue+"m";
+						" volts, run for "+parseInt(dataAr['r_ags_gen_run_time_minutes'].sampleValue)+"m";
 					$("#RC_battVolt").html(s);
 				} else {
 					$("#RC_bRow").hide();
 				}
 
 				if ( parseFloat(dataAr['r_ags_start_tempF'].sampleValue) > 0 ) {
-					var time = dataAr['r_ags_gen_run_time_minutes'].sampleValue+"m";
+					var time = parseInt(dataAr['r_ags_gen_run_time_minutes'].sampleValue)+"m";
 					var s=dataAr['r_ags_start_tempF'].sampleValue+
 						"&deg;C / "+((parseFloat(dataAr['r_ags_start_tempF'].sampleValue)-32.0)/1.8)+
 						"&deg;F, run for "+time;
@@ -344,7 +344,7 @@
 
 				if ( parseFloat(dataAr['r_ags_start_vdc'].sampleValue) > 0 && parseFloat(dataAr['r_ags_stop_vdc'].sampleValue) > 0 ) {
 					if ( parseFloat(dataAr['r_ags_stop_vdc'].sampleValue) < 255 ) {
-						var time = dataAr['r_ags_start_delay_seconds'].sampleValue
+						var time = parseInt(dataAr['r_ags_start_delay_seconds'].sampleValue)
 						var s = "@ "+dataAr['r_ags_start_vdc'].sampleValue+" volts for "+
 							time+
 							"s, run to "+dataAr['r_ags_stop_vdc'].sampleValue+" volts for "+
@@ -353,7 +353,7 @@
 						
 					} else if ( parseFloat(dataAr['r_ags_stop_vdc'].sampleValue) == 255 ) {
 						var s = "@ "+dataAr['r_ags_start_vdc'].sampleValue+
-							" volts for "+dataAr['r_ags_start_delay_seconds'].sampleValue+
+							" volts for "+parseInt(dataAr['r_ags_start_delay_seconds'].sampleValue)+
 							"s, run until charger is floating";
 					
 					}
@@ -373,9 +373,9 @@
 
 				if ( parseFloat(dataAr['r_ags_start_amps'].sampleValue) > 0 ) {
 					var s = "@ "+dataAr['r_ags_start_amps'].sampleValue+
-						" amps for "+dataAr['r_ags_start_amps_delay_seconds'].sampleValue+
+						" amps for "+parseInt(dataAr['r_ags_start_amps_delay_seconds'].sampleValue)+
 						" s to "+dataAr['r_ags_stop_amps'].sampleValue+
-						" amps for "+dataAr['r_ags_stop_amps_delay_seconds'].sampleValue+" s";
+						" amps for "+parseInt(dataAr['r_ags_stop_amps_delay_seconds'].sampleValue)+" s";
 					
 					$("#ARC_soc").html(s);
 				} else {
@@ -385,15 +385,15 @@
 				if ( parseFloat(dataAr['r_ags_start_tempF'].sampleValue) > 0 ) {
 					var s = dataAr['r_ags_start_tempF'].sampleValue + "&deg;C / "+
 						((parseFloat(dataAr['r_ags_start_tempF'].sampleValue)-32.0)/1.8) +
-						"&deg;F for "+dataAr['r_ags_gen_run_time_minutes'].sampleValue+"m.";
+						"&deg;F for "+parseInt(dataAr['r_ags_gen_run_time_minutes'].sampleValue)+"m.";
 				
 					$("#ARC_temp").html(s);
 				} else {
 					$("#ARC_tRow").hide();
 				}
 
-				var startTime = ("0"+dataAr['r_ags_start_time_hour'].sampleValue).slice(-2)+":"+("0"+dataAr['r_ags_start_time_minute'].sampleValue).slice(-2);
-				var stopTime = ("0"+dataAr['r_ags_stop_time_hour'].sampleValue).slice(-2)+":"+("0"+dataAr['r_ags_stop_time_minute'].sampleValue).slice(-2);
+				var startTime = ("0"+parseInt(dataAr['r_ags_start_time_hour'].sampleValue)).slice(-2)+":"+("0"+parseInt(dataAr['r_ags_start_time_minute'].sampleValue)).slice(-2);
+				var stopTime = ("0"+parseInt(dataAr['r_ags_stop_time_hour'].sampleValue)).slice(-2)+":"+("0"+parseInt(dataAr['r_ags_stop_time_minute'].sampleValue)).slice(-2);
 
 				if ( "00:00" != startTime && startTime != stopTime ) {
 
@@ -406,22 +406,22 @@
 
 
 			
-				$("#wut").html(dataAr['r_ags_warm_up_seconds'].sampleValue+"s");
-				$("#cdt").html(dataAr['r_ags_cool_down_seconds'].sampleValue+"s");
-				$("#mrt").html(dataAr['r_ags_max_run_time_minutes'].sampleValue+"m");
+				$("#wut").html(parseInt(dataAr['r_ags_warm_up_seconds'].sampleValue)+"s");
+				$("#cdt").html(parseInt(dataAr['r_ags_cool_down_seconds'].sampleValue)+"s");
+				$("#mrt").html(parseInt(dataAr['r_ags_max_run_time_minutes'].sampleValue)+"m");
 				if ( parseInt(dataAr["r_ags_quiet_time"].sampleValue) != 0 ) {
-					$("#ARC_quietTime").html(("0"+dataAr["r_ags_quiet_time_begin_minute"].sampleValue).slice(-2) +
-						":"+ ("0"+dataAr["r_ags_quiet_time_begin_hour"].sampleValue).slice(-2)+
-						" to "+("0"+dataAr["r_ags_quiet_time_end_minute"].sampleValue).slice(-2) +":"
-						+ ("0"+dataAr["r_ags_quiet_time_end_hour"].sampleValue).slice(-2));
+					$("#ARC_quietTime").html(("0"+parseInt(dataAr["r_ags_quiet_time_begin_minute"].sampleValue)).slice(-2) +
+						":"+ ("0"+parseInt(dataAr["r_ags_quiet_time_begin_hour"].sampleValue)).slice(-2)+
+						" to "+("0"+parseInt(dataAr["r_ags_quiet_time_end_minute"].sampleValue)).slice(-2) +":"
+						+ ("0"+parseInt(dataAr["r_ags_quiet_time_end_hour"].sampleValue)).slice(-2));
 				} else {	
 					$("#ARC_qRow").hide();
 				}
 
 				if ( parseInt(dataAr["r_ags_exercise_days"].sampleValue) > 0 ) {
-					var start = ("0"+dataAr["r_ags_exercise_start_hour"].sampleValue).slice(-2)+":"+("0"+dataAr["r_ags_exercise_start_minute"].sampleValue).slice(-2);
-					var run = dataAr["r_ags_exercise_run_time_minutes"].sampleValue+"m";
-					$("#ARC_exer").html("Every "+dataAr["r_ags_exercise_days"].sampleValue+" days at "+start+" for "+run+".");
+					var start = ("0"+parseInt(dataAr["r_ags_exercise_start_hour"].sampleValue)).slice(-2)+":"+("0"+parseInt(dataAr["r_ags_exercise_start_minute"].sampleValue)).slice(-2);
+					var run = parseInt(dataAr["r_ags_exercise_run_time_minutes"].sampleValue)+"m";
+					$("#ARC_exer").html("Every "+parseInt(dataAr["r_ags_exercise_days"].sampleValue)+" days at "+start+" for "+run+".");
 				} else {
 
 					$("#ARC_eRow").hide();
@@ -443,18 +443,18 @@
 		
 		if ( null != dataAr["b_revision"] && parseFloat(dataAr["b_revision"].sampleValue) != 0 ){
 			$("#b_revision").html(dataAr["b_revision"].sampleValue);
-			if ( 0 == dataAr["r_bmk_efficiency"].sampleValue ) {				
+			if ( 0 == parseFloat(dataAr["r_bmk_efficiency"].sampleValue) ) {				
 				$("#r_bmk_efficiency").html("Auto");
 			}else{
 				$("#r_bmk_efficiency").html(dataAr["r_bmk_efficiency"].sampleValue+"%");
 			}
-			$("#r_bmk_battery_size").html(commaSeparateNumber(dataAr["r_bmk_battery_size"].sampleValue)+" amp/hours");
+			$("#r_bmk_battery_size").html(commaSeparateNumber(parseInt(dataAr["r_bmk_battery_size"].sampleValue))+" amp/hours");
 		}else{
 			//console.log("hide");
 			$(".battMon").hide();
 		}
 
-		$("#firmware_date").html(dataAr["firmware_year"].sampleValue+"-"+("0"+dataAr["firmware_month"].sampleValue).slice(-2)+"-"+dataAr["firmware_day"].sampleValue);
+		$("#firmware_date").html(parseInt(dataAr["firmware_year"].sampleValue)+"-"+("0"+parseInt(dataAr["firmware_month"].sampleValue)).slice(-2)+"-"+parseInt(dataAr["firmware_day"].sampleValue));
 
 
 		/*

@@ -256,6 +256,16 @@ function magnumTemperature(tempC) {
 
 }
 
+function magnumAGSMode(val) {
+	switch (val) {
+		case 0: return "Off";
+		case 1: return "Enabled";
+		case 2: return "Test";
+		case 4: return "Enabled with Quiet Time";
+		case 5: return "On";
+		default: return "Unknown Value: " . val;
+	}
+}
 
 function magnumExportVoltageScale(vin,vScale) {
 	if ( 2 != vScale )

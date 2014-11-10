@@ -110,38 +110,7 @@
 
 
 	
-	$(document).ready(function(){
-		console.log("start");
-		/* The bar doesn't work well on ipods  */
-		if ( navigator.platform == 'iPhone' || navigator.platform == 'iPod' ) { 
-			$("#bar").hide();
-			
-		};
 
-		$.ajaxSetup({ cache: false });
-
-
-
-		/* this will shoot off a request to the server when the window is refocused */
-		$(window).focus(function() {
-			console.log("welcome back");
-			loadData();
-		});
-		/* ajax error listener */
-		$( document ).ajaxError(function(event){
-			console.log("no response from json");
-			//$("#connection_warn").show();
-			$("#connection_warn").append(event);
-			noResponse = true;
-			customFaults(null);
-		});
-		/* request data and start timer */
-		//loadData();
-
-		loadChannelData();
-		
-	
-	});
 
 	/* This script kindly provided by Microsoft */
 	function msieversion(){
@@ -219,40 +188,6 @@
 
 	var dataAr = [];
 
-	/* This loads the one second data */
-	function loadLiveData(){
-
-		//console.log(urlLive);
-
-
-
-		    // If internet explorer, use Microsoft XDR
-		if ( isIE ){
-		    var xdr = new XDomainRequest();
-		    xdr.open("get", urlLive+"?t="+new Date().getTime());
-		    xdr.onload = function() {
-		       
-			dataS = $.parseJSON(xdr.responseText);
-			//console.log(data);
-			liveData(dataS, false);
-		    };
-		    xdr.send();
-		} else {
-			/* if not IE we use ajax */
-		  	$.ajaxSetup({ cache: false });
-			$.ajax({
-				type: "GET",
-				url: urlLive,
-				dataType: "html",
-				crossDomain : true
-			})
-			.done(function( dataS ) {
-				dataS = $.parseJSON(dataS);
-				liveData(dataS, false);
-			});
-
-		}
-	}
 
 	var lastCh="";
 	
@@ -267,7 +202,7 @@
 		    var xdr = new XDomainRequest();
 		    xdr.open("get", urlNow+"?t="+new Date().getTime());
 		    xdr.onload = function() {
-		       
+		       	noResponse = false;
 			dataS = $.parseJSON(xdr.responseText);
 			//console.log(data);
 			createTable(dataS, true);
@@ -292,6 +227,7 @@
 				crossDomain : true
 			})
 			.done(function( dataS ) {
+				noResponse = false;
 				dataS = $.parseJSON(dataS);
 				createTable(dataS, true);
 			});
@@ -340,7 +276,7 @@
 	/* creates the current table */
 	function createTable(dataNow, create){
 		
-		
+
 		
 		$. each (dataNow.data, function (key, value) {
 			dataAr[value.channel]=value;
@@ -352,6 +288,7 @@
 
 		if ( dataNow.data.length != 0 ) {
 			noData = false;
+			noResponse = false;
 			/* Check for faults */		
 			customFaults(dataAr);
 
@@ -361,6 +298,7 @@
 			/* BMK rows */
 			batteryCharts(dataAr,create)
 			batteryRows(dataAr,create);
+			if ( parseInt(dataAr["age_bmk"].sampleValue) < 100 )updatePlotArrays(dataAr,create);
 
 			/* Inverter rows */
 			inverterRows(dataAr,create);
@@ -369,7 +307,8 @@
 			agsRows(dataAr,create);
 
 			/* 24hour data */
-			dailyStats(dataAr,create);
+			//dailyStats(dataAr,create);
+			loadDayData(dataAr,create);
 
 			/* plot graphs */
 			if ( create && parseInt(dataAr["age_bmk"].sampleValue) < 100 ) plotGraphs();
@@ -380,56 +319,6 @@
 	
 	}
 
-	/* not used for the time being */
-	function liveData(dataNow, create){
-	
-		$. each (dataNow.data, function (key, value) {
-			dataAr[value.channel]=value;
-			lastCh = value.channel;	
-		});
-
-		if ( create )
-			$("#currentTable").html("");
-
-		/* Check for faults */		
-		customFaults(dataAr);
-
-		/* Data date row */
-		$("#convDate").html(getUTCTime(dataAr[lastCh].time));
-
-		/* BMK rows */
-		batteryRows(dataAr,create);
-		
-
-		/* Inverter rows */
-		inverterRows(dataAr,create);
-
-		/* AGS rows */
-		agsRows(dataAr,create);
-	
-	}
-
-	/* 24 hour data */
-	function dailyStats(dataAr, create){
-			if ( create )
-				$("#hourTable").html("");
-		
-			addHeader("hourTable","24 Hour Data",4, create);		
-
-			
-			hourData.time = dataAr["i_fault"].time;
-
-			if ( parseInt(dataAr["age_bmk"].sampleValue) < 100 )updatePlotArrays(dataAr,create);
-			batteryHourRows(dataAr,create);
-			inverterHourRows(dataAr,create);
-			agsHourRows(dataAr,create);
-			//plotGraphs();
-
-
-
-	}
-
-	
 
 	/* create the human readable received report */
 	function dateRows(dataAr,create){
@@ -682,106 +571,7 @@
 
 
 
-	/* 24 hour battery monitor data */
-	function batteryHourRows(dataAr, create){
-
-		if ( parseInt(dataAr["age_bmk"].sampleValue) < 100 ) {
-
-			addHourCat("hourTable","Data Supplied By Battery Monitor (ME-BMK)", create);
-		
-			/* State Of Charge */
-			updateHourRow("b_state_of_charge","State of Charge:<br><span style=\"font-size:.75em;\">10 minute averages</span>", create);
-
-			/* DC Volts */
-			updateHourRow("b_dc_volts","DC Volts:", create);
-
-			/* DC Amps */
-			updateHourRow("b_dc_amps","DC Amps:", create);
-
-			/* specail case */
-			updateHourWatts("b_dc_watts","DC Watts:", create);
-		}
-	}
-
-
 	
-	/* 24 hour inverter data */
-	function inverterHourRows(dataAr, create){
-		
-		
-		if ( parseInt(dataAr['age_inverter'].sampleValue) < 250 ) {
-			
-			addHourCat("hourTable","Data Supplied By Inverter ("+magnumInverterModel(parseInt(dataAr["i_model"].sampleValue),0)+")", create);
-			/* if no BMK, then show inverter dc volts and amps */
-			if ( parseInt(dataAr['age_bmk'].sampleValue) > 250 ) {
-				/* unfortunately, we aren't keeping track of this in the history json  */
-				updateHourRow("i_dc_volts","DC Volts:", create);
-				updateHourRow("i_dc_amps","DC Amps:", create);
-		
-			}
-			var displayMeters=false;
-			if ( (null==dataAr['length_inverter'] || parseInt(dataAr['length_inverter'].sampleValue)>=20) && magnumInverterModel(parseInt(dataAr["i_model"].sampleValue),3) != 1 ) {
-				displayMeters=true;
-			}		
-			var exportMeters=false;
-
-			if ( ! displayMeters && parseInt(dataAr['length_inverter'].sampleValue)>=20 ) {
-				exportMeters=true;
-			}
-
-			if ( displayMeters || exportMeters ) {
-				/* AC Volts Out ( when volts > 80 ) */
-				updateHourRow("i_ac_volts_out","AC volts Out:<br><span style=\"font-size: 0.8em;\">(when volts &gt; 80)</span>", create);
-				
-			}
-			if ( displayMeters ) {
-				/* if we see a null for i_amps_out, then inverter does not have meters */
-
-				updateAmpInv("i_ac_amps_out_inverting","AC amps Out:<br><span style=\"font-size: 0.8em;\">(when not charging)</span>", create);
-				updateAmpChg("i_ac_amps_out_charging","AC amps Out:<br><span style=\"font-size: 0.8em;\">(when charging)</span>", create);
-
-
-				if ( hourData['min_i_amps_in_hours'] != hourData['max_i_amps_in_hours'] )  {
-
-					updateHourRow("i_amps_in","AC amps In:", create);
-			
-				}
-				
-				if ( hourData['min_i_ac_hz_hours'] != hourData['max_i_ac_hz_hours'] ) {
-
-					updateHourRow("i_ac_hz","AC Frequency: <span style=\"font-size: 0.8em;\">(Hz)</span>", create);
-			
-				}
-			}
-
-			/* temperatures */
-			updateHourRowTemp("i_temp_battery","Battery Temperature:", create);
-			updateHourRowTemp("i_temp_transformer","Transformer Temperature:", create);
-			updateHourRowTemp("i_temp_fet","FET Temperature:", create);
-
-	
-
-
-		}
-	}
-
-	/* 24 hour AGS data */
-	function agsHourRows(dataAr, create){
-
-		if ( parseFloat(dataAr['age_ags_0xA1'].sampleValue) < 250 ) {
-			
-			if( "0" == dataAr['a_status'].sampleValue ){
-				addHourCat("hourTable","AGS<br>(currently offline)", create);
-			} else {
-				addHourCat("hourTable","AGS", create);
-			}
-			
-			updateHourRowAGSTemp("a_temperature","AGS Temperature:", create);
-			updateHourRow("a_voltage","AGS Voltage: <span style=\"font-size: 0.8em;\">(volts DC)</span>", create);
-		}
-
-	}
-
 
 	function addHourCat(tableID, title, create){
 		tableID="#"+tableID;
@@ -793,212 +583,17 @@
 					"<th>Average</th></tr>");
 		}
 	}
-	function updateHourRow(key, title, create){
-
-		
-		if ( null != hourData["avg_"+key+"_hours"] ) {
-			if ( hourData["min_"+key+"_hours"] > dataAr[key].min ) hourData["min_"+key+"_hours"] = dataAr[key].min;
-			if ( hourData["max_"+key+"_hours"] < dataAr[key].max ) hourData["max_"+key+"_hours"] = dataAr[key].max;
-			hourData["n_"+key+"_hours"]++;
-			hourData["avg_"+key+"_hours"] = ((hourData["avg_"+key+"_hours"]*(hourData["n_"+key+"_hours"]-1))+dataAr[key].avg)/hourData["n_"+key+"_hours"];
-		
-		}
-		addHourLine("hourTable",title,key, create);
-		
-		
-	}
-	/* 24 hour rows with temperatures */
-	function updateHourRowTemp(key, title, create){
-		var obj = getChObj(key);
-		var prec = 2;
-		
-		if ( null != obj ) {
-			prec = obj.precision;
-			
-		}
-		var unit = getChUnit(key,"");
-		if ( null == prec ) prec = 1;
-
-		if ( null != hourData["avg_"+key+"_hours"] ) {
-			if ( hourData["min_"+key+"_hours"] > dataAr[key].min ) hourData["min_"+key+"_hours"] = dataAr[key].min;
-			if ( hourData["max_"+key+"_hours"] < dataAr[key].max ) hourData["max_"+key+"_hours"] = dataAr[key].max;
-			hourData["n_"+key+"_hours"]++;
-			hourData["avg_"+key+"_hours"] = ((hourData["avg_"+key+"_hours"]*(hourData["n_"+key+"_hours"]-1))+dataAr[key].avg)/hourData["n_"+key+"_hours"];
-			
-		}
-		
-		
-		if ( create ) {
-			$("#hourTable").append("<tr><th class=\"right\">"+title+"</th>"+
-					"<td id=\""+key+"_min\">"+magnumTemperature(hourData["min_"+key+"_hours"])+"</td>"+
-					"<td id=\""+key+"_max\">"+magnumTemperature(hourData["max_"+key+"_hours"])+"</td>"+
-					"<td id=\""+key+"_avg\">"+magnumTemperature(hourData["avg_"+key+"_hours"])+"</td></tr>");
-		} else {
-			
-			$("#"+key+"_min").html(magnumTemperature(hourData["min_"+key+"_hours"]));
-			$("#"+key+"_max").html(magnumTemperature(hourData["max_"+key+"_hours"]));
-			$("#"+key+"_avg").html(magnumTemperature(hourData["avg_"+key+"_hours"]));
-		}
-		
-		
-
-	}
-
-	/* 24 hour rows with temperatures */
-	function updateHourRowAGSTemp(key, title, create){
-		var obj = getChObj(key);
-		var prec = 2;
-		
-		if ( null != obj ) {
-			prec = obj.precision;
-			
-		}
-		var unit = getChUnit(key,"");
-		if ( null == prec ) prec = 1;
-
-		if ( null != hourData["avg_"+key+"_hours"] && 252 != hourData["avg_"+key+"_hours"] && 0 != hourData["avg_"+key+"_hours"] ) {
-			if ( hourData["min_"+key+"_hours"] > dataAr[key].min ) hourData["min_"+key+"_hours"] = dataAr[key].min;
-			if ( hourData["max_"+key+"_hours"] < dataAr[key].max ) hourData["max_"+key+"_hours"] = dataAr[key].max;
-			hourData["n_"+key+"_hours"]++;
-			hourData["avg_"+key+"_hours"] = ((hourData["avg_"+key+"_hours"]*(hourData["n_"+key+"_hours"]-1))+dataAr[key].avg)/hourData["n_"+key+"_hours"];
-			
-		}
-		if ( create ) {
-			$("#hourTable").append("<tr><th class=\"right\">"+title+"</th>"+
-					"<td id=\""+key+"_min\">"+magnumAGSTemperature(hourData["min_"+key+"_hours"])+"</td>"+
-					"<td id=\""+key+"_max\">"+magnumAGSTemperature(hourData["max_"+key+"_hours"])+"</td>"+
-					"<td id=\""+key+"_avg\">"+magnumAGSTemperature(hourData["avg_"+key+"_hours"])+"</td></tr>");
-		} else {
-			
-			$("#"+key+"_min").html(magnumAGSTemperature(hourData["min_"+key+"_hours"]));
-			$("#"+key+"_max").html(magnumAGSTemperature(hourData["max_"+key+"_hours"]));
-			$("#"+key+"_avg").html(magnumAGSTemperature(hourData["avg_"+key+"_hours"]));
-		}
-		
-		
-
-	}
-
-	function updateAmpInv(key, name, create){
-		if ( hourData.n_i_ac_amps_out_inverting_hours != 0 ) {
-			if ( dataAr["i_amps_out"] < 100 && 1 != parseInt(dataAr["i_status"]) && 2 != parseInt(dataAr["i_status"]) && 4 != parseInt(dataAr["i_status"]) && 8 != parseInt(dataAr["i_status"]) ) {
-				if ( hourData.min_i_ac_amps_out_inverting_hours > dataAr["i_amps_out"].min ) hourData.min_i_ac_amps_out_inverting_hours = dataAr["i_amps_out"].min;
-				if ( hourData.max_i_ac_amps_out_inverting_hours < dataAr["i_amps_out"].max ) hourData.max_i_ac_amps_out_inverting_hours = dataAr["i_amps_out"].max;
-				hourData.n_i_ac_amps_out_inverting_hours++;
-				hourData.avg_i_ac_amps_out_inverting_hours = ((hourData.avg_i_ac_amps_out_inverting_hours*(hourData.n_i_ac_amps_out_inverting_hours-1)) + 
-					dataAr["i_amps_out"].avg)/hourData.n_i_ac_amps_out_inverting_hours;
-
-			}
-			if ( create ) {
-
-				$("#hourTable").append("<tr><th class=\"right\">"+name+"</th>"+
-						"<td id=\""+key+"_min\">"+hourData["min_i_ac_amps_out_inverting_hours"].toFixed(1)+"</td>"+
-						"<td id=\""+key+"_max\">"+hourData["max_i_ac_amps_out_inverting_hours"].toFixed(1)+"</td>"+
-						"<td id=\""+key+"_avg\">"+hourData["avg_i_ac_amps_out_inverting_hours"].toFixed(1)+"</td></tr>");	
-			} else {
-				$("#"+key+"_min").html(hourData["min_i_ac_amps_out_inverting_hours"].toFixed(prec)+unit);
-				$("#"+key+"_max").html(hourData["max_i_ac_amps_out_inverting_hours"].toFixed(prec)+unit);
-				$("#"+key+"_avg").html(hourData["avg_i_ac_amps_out_inverting_hours"].toFixed(prec)+unit);
-			}
-		}
-	}
-
-	function updateAmpChg(key, name, create){
-		if (  hourData.n_i_ac_amps_out_charging_hours != 0  ) {
-			if ( dataAr["i_amps_out"] < 100 && parseInt(dataAr["i_status"]) >= 1 && parseInt(dataAr["i_status"]) <= 8 ) {
-				if ( hourData.min_i_ac_amps_out_charging_hours > dataAr["i_amps_out"].min ) hourData.min_i_ac_amps_out_charging_hours = dataAr["i_amps_out"].min;
-				if ( hourData.max_i_ac_amps_out_charging_hours < dataAr["i_amps_out"].max ) hourData.max_i_ac_amps_out_charging_hours = dataAr["i_amps_out"].max;
-				hourData.avg_i_ac_amps_out_charging_hours = ((hourData.avg_i_ac_amps_out_charging_hours*(hourData.n_i_ac_amps_out_charging_hours-1)) + 
-					dataAr["i_amps_out"].avg)/hourData.n_i_ac_amps_out_charging_hours;
-			}
-			if ( create ) {
-				$("#hourTable").append("<tr><th class=\"right\">"+name+"</th>"+
-						"<td id=\""+key+"_min\">"+hourData["min_i_ac_amps_out_charging_hours"].toFixed(1)+"</td>"+
-						"<td id=\""+key+"_max\">"+hourData["max_i_ac_amps_out_charging_hours"].toFixed(1)+"</td>"+
-						"<td id=\""+key+"_avg\">"+hourData["avg_i_ac_amps_out_charging_hours"].toFixed(1)+"</td></tr>");
-
-			} else {
-				$("#"+key+"_min").html(hourData["min_i_ac_amps_out_charging_hours"].toFixed(prec)+unit);
-				$("#"+key+"_max").html(hourData["max_i_ac_amps_out_charging_hours"].toFixed(prec)+unit);
-				$("#"+key+"_avg").html(hourData["avg_i_ac_amps_out_charging_hours"].toFixed(prec)+unit);
-				
-			}
-		}
-	}
-
-	function updateHourWatts(key, name, create){
-		
-
-		if ( hourData.min_b_dc_watts_hours > ( dataAr["b_dc_amps"].min * dataAr["b_dc_volts"].min ) ) 
-			hourData.min_b_dc_watts_hours = ( dataAr["b_dc_amps"].min * dataAr["b_dc_volts"].min );
 
 
-		if ( hourData.max_b_dc_watts_hours < ( dataAr["b_dc_amps"].max * dataAr["b_dc_volts"].max ) ) 
-			hourData.max_b_dc_watts_hours = ( dataAr["b_dc_amps"].max * dataAr["b_dc_volts"].max );
 
 
-		hourData.avg_b_dc_watts_hours = ((hourData.avg_b_dc_watts_hours*(hourData.n_b_dc_watts_hours-1)) + 
-			( dataAr["b_dc_amps"].avg * dataAr["b_dc_volts"].avg ))/hourData.n_b_dc_watts_hours;
 
 
-		hourData.n_b_dc_watts_hours++;
 
-		if ( create ) {
-			$("#hourTable").append("<tr><th class=\"right\">"+name+"</th>"+
-						"<td id=\""+key+"_min\">"+hourData["min_b_dc_watts_hours"].toFixed(1)+"</td>"+
-						"<td id=\""+key+"_max\">"+hourData["max_b_dc_watts_hours"].toFixed(1)+"</td>"+
-						"<td id=\""+key+"_avg\">"+hourData["avg_b_dc_watts_hours"].toFixed(1)+"</td></tr>");
-
-		} else {
-			$(key+"_min").html(hourData["min_b_dc_watts_hours"].toFixed(1));
-			$(key+"_max").html(hourData["max_b_dc_watts_hours"].toFixed(1));
-			$(key+"_avg").html(hourData["avg_b_dc_watts_hours"].toFixed(1));
-		}
-	}
-
-	/* appends row to the given tableID */
-	function addHourLine(tableID, name, key, create){
-		
-		var obj = getChObj(key);
-		var prec = 2;
 	
-		if ( null != obj ) {
-			prec = obj.precision;
-		
-		}
-		var unit = getChUnit(key,"");
-		if ( null == prec ) prec = 1;
-		tableID="#"+tableID;
-		//console.log(key);
-
-		//hourData["n_b_state_of_charge_hours"] = 0;
-		if ( undefined != hourData["min_"+key+"_hours"] ) {
-			if ( 0 != hourData["n_"+key+"_hours"] ) {
-
-				if ( create ) {	
-					$(tableID).append("<tr id=\"row_"+key+"\"><th class=\"right\">"+name+"</th>"+
-								"<td id=\""+key+"_min\">"+hourData["min_"+key+"_hours"].toFixed(prec)+unit+"</td>"+
-								"<td id=\""+key+"_max\">"+hourData["max_"+key+"_hours"].toFixed(prec)+unit+"</td>"+
-								"<td id=\""+key+"_avg\">"+hourData["avg_"+key+"_hours"].toFixed(prec)+unit+"</td></tr>");
-				} else {
-					$("#row_"+key).html("<th class=\"right\">"+name+"</th>"+
-								"<td id=\""+key+"_min\">"+hourData["min_"+key+"_hours"].toFixed(prec)+unit+"</td>"+
-								"<td id=\""+key+"_max\">"+hourData["max_"+key+"_hours"].toFixed(prec)+unit+"</td>"+
-								"<td id=\""+key+"_avg\">"+hourData["avg_"+key+"_hours"].toFixed(prec)+unit+"</td>");
-				}
-
-			} else {
-				if ( key == "b_state_of_charge" ) {
-					if ( create )
-						$(tableID).append("<tr id=\"row_"+key+"\"><th class=\"right\">"+name+"</th><td colspan=\"3\">BMK Was Thinking...</td></tr>");
-				}
-
-				//console.log("n_"+key+"_hours had no data");
-			}
-		}
-	}
 
 	function updatePlotArrays(dataAr){
+		console.log("updateplotarray");
 		/* push new data into chart arrays */
 		/* if isn't null and the time on the packet does not equal the time of the last pushed element */
 		if ( null !=  dataAr["b_state_of_charge"].avg && dataAr["b_state_of_charge"].time != data.b_state_array[data.b_state_array.length-1][0] ) {
@@ -1015,7 +610,7 @@
 		}
 
 		/* if array has more than 24 hours of data, shift data out */
-		hourData.count++;
+	
 
 		var dayAgo = (new Date().getTime())-(1000*60*60*24);
 
@@ -1039,7 +634,7 @@
 
 	
 	
-	var hourData = {};
+	
 
 	var battArray = [];
 	var voltsArray = [];
@@ -1049,25 +644,346 @@
 			b_state_array: [],
 			b_watts: [],
 			amp_in_out: []
-		}
-	/* loads the history json to create the 24 hour data as well as the striplines */
-	function loadHistory(){
+	}
 
-		//console.log(urlHist);
-
-
+	function loadDayData(dataAr,create){
 
 		    // If internet explorer, use Microsoft XDR
 		if ( isIE ){
-		    var xdr = new XDomainRequest();
-		    xdr.open("get", urlHist+"?t="+new Date().getTime());
-		    xdr.onload = function() {
-		       
+			var xdr = new XDomainRequest();
+			xdr.open("get", urlDay+"?t="+new Date().getTime());
+			xdr.onload = function() {
+			console.log("parse dayData");
 			dataS = $.parseJSON(xdr.responseText);
-			processHist(dataS);
+
+			processDayData(dataS,dataAr,create);
+
+			};
+			xdr.send();
+		} else {
+			/* if not IE we use ajax */
+		  	$.ajaxSetup({ cache: false });
+			$.ajax({
+				type: "GET",
+				url: urlDay,
+				dataType: "html",
+				crossDomain : true
+			})
+			.done(function( dataS ) {
+				
+				dataS = $.parseJSON(dataS);
+				processDayData(dataS,dataAr,create);
+				
+			});
+
+		}
+
+	}
+
+	function processDayData( dayData, dataAr, create ){
+		//console.log(dayData);
+		
+		if ( create )
+			$("#hourTable").html("");
+	
+		addHeader("hourTable","24 Hour Data",4, create);		
+
+		batteryHourRows(dayData, dataAr, create);
+		inverterHourRows(dayData, dataAr, create);
+		agsHourRows(dayData, dataAr, create);
+
+
+	}
+
+	function batteryHourRows(dayData, dataAr, create){
+		if ( parseInt(dataAr["age_bmk"].sampleValue) < 100 ) {
+
+			addHourCat("hourTable","Data Supplied By Battery Monitor (ME-BMK)", create);
+		
+			/* State Of Charge */
+			addHourLineSpec("hourTable","b_state_of_charge","State of Charge:",dayData.dayStats,create);
+
+			/* DC Volts */
+			addHourLine("hourTable","b_dc_volts","DC Volts:",dayData.dayStats,create );
+
+			/* DC Amps */
+			addHourLine("hourTable","b_dc_amps","DC Amps:",dayData.dayStats,create );
+
+			/* specail case */
+			addHourLine("hourTable","b_dc_watts","DC Watts:",dayData.dayStats,create );
+			//updateHourWatts("b_dc_watts","DC Watts:", create);
+			//updateHourWatts("hourTable","b_dc_watts","DC Watts:", dayData.dayStats,create);
+		}
+
+	}
+
+	function inverterHourRows(dayData, dataAr, create){
+		
+		if ( parseInt(dataAr['age_inverter'].sampleValue) < 250 ) {
 			
-		    };
-		    xdr.send();
+			addHourCat("hourTable","Data Supplied By Inverter ("+magnumInverterModel(parseInt(dataAr["i_model"].sampleValue),0)+")", create);
+			/* if no BMK, then show inverter dc volts and amps */
+			if ( parseInt(dataAr['age_bmk'].sampleValue) > 250 ) {
+				/* unfortunately, we aren't keeping track of this in the history json  */
+				//updateHourRow("i_dc_volts","DC Volts:", create);
+				//updateHourRow("i_dc_amps","DC Amps:", create);
+				addHourLine("hourTable","i_dc_volts","DC Volts:",dayData.dayStats,create );
+				addHourLine("hourTable","i_dc_amps","DC Amps:",dayData.dayStats,create );
+		
+			}
+			var displayMeters=false;
+			if ( (null==dataAr['length_inverter'] || parseInt(dataAr['length_inverter'].sampleValue)>=20) && magnumInverterModel(parseInt(dataAr["i_model"].sampleValue),3) != 1 ) {
+				displayMeters=true;
+			}		
+			var exportMeters=false;
+
+			if ( ! displayMeters && parseInt(dataAr['length_inverter'].sampleValue)>=20 ) {
+				exportMeters=true;
+			}
+			//console.log("displayMeters: "+displayMeters+", exportMeters: "+exportMeters);
+			if ( displayMeters || exportMeters ) {
+				/* AC Volts Out ( when volts > 80 ) */
+
+				addHourLine("hourTable","i_ac_volts_out_over_80","AC volts Out:<br><span style=\"font-size: 0.8em;\">(when volts &gt; 80)</span>",dayData.dayStats,create );
+
+			}
+			if ( displayMeters ) {
+				/* if we see a null for i_amps_out, then inverter does not have meters */
+
+				addHourLine("hourTable","i_amps_out_inverting","AC amps Out:<br><span style=\"font-size: 0.8em;\">(when not charging)</span>",dayData.dayStats,create );
+
+				addHourLine("hourTable","i_amps_out_charging","AC amps Out:<br><span style=\"font-size: 0.8em;\">(when charging)</span>",dayData.dayStats,create );
+
+				addHourLine("hourTable","i_amps_in","AC amps In:",dayData.dayStats,create );
+				
+				addHourLine("hourTable","i_ac_hz","AC Frequency: <span style=\"font-size: 0.8em;\">(Hz)</span>",dayData.dayStats,create );
+			
+				
+			}
+
+			/* temperatures */
+			updateHourRowTemp("hourTable","i_temp_battery","Battery Temperature:",dayData.dayStats, create);
+			updateHourRowTemp("hourTable","i_temp_transformer","Transformer Temperature:",dayData.dayStats, create);
+			updateHourRowTemp("hourTable","i_temp_fet","FET Temperature:",dayData.dayStats, create);
+
+
+		}
+	}
+
+	/* 24 hour AGS data */
+	function agsHourRows(dayData, dataAr, create){
+
+		if ( parseFloat(dataAr['age_ags_0xA1'].sampleValue) < 250 ) {
+			
+			if( "0" == dataAr['a_status'].sampleValue ){
+				addHourCat("hourTable","AGS<br>(currently offline)", create);
+			} else {
+				addHourCat("hourTable","AGS", create);
+			}
+			updateHourRowTempAGS("hourTable","a_temperature","AGS Temperature:",dayData.dayStats, create);
+			addHourLine("hourTable","a_voltage","AGS Voltage: <span style=\"font-size: 0.8em;\">(volts DC)</span>",dayData.dayStats,create );
+		}
+
+	}
+
+	function updateHourRowTemp(tableID,id,title,val,create){
+
+		var obj = getChObj(id);
+		var prec = 2;
+		
+		if ( null != obj ) {
+			prec = obj.precision;
+			
+		}
+		var unit = getChUnit(id,"");
+		if ( null == prec ) prec = 1;
+
+		
+		if ( create ) {
+			$("#hourTable").append("<tr><th class=\"right\">"+title+"</th>"+
+					"<td id=\""+id+"_min\">"+magnumTemperature(val[id].min)+"</td>"+
+					"<td id=\""+id+"_max\">"+magnumTemperature(val[id].max)+"</td>"+
+					"<td id=\""+id+"_avg\">"+magnumTemperature(val[id].avg)+"</td></tr>");
+		} else {
+			
+			$("#"+id+"_min").html(magnumTemperature(val[id].min));
+			$("#"+id+"_max").html(magnumTemperature(val[id].max));
+			$("#"+id+"_avg").html(magnumTemperature(val[id].avg));
+		}
+	
+
+
+	}
+
+	function updateHourRowTempAGS(tableID,id,title,val,create){
+
+		var obj = getChObj(id);
+		var prec = 2;
+		
+		if ( null != obj ) {
+			prec = obj.precision;
+			
+		}
+		var unit = getChUnit(id,"");
+		if ( null == prec ) prec = 1;
+
+		if ( 252 == val[id].max || 0 == val[id].min ) {
+			if ( create ) {
+
+				$("#"+tableID).append("<tr id=\"hour_"+id+"\">"+
+					"<th class=\"right\">"+title+"</th>"+
+					"<td colspan = \"3\">Was Disconnected...</td></tr>");
+
+			} else {
+
+				$("#hour_"+id).html(
+					"<th class=\"right\">"+title+"</th>"+
+					"<td colspan = \"3\">Was Disconnected...</td>");
+
+			}
+			
+			return;
+		} else {
+			if ( create ) {
+				$("#hourTable").append("<tr><th class=\"right\">"+title+"</th>"+
+						"<td id=\""+id+"_min\">"+magnumAGSTemperature(val[id].min)+"</td>"+
+						"<td id=\""+id+"_max\">"+magnumAGSTemperature(val[id].max)+"</td>"+
+						"<td id=\""+id+"_avg\">"+magnumAGSTemperature(val[id].avg)+"</td></tr>");
+			} else {
+			
+				$("#"+id+"_min").html(magnumAGSTemperature(val[id].min));
+				$("#"+id+"_max").html(magnumAGSTemperature(val[id].max));
+				$("#"+id+"_avg").html(magnumAGSTemperature(val[id].avg));
+			}
+		}
+
+
+	}
+
+	function addHourLineSpec(tableID,id,title,val,create){
+		//console.log(val.dayStats[id]);
+		var chObj = getChObj(id);
+
+		/* if channel exists */
+		if ( null != chObj ) {
+			var unit = getChUnit(id,"");
+			/* if max is 5e-324 then that means we don't have data for that channel, which is not an error, it just means the inverter doesn't have a feature that others might have */
+			if ( val[id].max != 5e-324 ) {
+				
+				var prec = chObj.precision;
+
+				if ( "b_state_of_charge" == id && 100 < val[id].max ) {
+
+					if ( create ) {
+
+						$("#"+tableID).append("<tr id=\"hour_"+id+"\">"+
+							"<th class=\"right\">"+title+"</th>"+
+							"<td colspan = \"3\"><i>BMK Was Thinking...</i></td></tr>");
+
+					} else {
+
+						$("#hour_"+id).html(
+							"<th class=\"right\">"+title+"</th>"+
+							"<td colspan = \"3\"><i>BMK Was Thinking...</i></td>");
+
+					}
+					
+					return;
+
+				} else if ( "a_temperature" == id && (252 == val[id].max || 0 == val[id].min) ) {
+
+					if ( create ) {
+
+						$("#"+tableID).append("<tr id=\"hour_"+id+"\">"+
+							"<th class=\"right\">"+title+"</th>"+
+							"<td colspan = \"3\">Was Disconnected...</td></tr>");
+
+					} else {
+
+						$("#hour_"+id).html(+
+							"<th class=\"right\">"+title+"</th>"+
+							"<td colspan = \"3\">Was Disconnected...</td>");
+
+					}
+					
+					return;
+				}
+
+				if ( create ) {
+
+					$("#"+tableID).append("<tr id=\"hour_"+id+"\">"+
+						"<th class=\"right\">"+title+"</th>"+
+						"<td>"+val[id].min.toFixed(prec)+unit+"</td>"+
+						"<td>"+val[id].max.toFixed(prec)+unit+"</td>"
+						+"<td>"+val[id].avg.toFixed(prec)+unit+"</td></tr>");
+
+				} else {
+
+					$("#hour_"+id).html("<th class=\"right\">"+title+"</th>"+
+						"<td>"+val[id].min.toFixed(prec)+unit+"</td>"+
+						"<td>"+val[id].max.toFixed(prec)+unit+"</td>"+
+						"<td>"+val[id].avg.toFixed(prec)+unit+"</td>");
+
+				}
+			}
+
+		} 
+		
+
+	}
+
+	function addHourLine(tableID,id,title,val,create){
+		//console.log(val.dayStats[id]);
+		var chObj = getChObj(id);
+
+		/* if channel exists */
+		if ( null != chObj ) {
+			var unit = getChUnit(id,"");
+			/* if max is 5e-324 then that means we don't have data for that channel, which is not an error, it just means the inverter doesn't have a feature that others might have */
+			if ( val[id].max != 5e-324 ) {
+
+				var prec = chObj.precision;
+
+				if ( create ) {
+
+					$("#"+tableID).append("<tr id=\"hour_"+id+"\">"+
+						"<th class=\"right\">"+title+"</th>"+
+						"<td>"+val[id].min.toFixed(prec)+unit+"</td>"+
+						"<td>"+val[id].max.toFixed(prec)+unit+"</td>"
+						+"<td>"+val[id].avg.toFixed(prec)+unit+"</td></tr>");
+
+				} else {
+
+					$("#hour_"+id).html("<th class=\"right\">"+title+"</th>"+
+						"<td>"+val[id].min.toFixed(prec)+unit+"</td>"+
+						"<td>"+val[id].max.toFixed(prec)+unit+"</td>"+
+						"<td>"+val[id].avg.toFixed(prec)+unit+"</td>");
+
+				}
+			}
+
+		} 
+		
+
+	}
+
+	/* loads the history json to create the 24 hour data as well as the striplines */
+	function loadHistory(){
+
+		console.log("request history");
+
+		    // If internet explorer, use Microsoft XDR
+		if ( isIE ){
+			var xdr = new XDomainRequest();
+			xdr.open("get", urlHist+"?t="+new Date().getTime());
+			xdr.onload = function() {
+			console.log("parse history");
+			dataS = $.parseJSON(xdr.responseText);
+
+			processHist(dataS);
+
+			};
+			xdr.send();
 		} else {
 			/* if not IE we use ajax */
 		  	$.ajaxSetup({ cache: false });
@@ -1078,6 +994,7 @@
 				crossDomain : true
 			})
 			.done(function( dataS ) {
+				
 				dataS = $.parseJSON(dataS);
 				processHist(dataS);
 				
@@ -1085,9 +1002,10 @@
 
 		}
 	}
+
 	/* processes the history json into 24 hour data and arrays for the striplines */
 	function processHist(hist){
-		
+		console.log("got history");
 		var color_green;
 		var color_yellow =  '#f7a11a';
 		var color_red;
@@ -1103,73 +1021,29 @@
 		var hourChannels = [];
 
 		/* iterate through the history object array */
-		hourData.time = 0;
-		$. each (hist.history, function (packet, entry) {
-
+		
+		var histAr = hist.history;
+		//console.log(histAr);
+		//$. each (hist.history, function (packet, entry) {
+		for ( var i = 0 ; i < histAr.length ; i++ ) {
+			
 			
 
 			/* add data to the flot chart arrays */
-			if ( null !=  entry.data.b_state_of_charge && 100 >= entry.data.b_state_of_charge ) 
-				data.b_state_array.push([entry.time, entry.data.b_state_of_charge]);
-			if ( null !=  entry.data.b_dc_volts && null !=  entry.data.b_dc_amps ) 
-				data.b_watts.push([entry.time, entry.data.b_dc_volts * entry.data.b_dc_amps]);
-			if ( null !=  entry.data.b_amph_in_out ) 
-				data.amp_in_out.push([entry.time, entry.data.b_amph_in_out]);
+			if ( null !=  histAr[i].data.b_state_of_charge && 100 >= histAr[i].data.b_state_of_charge ) 
+				data.b_state_array.push([histAr[i].time, histAr[i].data.b_state_of_charge]);
+			if ( null !=  histAr[i].data.b_dc_volts && null !=  histAr[i].data.b_dc_amps ) 
+				data.b_watts.push([histAr[i].time, histAr[i].data.b_dc_volts * histAr[i].data.b_dc_amps]);
+			if ( null !=  histAr[i].data.b_amph_in_out ) 
+				data.amp_in_out.push([histAr[i].time, histAr[i].data.b_amph_in_out]);
 
 
-			/* iterate through each entry in the object */
-			$. each (entry.data, function (channel, chData) { 
-
-				if ( -1 == $.inArray( channel, hourChannels ) ) {	
-					hourChannels.push( channel );	
-					//console.log("adding"+channel);
-				}
-				
-				if ( "b_state_of_charge" == channel ) {
-					if ( chData <= 100 ) 
-						createHourData(channel , chData);
-
-				} else if ( "i_ac_volts_out" == channel ) {
-					if ( chData > 80 )
-						createHourData(channel , chData);
-
-				} else if ( "a_temperature" == channel ) {
-					if ( 252 != chData && 0 != chData )
-						createHourData(channel , chData);
-
-				}  else {
-
-					createHourData(channel , chData);
-
-				}
-				
-			});
-			
-			wattsHourData(packet, entry, hourChannels);
-
-			ampsOutHourData(packet, entry, hourChannels);
-
-			if ( hourData.time < entry.time ) hourData.time = entry.time;
-			
-			count++;
 			
 			
-		});
-
+		}	
 	
-		/* now that we have iterated through each entry, we get the averages by dividing by the total data count */
 		
-		$. each (hourChannels, function (key, channel) {
-			/* if count for channel is more than 0 */
-			if ( hourData["n_"+channel+"_hours"] > 0 ) {
-				/* average the data */
-				hourData["avg_"+channel+"_hours"]/=hourData["n_"+channel+"_hours"];
-
-			}
-
-		});
-
-		hourData.count=count;
+		
 
 		loadDataCreate();
 		timerTick();
@@ -1180,154 +1054,7 @@
 	}
 
 
-	/* add channel data to hourData statistics */
-	function createHourData(channel , chData){
-		
-		chData = parseFloat(chData);		
-
-		/* check if it doesn't already exists */
-		if ( null == hourData["min_"+channel+"_hours"] ) {
-
-
-			hourData["min_"+channel+"_hours"] = chData;
-			hourData["max_"+channel+"_hours"] = chData;
-			hourData["avg_"+channel+"_hours"] = chData;
-			hourData["n_"+channel+"_hours"] = 1;
-			
-		} else {
-
-			if ( channel == "a_temperature" && chData < 10 ) console.log(chData);
-
-			if ( hourData["min_"+channel+"_hours"] > chData )hourData["min_"+channel+"_hours"] = chData;
-			if ( hourData["max_"+channel+"_hours"] < chData ) hourData["max_"+channel+"_hours"] = chData;
-			hourData["avg_"+channel+"_hours"] += chData;
-			hourData["n_"+channel+"_hours"]++;
-
-		}
-
-	}
-
-	/* add watts to hourData statistics */
-	function wattsHourData(packet, entry, hourChannels){
-		if ( null != entry.data.b_dc_amps ){
-			var channel = "b_dc_watts";
-			if ( -1 == $.inArray( channel, hourChannels ) ) {	
-					hourChannels.push( channel );	
-			}
-
-			if ( null == hourData["min_b_dc_watts_hours"] ) {
-
-				hourData.min_b_dc_watts_hours = ( entry.data.b_dc_amps * entry.data.b_dc_volts );
-				hourData.max_b_dc_watts_hours = ( entry.data.b_dc_amps * entry.data.b_dc_volts );
-				hourData.avg_b_dc_watts_hours = ( entry.data.b_dc_amps * entry.data.b_dc_volts );
-				hourData.n_b_dc_watts_hours = 1;
-
-			} else {
-		
-				if ( hourData.min_b_dc_watts_hours > ( entry.data.b_dc_amps * entry.data.b_dc_volts ) ) hourData.min_b_dc_watts_hours = ( entry.data.b_dc_amps * entry.data.b_dc_volts );
-				if ( hourData.max_b_dc_watts_hours < ( entry.data.b_dc_amps * entry.data.b_dc_volts ) ) hourData.max_b_dc_watts_hours = ( entry.data.b_dc_amps * entry.data.b_dc_volts );
-				hourData.avg_b_dc_watts_hours += ( entry.data.b_dc_amps * entry.data.b_dc_volts );
-				hourData.n_b_dc_watts_hours++;
-			}
-		}
-
-
-		if ( null != entry.data.i_dc_amps ){
-
-			var channel = "i_dc_watts";
-			if ( -1 == $.inArray( channel, hourChannels ) ) {	
-					hourChannels.push( channel );	
-					
-			}
-
-			if ( null == hourData["min_b_dc_watts_hours"] ) {
-
-				hourData.min_i_dc_watts_hours = ( entry.data.i_dc_amps * entry.data.i_dc_volts );
-				hourData.max_i_dc_watts_hours = ( entry.data.i_dc_amps * entry.data.i_dc_volts );
-				hourData.avg_i_dc_watts_hours = ( entry.data.i_dc_amps * entry.data.i_dc_volts );
-				hourData.n_i_dc_watts_hours = 1;
-
-			} else {
-
-				if ( hourData.min_i_dc_watts_hours > ( entry.data.i_dc_amps * entry.data.i_dc_volts ) ) hourData.min_i_dc_watts_hours = ( entry.data.i_dc_amps * entry.data.i_dc_volts );
-				if ( hourData.max_i_dc_watts_hours < ( entry.data.i_dc_amps * entry.data.i_dc_volts ) ) hourData.max_i_dc_watts_hours = ( entry.data.i_dc_amps * entry.data.i_dc_volts );
-				hourData.avg_i_dc_watts_hours += ( entry.data.i_dc_amps * entry.data.i_dc_volts );
-				hourData.n_i_dc_watts_hours++;
-
-			}
-		}
-
 	
-
-	}
-
-	function ampsOutHourData(packet, entry, hourChannels){
-
-		var channel = "i_ac_amps_out_inverting";
-		if ( -1 == $.inArray( channel, hourChannels ) ) {	
-				hourChannels.push( channel );	
-		}
-
-		channel = "i_ac_amps_out_charging";
-		if ( -1 == $.inArray( channel, hourChannels ) ) {	
-				hourChannels.push( channel );	
-		}
-
-
-		if ( entry.data.i_ac_amps_out < 100 && 1 != parseInt(entry.data.i_status) && 2 != parseInt(entry.data.i_status) && 4 != parseInt(entry.data.i_status) && 8 != parseInt(entry.data.i_status) ) {
-			
-			if ( null == hourData["min_i_ac_amps_out_inverting_hours"] ) {
-				hourData.min_i_ac_amps_out_inverting_hours = entry.data.i_ac_amps_out;
-				hourData.max_i_ac_amps_out_inverting_hours = entry.data.i_ac_amps_out;
-				hourData.avg_i_ac_amps_out_inverting_hours = entry.data.i_ac_amps_out;
-				hourData.n_i_ac_amps_out_inverting_hours = 1;	
-			
-			} else {
-
-				if ( hourData.min_i_ac_amps_out_inverting_hours > entry.data.i_ac_amps_out ) hourData.min_i_ac_amps_out_inverting_hours = entry.data.i_ac_amps_out;
-				if ( hourData.max_i_ac_amps_out_inverting_hours < entry.data.i_ac_amps_out ) hourData.max_i_ac_amps_out_inverting_hours = entry.data.i_ac_amps_out;
-				hourData.avg_i_ac_amps_out_inverting_hours += entry.data.i_ac_amps_out;
-				hourData.n_i_ac_amps_out_inverting_hours++;
-
-			}
-		} else {
-
-			if ( null == hourData["min_i_ac_amps_out_inverting_hours"] ) {
-				hourData.min_i_ac_amps_out_inverting_hours = 0;
-				hourData.max_i_ac_amps_out_inverting_hours = 0;
-				hourData.avg_i_ac_amps_out_inverting_hours = 0;
-				hourData.n_i_ac_amps_out_inverting_hours = 0;	
-			}
-
-		}
-		
-		if ( entry.data.i_ac_amps_out < 100 && parseInt(entry.data.i_status) >= 1 && parseInt(entry.data.i_status) <= 8 ) {
-
-			if ( null == hourData["min_i_ac_amps_out_charging_hours"]) {
-
-				hourData.min_i_ac_amps_out_charging_hours = entry.data.i_ac_amps_out;
-				hourData.max_i_ac_amps_out_charging_hours = entry.data.i_ac_amps_out;
-				hourData.avg_i_ac_amps_out_charging_hours = entry.data.i_ac_amps_out;
-				hourData.n_i_ac_amps_out_charging_hours = 1;
-
-			} else {
-				if ( hourData.min_i_ac_amps_out_charging_hours > entry.data.i_ac_amps_out ) hourData.min_i_ac_amps_out_charging_hours = entry.data.i_ac_amps_out;
-				if ( hourData.max_i_ac_amps_out_charging_hours < entry.data.i_ac_amps_out ) hourData.max_i_ac_amps_out_charging_hours = entry.data.i_ac_amps_out;
-				hourData.avg_i_ac_amps_out_charging_hours += entry.data.i_ac_amps_out;
-				hourData.n_i_ac_amps_out_charging_hours++;
-			}
-		} else {
-			
-			if ( null == hourData["min_i_ac_amps_out_charging_hours"]) {
-				hourData.min_i_ac_amps_out_charging_hours = 0;
-				hourData.max_i_ac_amps_out_charging_hours = 0;
-				hourData.avg_i_ac_amps_out_charging_hours = 0;
-				hourData.n_i_ac_amps_out_charging_hours = 0;
-			}
-		}
-
-
-	}
 
 	/* plots the graphs */
 	function plotGraphs(){
@@ -1483,7 +1210,9 @@
 		var count = 0;
 
 		/* get first timestamp */
-		var startTime = notAvgArray[0][0];
+		
+		if (notAvgArray)
+			var startTime = notAvgArray[0][0];
 		
 
 		/* initialize array */
@@ -1557,12 +1286,6 @@
 			loadData();
 			console.log("tried again");
 		}
-		/* if seconds get to 60 a message pops up saying the data is old */
-		if ( seconds > 60 ) {
-			$(".caution").show();
-		} else {
-			$(".caution").hide();
-		}
 
 		//loadLiveData();
 
@@ -1592,7 +1315,38 @@
 
 	}
 
+	$(document).ready(function(){
+		console.log("start");
+		/* The bar doesn't work well on ipods  */
+		if ( navigator.platform == 'iPhone' || navigator.platform == 'iPod' ) { 
+			$("#bar").hide();
+			
+		};
 
+		$.ajaxSetup({ cache: false });
+
+
+
+		/* this will shoot off a request to the server when the window is refocused */
+		$(window).focus(function() {
+			console.log("welcome back");
+			//loadData();
+		});
+		/* ajax error listener */
+		$( document ).ajaxError(function(event){
+			console.log("no response from json");
+			//$("#connection_warn").show();
+			$("#connection_warn").append(event);
+			noResponse = true;
+			customFaults(null);
+		});
+		/* request data and start timer */
+		//loadData();
+
+		loadChannelData();
+		
+	
+	});
 
 </script>
 

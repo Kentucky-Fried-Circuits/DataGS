@@ -143,6 +143,9 @@
 			case 5: 
 				fault = "PRO-VERTER INTERNAL ERROR: DATA NOT UPDATING<br><span style=\"font-size:.75em;\">CONTACT SUPPORT OR POWER CYCLE PROVERTER</span>";
 				break;
+			case 6: 
+				fault = "BMK IN FAULT MODE!";
+				break;
 			default:
 				fault = "UNKNOWN FAULT";
 				break;
@@ -169,7 +172,11 @@
 				s += magnumAGSStatus(parseInt(dataAr['a_status'].sampleValue));
 			}
 
-		
+			/* Check for inverter faults */
+			if ( 1 != parseInt(dataAr['b_fault'].sampleValue) ) {
+				s += "<hr>";
+				s += faultMessages(6);
+			}
 
 			/* Critical Battery */
 			if ( parseInt(dataAr["age_bmk"].sampleValue) < 100 ) {

@@ -26,6 +26,7 @@
 	var urlSummary = root+"historyByDay.json";
 	var urlChannel = root+"channels.json";
 	var urlLive = root+"live.json";
+	var urlDay = root+"dayStats.json";
 
 	if ( msieversion() ) {
 		isIE = true;
@@ -35,4 +36,5 @@
 		urlSummary = root+"historyByDay.dat";
 		//urlChannel = root+"channels.dat";
 		urlLive = root+"live.dat";
+		urlDay = root+"dayStats.dat";
 	}
