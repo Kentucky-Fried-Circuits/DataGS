@@ -26,54 +26,25 @@
 				
 			
 		</div>
-<!--
-			<tr>
-				<td class="right" style="border: none;"></th>
-				<td class="right" style="padding-right: 10px; border: none;"></th>
-				<td rowspan="2" style="width: 240px; border: none;">
-					<form method="post" action="/">
-						<table style="float: right;">
-							<tr>
-								<td>
-									<span style="font-size: 0.7em;">username:</span><br />
-									<input type="text" name="username" size="12" value="" />
-								</td>
-								<td>
-									<span style="font-size: 0.7em;">password:</span><br />
-									<input type="password" name="password" size="12" />
-								</td>
-								<td>
-									<input type="submit" value="login" />
-								</td>
-								</tr>
-						</table>
-					</form>
-				</th> 
-			</tr>
-			<tr>
-				<td class="right" style="padding-right: 10px; border: none;"></th>
-				<td class="right" style="padding-right: 10px; border: none;"><a href="/" class="thlinkheader">Home</a> or <a href="/newuser/" class="thlinkheader">Create Account</a></th>
-			</tr>
--->
-
+		<div class="navBarCon">	
+			<ul  style="border: none; width:100%; border-spacing: 0px;list-style-type: none;">
 			
-		<table style="border: none; width:100%; border-spacing: 0px;">
-			<tr>
 				
-				<th class="navinnerselected">
-					<a class="thlink" href="index.html">Current Conditions</a>
-				</th>
-				<th class="navinner">
-					<a class="thlink" href="currentSettings.html">Current Settings</a>
-				</th>
-				<th class="navinner">
-					<a class="thlink" href="historical.html">Historical Data</a>
-				</th>
+					<li>
+						<a  href="index.html">Current Conditions</a>
+					</li>
+					<li>
+						<a  href="currentSettings.html">Current Settings</a>
+					</li>
+					<li>
+						<a  href="historical.html">Historical Data</a>
+					</li>
 				
-			</tr>	
+				</ul>
+		</div>
 				
 
-					</table>
+						
 	</div>
 	<div style="text-align: center;">
 		<h1>PRO-Verter RMK: Current Conditions</h1>
@@ -125,9 +96,8 @@
 	}
 	/* saves the channel data to an object that can be referenced anywhere */
 	function loadChannelData(){
-		//console.log(urlChannel);
 
-		    // If internet explorer, use Microsoft XDR
+		// If internet explorer, use Microsoft XDR
 		if ( isIE ) {
 		    var xdr = new XDomainRequest();
 		    xdr.open("get", urlChannel+"?t="+new Date().getTime());
@@ -175,16 +145,6 @@
 		return space+obj.units;
 	}
 
-	/* takes most current timestamp from packet and checks against current UTC time */
-	/* Doesn't work if server and the client's clocks are out of sync. Which means it will never work */
-	function getAgeSeconds(ts){
-
-		var now = new Date().getTime();
-	
-		return (now-ts)/1000;
-
-	}
-
 
 	var dataAr = [];
 
@@ -197,7 +157,7 @@
 
 
 
-		    // If internet explorer, use Microsoft XDR
+		// If internet explorer, use Microsoft XDR
 		if ( isIE ) {
 		    var xdr = new XDomainRequest();
 		    xdr.open("get", urlNow+"?t="+new Date().getTime());
@@ -241,7 +201,7 @@
 		
 
 
-		    // If internet explorer, use Microsoft XDR
+		// If internet explorer, use Microsoft XDR
 		if ( isIE ) {
 		    var xdr = new XDomainRequest();
 		    xdr.open("get", urlNow+"?t="+new Date().getTime());
