@@ -25,6 +25,16 @@ public class UtilJSON {
 	}
 	
 	/**
+	 * Make a JSON object with an long value.
+	 * @param object name
+	 * @param string value
+	 * @return string with JSON representation 
+	 */
+	public static String putLong(String title, long value) {
+		return "\"" + title + "\": " + value; 		
+	}
+	
+	/**
 	 * Make a JSON object with an string value.
 	 * @param object name
 	 * @param string value
