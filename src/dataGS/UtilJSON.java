@@ -21,7 +21,7 @@ public class UtilJSON {
 	 * @return string with JSON representation 
 	 */
 	public static String putInt(String title, int value) {
-		return "\"" + title + "\": \"" + value + "\"";
+		return "\"" + title + "\": " + value;
 	}
 	
 	/**
