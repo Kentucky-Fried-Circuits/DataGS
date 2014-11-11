@@ -16,7 +16,7 @@
 		window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '');
 	}
 
-	var root = window.location.origin + ":8080/data/";
+	var root = window.location.origin + "/data/";
 
 
 
