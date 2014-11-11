@@ -109,10 +109,11 @@ public class HistoryPointJSON {
 				/* if we have have this key in the channel description map, we use the precision from there. Otherwise we
 				 * just go with default precision.
 				 */
-				if ( pairs.getValue().mode==ChannelDescription.Modes.SAMPLE ) {
-					/* just dump the current value */
-					csvData.append("\"" + StringEscapeUtils.escapeCsv(pairs.getValue().sampleValue + "") + "\"");
-				} else if ( chanDesc.containsKey(pairs.getKey() )) {
+//				if ( pairs.getValue().mode==ChannelDescription.Modes.SAMPLE ) {
+//					/* just dump the current value */
+//					csvData.append("\"" + StringEscapeUtils.escapeCsv(pairs.getValue().sampleValue + "") + "\"");
+//				} else 
+				if ( chanDesc.containsKey(pairs.getKey() )) {
 					csvData.append("" + StringEscapeUtils.escapeCsv(numberPrecision(pairs.getValue().getMean(), chanDesc.get( pairs.getKey() ).precision ))+"");
 				} else {
 					System.err.println("# No channel description found for " + pairs.getKey() + " using default double.");
