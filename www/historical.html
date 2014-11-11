@@ -19,7 +19,7 @@
 		<div id = "header" style = "width:100%;">
 			
 				
-			<a href="http://www.solarstik.com/"><img src="res/images/logo_s.png" alt="Magnum Energy" style = "text-decoration: none; border: none; outline: none; padding-bottom: 5px; padding-top: 30px; padding-left: 5px;" /></a>
+			<a href="http://www.solarstik.com/"><img src="res/images/logo_s.png" alt="Solar Stik" style = "text-decoration: none; border: none; outline: none; padding-bottom: 5px; padding-top: 30px; padding-left: 5px;" /></a>
 	
 			<b style = "padding-left: 20px" >24/7 Support: 800-793-4364 Ext 102</b>
 	
@@ -94,16 +94,15 @@
 		};
 		/* window refocus listener  */
 		$(window).focus(function() {
-			//console.log("welcome back");
 			//loadData();
 		});
 
 		/* ajax error listener */
 		$( document ).ajaxError(function(event){
-			//console.log("no response from json");
-			//console.log(event);
-			$("#connection_warn").show();
-			$("#connection_warn").append(event);
+			//$("#connection_warn").show();
+			//$("#connection_warn").append(event);
+	
+			$(".caution").show();
 
 			//$("#cover").hide();
 			//clearInterval(loadTimerVar);
@@ -129,6 +128,12 @@
 			
 			
 		    };
+		    xdr.onerror = function() {
+			//console.log("err");
+			setTimeout(loadHeadline,10000);
+			$(".caution").show();
+
+		    }
 		    xdr.send();
 		} else {
 			/* if not IE we use ajax */
@@ -161,19 +166,20 @@
 	var calMonths = ["Not A Month","January","Feburary","March","April","May","June","July","August","September","October","November","December"];
 	
 	function getFiles() {
-		console.log(urlFiles);
 		    // If internet explorer, use Microsoft XDR
-		console.log(isIE)
 		if ( isIE ){
 		    var xdr = new XDomainRequest();
 		    xdr.open("get", urlFiles + "?t="+new Date().getTime());
 		    xdr.onload = function() {
 		       
 			data = $.parseJSON(xdr.responseText);
-			//console.log(data);
 			processResponse(data);
 		    };
-		    
+		    xdr.onerror = function() {
+			setTimeout(getFiles,10000);
+			$(".caution").show();
+
+		    }
 		    xdr.send();
 		} else {
 			/* if not IE we use ajax */
@@ -196,7 +202,6 @@
 	
 	/* only pass data as an object, not as a plain text response */
 	function processResponse(data){
-		console.log("got here");
 		var fileAr = data.history_files.files;
 			//console.log(fileAr);
 			var lastYear = "";
@@ -330,12 +335,12 @@
 
 	</script>
 
-
 	<div class="caution" style="display: none;" >
 		<p>
-		This station is marked as supplying live data, however the data appears to be old. Please check the age of the data carefully before using it!
+		PRO-Verter Not Connected!
 		</p>
 	</div>
+
 
 	<div id="connection_warn" style="text-align: center; width: 800px; margin-right: auto; margin-left: auto; background-color: orange; color: white; display: none;" onclick="hideWarn()">
 			<h1>No Response From Server. Please check to make sure you are still connected to the internet</h1>

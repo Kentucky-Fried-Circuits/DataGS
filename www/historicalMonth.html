@@ -19,7 +19,7 @@
 		<div id = "header" style = "width:100%;">
 			
 				
-			<a href="http://www.solarstik.com/"><img src="res/images/logo_s.png" alt="Magnum Energy" style = "text-decoration: none; border: none; outline: none; padding-bottom: 5px; padding-top: 30px; padding-left: 5px;" /></a>
+			<a href="http://www.solarstik.com/"><img src="res/images/logo_s.png" alt="Solar Stik" style = "text-decoration: none; border: none; outline: none; padding-bottom: 5px; padding-top: 30px; padding-left: 5px;" /></a>
 	
 			<b style = "padding-left: 20px" >24/7 Support: 800-793-4364 Ext 102</b>
 	
@@ -101,13 +101,11 @@
 
 		/* window refocus listener  */
 		$(window).focus(function() {
-			console.log("welcome back");
 			//loadData();
 		});
 
 		/* ajax error listener */
 		$( document ).ajaxError(function(event){
-			console.log("no response from json");
 			$("#connection_warn").show();
 			$("#connection_warn").append(event);
 			
@@ -181,13 +179,11 @@
 	var channels;
 
 	function loadChannels(){
-		console.log(urlChannel);
 	        // If internet explorer, use Microsoft XDR
 		if ( isIE ){
 		    var xdr = new XDomainRequest();
 		    xdr.open("get", urlChannel+"?t="+new Date().getTime());
 		    xdr.onload = function() {
-		        console.log("channels obtained");
 			dataS = $.parseJSON(xdr.responseText);
 			channels=dataS.data;
 			loadSummary()
@@ -234,19 +230,16 @@
 	}
 
 	function loadSummary(){
-		console.log(urlSummary);
 		if ( isIE ){
 		    var xdr = new XDomainRequest();
 		    xdr.open("get", urlSummary+"?t="+new Date().getTime());
 		    xdr.onload = function() {
 		       
-			console.log(xdr.responseText);
 
 			if ( "" == xdr.responseText ) {
 				$("#files").html("");
 				$("#lH1").html("Building Summary. Please be patient, this process could take a couple minutes.");
 				$("#loading").show();
-				console.log("timer");
 				setTimeout(loadSummary,1000*10);
 			} else {
 				
@@ -271,7 +264,6 @@
 					$("#files").html("");
 					$("#lH1").html("Building Summary. Please be patient, this process could take a couple minutes.");
 					$("#loading").show();
-					console.log("timer");
 					setTimeout(loadSummary,1000*10);
 				} else {
 					dataS = $.parseJSON(dataS);
@@ -295,7 +287,6 @@
 	}
 
 	function getFiles() {
-		console.log(urlFiles);
 		if ( isIE ){
 		    var xdr = new XDomainRequest();
 		    xdr.open("get", urlFiles+"?t="+new Date().getTime());
@@ -330,7 +321,6 @@
 		
 	
 		var fileAr = data.history_files.files;
-		//console.log(fileAr);
 		var lastYear = "";
 		var lastMonth = "";
 		var years = [];
@@ -338,7 +328,6 @@
 		
 		var dispMonths = $(document).getUrlParam("months[]");
 
-		console.log(dispMonths);
 		//dispMonths = ["201410","201409","201408","201407"];
 
 		/* sort the files because they may not be in order */
@@ -374,7 +363,6 @@
 						/* set to current year */
 						lastYear = fileAr[i].substr(0,4);
 						/* add to the year array */
-						console.log("pushing year: "+  fileAr[i].substr(0,4) );
 						years.push( fileAr[i].substr(0,4) );
 
 						/* month has to be reset if year is changed incase the same month of different years is selected. */
@@ -382,15 +370,12 @@
 						//$("#files").append("<tr><th colspan=2>"+fileAr[i].substr(0,4)+"</th></tr>");
 					}
 					/* check the month */
-					//console.log(fileAr[i].substr(4,2));
 					if (lastMonth != fileAr[i].substr(4,2)){
-						//console.log("next month");
 						/* set to current month */
 						lastMonth = fileAr[i].substr(4,2);
 						/* add to the month array */
 						if ( null == months[lastYear] ) 						
 							months[lastYear]=[];	
-						console.log("pushing month: "+  fileAr[i].substr(4,2) );				
 						months[lastYear].push( fileAr[i].substr(4,2) );
 					
 						$("#files").append("<tr><th colspan="+colSpan+">"+calMonths[parseInt(fileAr[i].substr(4,2),10)]+" - "+fileAr[i].substr(0,4)+"</th></div></tr>");
@@ -551,7 +536,6 @@
 	var plot0 = [];
 	function plotCharts(){
 		/* tool tip */
-		console.log("plot");
 		$("<div id='tooltip'></div>").css({
 			position: "absolute",
 			display: "none",
@@ -643,7 +627,6 @@
 					};
 
 				if ( flot[key][0].length>0 ) {
-					console.log(key);
 					plot0[key] = $.plot("#chart"+key, data0[key],optionsEdit);
 
 					$("#chart"+key).bind("plothover", createPlotHoverHandler(plot0[key]));
@@ -704,7 +687,6 @@
 						.css({top: item.pageY+5, left: item.pageX+5})
 						.fadeIn(200);
 				} else {
-					console.log("issue with tooltip");
 				}
 				
 			} else {

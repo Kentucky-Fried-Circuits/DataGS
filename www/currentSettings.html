@@ -18,7 +18,7 @@
 		<div id = "header" style = "width:100%;">
 			
 				
-			<a href="http://www.solarstik.com/"><img src="res/images/logo_s.png" alt="Magnum Energy" style = "text-decoration: none; border: none; outline: none; padding-bottom: 5px; padding-top: 30px; padding-left: 5px;" /></a>
+			<a href="http://www.solarstik.com/"><img src="res/images/logo_s.png" alt="Solar Stik" style = "text-decoration: none; border: none; outline: none; padding-bottom: 5px; padding-top: 30px; padding-left: 5px;" /></a>
 	
 			<b style = "padding-left: 20px" >24/7 Support: 800-793-4364 Ext 102</b>
 	
@@ -85,17 +85,14 @@
 
 		/* This shoots off a request to the server when the window is refocused on  */
 		$(window).focus(function() {
-			//console.log("welcome back");
 			loadData();
 		});
 
 		
 		$( document ).ajaxError(function(event){
-			//console.log("no response from json");
-			$("#connection_warn").show();
-			$("#connection_warn").append(event);
-			//$("#cover").hide();
-			//clearInterval(loadTimerVar);
+
+			$("#settingsTable").hide();
+			$(".caution").show();
 		});
 		loadHeadline();
 		loadData();
@@ -168,7 +165,6 @@
 		
 		if ( seconds > 30 && seconds % 30 == 5 ) {
 			loadData();
-			//console.log("tried again");
 		}
 		
 	
@@ -191,7 +187,6 @@
 	var lastCh="";	
 	function loadData() {
 
-			//console.log(urlNow);
 
 
 
@@ -202,9 +197,14 @@
 		    xdr.onload = function() {
 		       
 			dataS = $.parseJSON(xdr.responseText);
-			//console.log(data);
 			processResponse(dataS, true);
 		    };
+		    xdr.onerror = function() {
+			$("#settingsTable").hide();
+			setTimeout(loadData,10000);
+			$(".caution").show();
+
+		    }
 		    xdr.send();
 		} else {
 			/* if not IE we use ajax */
@@ -216,8 +216,13 @@
 				crossDomain : true
 			})
 			.done(function( dataS ) {
-				dataS = $.parseJSON(dataS);
-				processResponse(dataS, true);
+				if ( "" != dataS ) {
+					dataS = $.parseJSON(dataS);
+					processResponse(dataS, true);
+				} else {
+					$("#settingsTable").hide();
+					setTimeout(loadData,10000);
+				}
 			});
 
 		}
@@ -232,10 +237,10 @@
 			of objects instead that can be referenced by channel. */
 		
 		$. each (data.data, function (key, value) {
-			   	//console.log (key + ":" + value);
 				dataAr[value.channel]=value;
 				lastCh = value.channel;	
 		});
+
 
 		if ( 0 == data.data.length ) {
 			$("#settingsTable").hide();
@@ -287,8 +292,6 @@
 
 		//Check which, if any, ags is used and hide what's not used
 		/*if ( dataAr["a_revision"].avg != 0 && dataAr["a_revision"].avg != null && dataAr["r_ags_stop_vdc"].avg == null ) {
-			console.log(dataAr["a_revision"].avg);
-			console.log(dataAr["r_ags_stop_vdc"].avg);
 			$(".ARC").hide();
 
 		} else if ( dataAr["a_revision"].avg != 0 && dataAr["a_revision"].avg != null ) {
@@ -303,7 +306,6 @@
 		if ( null != dataAr["a_revision"] && null != dataAr["r_ags_stop_vdc"] ) {
 			var agsType = ags_type(dataAr["a_revision"].sampleValue, dataAr["r_ags_stop_vdc"].sampleValue);
 
-			//console.log(agsType);
 
 			if ( "none" == agsType ) {
 
@@ -441,7 +443,6 @@
 
 
 			} else {
-				//console.log("something is wrong with the AGS data");
 				$(".ARC").hide();
 				$(".RC").hide();
 			}
@@ -460,7 +461,6 @@
 			}
 			$("#r_bmk_battery_size").html(commaSeparateNumber(parseInt(dataAr["r_bmk_battery_size"].sampleValue))+" amp/hours");
 		}else{
-			//console.log("hide");
 			$(".battMon").hide();
 		}
 

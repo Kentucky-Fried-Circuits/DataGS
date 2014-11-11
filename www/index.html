@@ -18,7 +18,7 @@
 		<div id = "header" style = "width:100%;">
 			
 				
-			<a href="http://www.solarstik.com/"><img src="res/images/logo_s.png" alt="Magnum Energy" style = "text-decoration: none; border: none; outline: none; padding-bottom: 5px; padding-top: 30px; padding-left: 5px;" /></a>
+			<a href="http://www.solarstik.com/"><img src="res/images/logo_s.png" alt="Solar Stik" style = "text-decoration: none; border: none; outline: none; padding-bottom: 5px; padding-top: 30px; padding-left: 5px;" /></a>
 	
 			<b style = "padding-left: 20px" >24/7 Support: 800-793-4364 Ext 102</b>
 	
@@ -99,16 +99,20 @@
 
 		// If internet explorer, use Microsoft XDR
 		if ( isIE ) {
-		    var xdr = new XDomainRequest();
-		    xdr.open("get", urlChannel+"?t="+new Date().getTime());
-		    xdr.onload = function() {
-		       
-			dataS = $.parseJSON(xdr.responseText);
-			channels=dataS.data;
-			loadHistory();
-			
-		    };
-		    xdr.send();
+			var xdr = new XDomainRequest();
+			xdr.open("get", urlChannel+"?t="+new Date().getTime());
+			xdr.onerror = function(){
+				noResponse = true;
+				customFaults(null);
+			};
+			xdr.onload = function() {
+
+				dataS = $.parseJSON(xdr.responseText);
+				channels=dataS.data;
+				loadHistory();
+
+			};
+			xdr.send();
 		} else {
 			/* if not IE we use ajax */
 		  	$.ajaxSetup({ cache: false });
@@ -189,30 +193,29 @@
 	
 	/* loads ten second data */
 	function loadDataCreate() {
-		//console.log(urlNow);
 		
 
 
 		// If internet explorer, use Microsoft XDR
 		if ( isIE ) {
-		    var xdr = new XDomainRequest();
-		    xdr.open("get", urlNow+"?t="+new Date().getTime());
-		    xdr.onload = function() {
-		       	noResponse = false;
-			dataS = $.parseJSON(xdr.responseText);
-			//console.log(data);
-			createTable(dataS, true);
-		    };
-		    xdr.onError = function() {
-		       
-			console.log("no response from json");
-			//$("#connection_warn").show();
-			$("#connection_warn").append(event);
-			noResponse = true;
-			customFaults(null);
-		    };
-			
-		    xdr.send();
+
+			var xdr = new XDomainRequest();
+			xdr.timeout = 3000;
+
+			xdr.open("get", urlNow+"?t="+new Date().getTime());
+			xdr.onload = function() {
+				dataS = $.parseJSON(xdr.responseText);
+				createTable(dataS, true);
+			};
+			xdr.ontimeout = function(){
+			};
+			xdr.onerror = function(){
+				noResponse = true;
+				customFaults(null);
+			};
+			xdr.send();
+
+		
 		} else {
 			/* if not IE we use ajax */
 		  	$.ajaxSetup({ cache: false });
@@ -226,6 +229,7 @@
 				noResponse = false;
 				dataS = $.parseJSON(dataS);
 				createTable(dataS, true);
+				
 			});
 
 		}
@@ -233,21 +237,21 @@
 	}
 
 	function loadData() {
-		//console.log(urlNow);
-		
-
 		// If internet explorer, use Microsoft XDR
 		if ( isIE ) {
 			var xdr = new XDomainRequest();
+			xdr.timeout = 3000;
+
 			xdr.open("get", urlNow+"?t="+new Date().getTime());
 			xdr.onload = function() {
-
 				dataS = $.parseJSON(xdr.responseText);
-				//console.log(data);
 				createTable(dataS, false);
 			};
-			xdr.onError = function(){
-				console.log();
+			xdr.ontimeout = function(){
+			};
+			xdr.onerror = function(){
+				noResponse = true;
+				customFaults(null);
 			};
 			xdr.send();
 		} else {
@@ -260,6 +264,7 @@
 				crossDomain : true
 			})
 			.done(function( dataS ) {
+
 				dataS = $.parseJSON(dataS);
 				createTable(dataS, false);
 			});
@@ -274,12 +279,12 @@
 	/* creates the current table */
 	function createTable(dataNow, create){
 		
-
-		
 		$. each (dataNow.data, function (key, value) {
 			dataAr[value.channel]=value;
 			lastCh = value.channel;	
 		});
+		
+		
 
 		if ( create )
 			$("#currentTable").html("");
@@ -296,7 +301,8 @@
 			/* BMK rows */
 			batteryCharts(dataAr,create)
 			batteryRows(dataAr,create);
-			if ( parseInt(dataAr["age_bmk"].sampleValue) < 100 )updatePlotArrays(dataAr,create);
+			if ( parseInt(dataAr["age_bmk"].sampleValue) < 100 )
+				updatePlotArrays(dataAr,create);
 
 			/* Inverter rows */
 			inverterRows(dataAr,create);
@@ -370,7 +376,7 @@
 		
 			$('#voltsAmps').html( commaSeparateNumber(dataAr["b_dc_volts"].avg.toFixed(getChObj("b_dc_volts").precision)) + " VDC @ " + commaSeparateNumber(dataAr["b_dc_amps"].avg.toFixed(getChObj("b_dc_amps").precision)) + " amps (" + commaSeparateNumber(watts) + " watts)" );
 		
-			$('#ampHours').html( commaSeparateNumber(dataAr["b_amph_in_out"].sampleValue) + " amp hours");
+			$('#ampHours').html( commaSeparateNumber(parseFloat(dataAr["b_amph_in_out"].sampleValue).toFixed(getChObj("b_amph_in_out").precision)) + " amp hours");
 
 
 			
@@ -511,9 +517,9 @@
 
 			addLine("currentTable",'Status:', magnumAGSStatus(parseInt(dataAr['a_status'].sampleValue)),"ags_status", create);
 			addLine("currentTable",'AGS Temperature:', magnumAGSTemperature(dataAr['a_temperature'].avg),"ags_temp", create);
-			addLine("currentTable",'AGS Voltage:', dataAr['a_voltage'].avg+" VDC","ags_volt", create);
-			addLine("currentTable",'Generator Runtime:', dataAr['a_gen_runtime_minutes'].sampleValue+" minutes","ags_genRun", create);
-			addLine("currentTable",'Days Since Last Run:', dataAr['a_days_since_last'].sampleValue + " days","ags_daysSince", create);
+			addLine("currentTable",'AGS Voltage:', dataAr['a_voltage'].avg.toFixed(getChObj("a_voltage").precision)+" VDC","ags_volt", create);
+			addLine("currentTable",'Generator Runtime:', parseInt(dataAr['a_gen_runtime_minutes'].sampleValue)+" minutes","ags_genRun", create);
+			addLine("currentTable",'Days Since Last Run:', parseInt(dataAr['a_days_since_last'].sampleValue) + " days","ags_daysSince", create);
 
 		} else {
 	
@@ -532,7 +538,8 @@
 	/* appends row to the given tableID */
 	function addLine(tableID, name, val, id, create){
 		tableID="#"+tableID;
-	
+		
+		
 
 		if ( create ) {
 			$(tableID).append("<tr><th class=\"right\">"+name+"</th><td id=\""+id+"\">"+val+"</td></tr>");
@@ -607,20 +614,16 @@
 	
 
 	function updatePlotArrays(dataAr){
-		//console.log("updateplotarray");
 		/* push new data into chart arrays */
 		/* if isn't null and the time on the packet does not equal the time of the last pushed element */
 		if ( null !=  dataAr["b_state_of_charge"].avg && dataAr["b_state_of_charge"].time != data.b_state_array[data.b_state_array.length-1][0] ) {
 			data.b_state_array.push([dataAr["b_state_of_charge"].time, dataAr["b_state_of_charge"].avg]);
-			//console.log("# push: "+dataAr["b_state_of_charge"].avg);
 		}
 		if ( null != dataAr["b_dc_volts"].avg && null !=  dataAr["b_dc_amps"].avg && dataAr["b_dc_amps"].time != data.b_watts[data.b_watts.length-1][0] ) {
 			data.b_watts.push([dataAr["b_dc_volts"].time, dataAr["b_dc_volts"].avg * dataAr["b_dc_amps"].avg]);
-			//console.log("push: "+(dataAr["b_dc_volts"].avg * dataAr["b_dc_amps"].avg));
 		}
 		if ( null != dataAr["b_amph_in_out"].sampleValue && dataAr["b_amph_in_out"].time != data.amp_in_out[data.amp_in_out.length-1][0] ) {
 			data.amp_in_out.push([ dataAr["b_amph_in_out"].time, dataAr["b_amph_in_out"].sampleValue ]);
-			//console.log("push: "+dataAr["b_amph_in_out"].sampleValue );
 		}
 
 		/* if array has more than 24 hours of data, shift data out */
@@ -629,17 +632,14 @@
 		var dayAgo = (new Date().getTime())-(1000*60*60*24);
 
 		while (data.b_state_array[0][0] < dayAgo ) {
-			//console.log("shift SOC");
 			data.b_state_array.shift();
 		}
 
 		while (data.b_watts[0][0] < dayAgo ) {
-			//console.log("shift watts");
 			data.b_watts.shift();
 		}
 
 		while (data.amp_in_out[0][0] < dayAgo ) {
-			//console.log("shift amps");
 			data.amp_in_out.shift();
 		}
 
@@ -666,11 +666,15 @@
 		if ( isIE ){
 			var xdr = new XDomainRequest();
 			xdr.open("get", urlDay+"?t="+new Date().getTime());
-			xdr.onload = function() {
-			//console.log("parse dayData");
-			dataS = $.parseJSON(xdr.responseText);
 
-			processDayData(dataS,dataAr,create);
+			xdr.onerror = function(){
+				noResponse = true;
+				customFaults(null);
+			};
+			xdr.onload = function() {
+				dataS = $.parseJSON(xdr.responseText);
+			
+				processDayData(dataS,dataAr,create);
 
 			};
 			xdr.send();
@@ -695,7 +699,6 @@
 	}
 
 	function processDayData( dayData, dataAr, create ){
-		//console.log(dayData);
 		
 		if ( create )
 			$("#hourTable").html("");
@@ -739,8 +742,7 @@
 			/* if no BMK, then show inverter dc volts and amps */
 			if ( parseInt(dataAr['age_bmk'].sampleValue) > 250 ) {
 				/* unfortunately, we aren't keeping track of this in the history json  */
-				//updateHourRow("i_dc_volts","DC Volts:", create);
-				//updateHourRow("i_dc_amps","DC Amps:", create);
+
 				addHourLine("hourTable","i_dc_volts","DC Volts:",dayData.dayStats,create );
 				addHourLine("hourTable","i_dc_amps","DC Amps:",dayData.dayStats,create );
 		
@@ -754,7 +756,6 @@
 			if ( ! displayMeters && parseInt(dataAr['length_inverter'].sampleValue)>=20 ) {
 				exportMeters=true;
 			}
-			//console.log("displayMeters: "+displayMeters+", exportMeters: "+exportMeters);
 			if ( displayMeters || exportMeters ) {
 				/* AC Volts Out ( when volts > 80 ) */
 
@@ -875,11 +876,10 @@
 	}
 
 	function addHourLineSpec(tableID,id,title,val,create){
-		//console.log(val.dayStats[id]);
 		var chObj = getChObj(id);
 
 		/* if channel exists */
-		if ( null != chObj ) {
+		if ( null != chObj && null != val[id]) {
 			var unit = getChUnit(id,"");
 			/* if max is 5e-324 then that means we don't have data for that channel, which is not an error, it just means the inverter doesn't have a feature that others might have */
 			if ( val[id].max != 5e-324 ) {
@@ -947,11 +947,11 @@
 	}
 
 	function addHourLine(tableID,id,title,val,create){
-		//console.log(val.dayStats[id]);
 		var chObj = getChObj(id);
 
+
 		/* if channel exists */
-		if ( null != chObj ) {
+		if ( null != chObj && null != val[id] ) {
 			var unit = getChUnit(id,"");
 			/* if max is 5e-324 then that means we don't have data for that channel, which is not an error, it just means the inverter doesn't have a feature that others might have */
 			if ( val[id].max != 5e-324 ) {
@@ -984,17 +984,20 @@
 	/* loads the history json to create the 24 hour data as well as the striplines */
 	function loadHistory(){
 
-		//console.log("request history");
 
 		    // If internet explorer, use Microsoft XDR
 		if ( isIE ){
 			var xdr = new XDomainRequest();
 			xdr.open("get", urlHist+"?t="+new Date().getTime());
-			xdr.onload = function() {
-			//console.log("parse history");
-			dataS = $.parseJSON(xdr.responseText);
 
-			processHist(dataS);
+			xdr.onerror = function(){
+				noResponse = true;
+				customFaults(null);
+			};
+			xdr.onload = function() {
+				dataS = $.parseJSON(xdr.responseText);
+
+				processHist(dataS);
 
 			};
 			xdr.send();
@@ -1019,7 +1022,12 @@
 
 	/* processes the history json into 24 hour data and arrays for the striplines */
 	function processHist(hist){
-		//console.log("got history");
+
+		if ( 0 == hist.history.length ) {
+			setTimeout(loadHistory,10000);
+			return;
+		}
+
 		var color_green;
 		var color_yellow =  '#f7a11a';
 		var color_red;
@@ -1037,7 +1045,6 @@
 		/* iterate through the history object array */
 		
 		var histAr = hist.history;
-		//console.log(histAr);
 		//$. each (hist.history, function (packet, entry) {
 		for ( var i = 0 ; i < histAr.length ; i++ ) {
 			
@@ -1060,8 +1067,8 @@
 		
 
 		loadDataCreate();
+		
 		timerTick();
-
 		
 
 	
@@ -1072,10 +1079,8 @@
 
 	/* plots the graphs */
 	function plotGraphs(){
-		//console.log("plot");
 		/* take data from the json and put it in an array suitable for flot */
 		var dataArray = data.b_state_array;
-		//console.log(dataArray);
 		var minBatt = 100;
 
 		dataArray = tenMinuteAverages(dataArray);
@@ -1137,7 +1142,6 @@
 		for ( var i = 0; i<dataArray.length; i++ ) {
 			voltsArray[i]=[i,dataArray[i]];
 		}
-		//console.log(voltsArray);
 		/* plot the flot chart */
 		$.plot("#voltsChart", [{
 				data: voltsArray,
@@ -1175,7 +1179,6 @@
 		for ( var i = 0; i<dataArray.length; i++ ) {
 			ampArray[i]=[i,dataArray[i]];
 		}
-		//console.log(ampArray);
 		/* plot the flot chart */
 		$.plot("#ampChart", [{
 				data: ampArray,
@@ -1298,7 +1301,6 @@
 			old or if it checked too early */
 		if ( seconds > 10 && seconds % 10 == 5 ) {
 			loadData();
-			console.log("tried again");
 		}
 
 		//loadLiveData();
@@ -1349,7 +1351,6 @@
 	}
 
 	$(document).ready(function(){
-		console.log("start");
 		/* The bar doesn't work well on ipods  */
 		if ( navigator.platform == 'iPhone' || navigator.platform == 'iPod' ) { 
 			$("#bar").hide();
@@ -1362,12 +1363,10 @@
 
 		/* this will shoot off a request to the server when the window is refocused */
 		$(window).focus(function() {
-			console.log("welcome back");
 			//loadData();
 		});
 		/* ajax error listener */
 		$( document ).ajaxError(function(event){
-			console.log("no response from json");
 			//$("#connection_warn").show();
 			$("#connection_warn").append(event);
 			noResponse = true;
