@@ -75,7 +75,7 @@
 		} else {
 
 			if ( booFault && !silence) {	
-				console.log("BOOOOOP");
+				//console.log("BOOOOOP");
 				alarmSound.play();
 				alarmSound.isPlaying = true;
 				//setTimeout(soundAlarm,2000);
@@ -93,11 +93,11 @@
 			$('#controlSilence').html('true');
 			alarmSound.stop();
 			alarmSound.isPlaying = false;
-			console.log(alarmSound.isPlaying);
+			//console.log(alarmSound.isPlaying);
 		} else {
 			silence=false;
 			$('#controlSilence').html('false');
-			console.log(alarmSound.isPlaying);
+			//console.log(alarmSound.isPlaying);
 			if ( !alarmSound.isPlaying && booFault ){
 				alarmSound.isPlaying = true;
 				alarmSound.play();
@@ -172,19 +172,23 @@
 				s += magnumAGSStatus(parseInt(dataAr['a_status'].sampleValue));
 			}
 
-			/* Check for inverter faults */
-			if ( 1 != parseInt(dataAr['b_fault'].sampleValue) ) {
-				s += "<hr>";
-				s += faultMessages(6);
-			}
 
-			/* Critical Battery */
+
+			
 			if ( parseInt(dataAr["age_bmk"].sampleValue) < 100 ) {
 
+				/* Critical Battery */
 				if ( dataAr["b_dc_volts"].min - 1.0 <= parseFloat( dataAr["r_low_batt_cut_out"].sampleValue ) 
 										&& parseInt(dataAr["i_fault"].sampleValue) != 0x08 ) {
 					s += "<hr>";
 					s += faultMessages(0);
+				}
+
+				/* Check for inverter faults */
+				if ( 1 != parseInt(dataAr['b_fault'].sampleValue) ) {
+					s += "<hr>";
+					s += faultMessages(6);
+				
 				}
 
 			} else if ( parseInt(dataAr["age_inverter"].sampleValue) < 100 ) {
@@ -235,11 +239,12 @@
 
 
 		if ( "" == s ) {
-			console.log("Fault Free");
+			//console.log("Fault Free");
 			dismiss();
 			return false;
 		} else {
 			warn(s);
+			alarmUp();
 			return true;
 		}
 

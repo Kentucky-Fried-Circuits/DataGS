@@ -32,7 +32,7 @@
 			
 				
 					<li>
-						<a  href="index.html">Current Conditions</a>
+						<a  href="/">Current Conditions</a>
 					</li>
 					<li>
 						<a  href="currentSettings.html">Current Settings</a>
@@ -48,7 +48,7 @@
 						
 	</div>
 	<div style="text-align: center;">
-		<h1>PRO-Verter RMK: Historical Data</h1>
+		<h1 id="headline">PRO-Verter RMK: Historical Data</h1>
 				<!--Note: This server will be down for scheduled maintenance from 7PM to 9PM CST today.-->
 
 		<br />
@@ -108,9 +108,48 @@
 			//$("#cover").hide();
 			//clearInterval(loadTimerVar);
 		});
+		loadHeadline();		
 		getFiles();
+		
 
 	});
+
+
+	/* headline */
+	function loadHeadline(){
+
+		// If internet explorer, use Microsoft XDR
+		if ( isIE ) {
+		    var xdr = new XDomainRequest();
+		    xdr.open("get", urlHostname+"?t="+new Date().getTime());
+		    xdr.onload = function() {
+		       
+			dataS = $.parseJSON(xdr.responseText);
+			$("#headline").html("PRO-Verter RMK ("+dataS.hostname+"): Historical Data");
+			
+			
+		    };
+		    xdr.send();
+		} else {
+			/* if not IE we use ajax */
+		  	$.ajaxSetup({ cache: false });
+			$.ajax({
+				type: "GET",
+				url: urlHostname,
+				dataType: "html",
+				crossDomain : true
+			})
+			.done(function( dataS ) {
+
+				dataS = $.parseJSON(dataS);
+				$("#headline").html("PRO-Verter RMK ("+dataS.hostname+"): Current Conditions");
+				
+			});
+
+		}
+
+	}
+
 	/* Currently this has no point. It is just holding every object with it's timestamp as the key. */
 	var dataAr = [];
 	/* used to convert the timestamp into something human readable */
