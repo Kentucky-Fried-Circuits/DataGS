@@ -42,6 +42,12 @@ Returned as `application/json` if URI ends with `.json` or as `text/plain` if th
 
 ### /data/dayStats.json or /data/dayStats.dat
 
+Todo: fill in details
+
+### /data/hostname.json or /data/hostname.dat
+
+Hostname of server as `application/json` if URI ends with `.json` or as `text/plain` if the URI ends with `.dat`
+
 
 
 ## Command line arguments

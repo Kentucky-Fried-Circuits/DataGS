@@ -51,7 +51,7 @@ public class HTTPServerJSON extends NanoHTTPD {
 		File file = new File(documentRoot,uri);
 	
 		
-		System.err.println("# Checking if " + file.getAbsoluteFile() + " exists and is not a directory");
+	//	System.err.println("# Checking if " + file.getAbsoluteFile() + " exists and is not a directory");
 		
 	
 		
@@ -202,6 +202,9 @@ public class HTTPServerJSON extends NanoHTTPD {
 		} else if ( uri.endsWith( "/data/dayStats.json" ) ) {
 			/* summarized 24 hour data */
 			response = new NanoHTTPD.Response( Response.Status.OK, MIME_JSON, data.getJSON( DataGS.JSON_DAY_STATS ), gzipAllowed );
+		} else if ( uri.endsWith( "/data/hostname.json" ) ) {
+			/* meta info */
+			response = new NanoHTTPD.Response( Response.Status.OK, MIME_JSON, data.getJSON( DataGS.JSON_HOSTNAME ), gzipAllowed );
 		}
 
 
@@ -222,6 +225,9 @@ public class HTTPServerJSON extends NanoHTTPD {
 		} else if ( uri.endsWith( "/data/dayStats.dat" ) ) {
 			/* summarized 24 hour data */
 			response = new NanoHTTPD.Response( Response.Status.OK, MIME_PLAINTEXT, data.getJSON( DataGS.JSON_DAY_STATS ), gzipAllowed );
+		} else if ( uri.endsWith( "/data/hostname.dat" ) ) {
+			/* meta info */
+			response = new NanoHTTPD.Response( Response.Status.OK, MIME_PLAINTEXT, data.getJSON( DataGS.JSON_HOSTNAME ), gzipAllowed );
 		}
 		/* serve from filesystem */
 		else {
