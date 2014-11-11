@@ -443,9 +443,11 @@ public class DataGS implements ChannelData, JSONData {
 
 		if ( null == files || 0==files.length ) {
 			historyDayLogFilesJSON="\"files\":[]";
-		} else {
-			historyDayLogFilesJSON="\"files\":["+filesToJson( files )+"]";
-		}
+			return;
+		} 
+		
+		historyDayLogFilesJSON="\"files\":["+filesToJson( files )+"]";
+		
 		System.err.println("# " + files.length + " files listed for historyFiles.json");
 		System.err.flush();
 
@@ -1041,7 +1043,7 @@ public class DataGS implements ChannelData, JSONData {
 
 	/* Main method */
 	public static void main(String[] args) throws IOException {
-		System.err.println("# Major version: 2014-11-10 (Ian's Laptop)");
+		System.err.println("# Major version: 2014-11-11 (precision)");
 		System.err.println("# java.library.path: " + System.getProperty( "java.library.path" ));
 
 		DataGS d=new DataGS();
