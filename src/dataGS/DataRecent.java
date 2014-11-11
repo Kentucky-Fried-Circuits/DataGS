@@ -45,6 +45,11 @@ public class DataRecent {
 	public void startPoint(long time) {
 		/* call this at the start of a new measurement */
 		wValues=new double[channelIndexes.size()];
+		
+		for ( int i=1 ; i<wValues.length ; i++ ) {
+			wValues[i]=Double.NaN;
+		}
+		
 		/* index zero is always timestamp */
 		wValues[0]=time;
 	}
