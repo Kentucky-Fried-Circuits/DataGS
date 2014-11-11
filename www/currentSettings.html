@@ -31,7 +31,7 @@
 			
 				
 					<li>
-						<a  href="index.html">Current Conditions</a>
+						<a  href="/">Current Conditions</a>
 					</li>
 					<li>
 						<a  href="currentSettings.html">Current Settings</a>
@@ -138,11 +138,7 @@
 			//console.log("tried again");
 		}
 		
-		if ( seconds > 60 ) {
-			$(".caution").show();
-		} else {
-			$(".caution").hide();
-		}
+	
 		
 		setTimeout(timerTick,1000);
 	}
@@ -207,6 +203,16 @@
 				dataAr[value.channel]=value;
 				lastCh = value.channel;	
 		});
+
+		if ( 0 == data.data.length ) {
+			$("#settingsTable").hide();
+			$(".caution").show();
+			return;			
+		}
+
+		$(".caution").hide();
+		$("#settingsTable").show();
+
 
 		seconds = 0;//data.ageSeconds;
 		
@@ -468,16 +474,16 @@
 
 	<div class="caution" style="display: none;" >
 		<p>
-		This station is marked as supplying live data, however the data appears to be old. Please check the age of the data carefully before using it!
+		PRO-Verter Not Connected!
 		</p>
 	</div>
 	<div id="connection_warn" style="text-align: center; width: 800px; margin-right: auto; margin-left: auto; background-color: orange; color: white; display: none;" onclick="hideWarn()">
 			<h1>No Response From Server. Please check to make sure you are still connected to the internet</h1>
 	</div>
 
-
-<div style="margin-left: auto; margin-right: auto; text-align: center;">
-<table style = "margin-left: auto; margin-right: auto;">
+	
+<div  style="margin-left: auto; margin-right: auto; text-align: center;">
+<table id = "settingsTable" style = "margin-left: auto; margin-right: auto;">
 	<tr>
 		<th class="right" style="width: 30%;">Settings Date:</th>
                 <td><span id="localDate">Loading...</span><br />Report received <span id="timerSeconds">Loading...</span> ago.</td>
@@ -558,7 +564,7 @@
 	</tr>
 	<tr class="RC" id="RC_qRow"><th class="right">Quiet Time:</th><td id="RC_quietTime">Loading...</td></tr>
 	<tr class="RC">
-		<td style="background-color: #9D3F1B;" colspan="2">Start Generator When:</td>
+		<td colspan="2">Start Generator When:</td>
 	</tr>
 	<tr class="RC" id="RC_bRow"><th class="right">Battery Voltage:</th><td id="RC_battVolt">Loading...</td></tr>
 	<tr class="RC" id="RC_tRow"><th class="right">Temperature:<br ><span style="font-size: 0.8em;">(cooling only)</span></th><td id="RC_temp">Loading...</td></tr>

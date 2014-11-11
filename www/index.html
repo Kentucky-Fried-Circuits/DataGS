@@ -31,7 +31,7 @@
 			
 				
 					<li>
-						<a  href="index.html">Current Conditions</a>
+						<a  href="/">Current Conditions</a>
 					</li>
 					<li>
 						<a  href="currentSettings.html">Current Settings</a>
@@ -154,7 +154,7 @@
 	/* loads ten second data */
 	function loadDataCreate() {
 		//console.log(urlNow);
-
+		
 
 
 		// If internet explorer, use Microsoft XDR
@@ -199,19 +199,22 @@
 	function loadData() {
 		//console.log(urlNow);
 		
-
+		console.log("Load data called");
 
 		// If internet explorer, use Microsoft XDR
 		if ( isIE ) {
-		    var xdr = new XDomainRequest();
-		    xdr.open("get", urlNow+"?t="+new Date().getTime());
-		    xdr.onload = function() {
-		       
-			dataS = $.parseJSON(xdr.responseText);
-			//console.log(data);
-			createTable(dataS, false);
-		    };
-		    xdr.send();
+			var xdr = new XDomainRequest();
+			xdr.open("get", urlNow+"?t="+new Date().getTime());
+			xdr.onload = function() {
+
+				dataS = $.parseJSON(xdr.responseText);
+				//console.log(data);
+				createTable(dataS, false);
+			};
+			xdr.onError = function(){
+				console.log();
+			};
+			xdr.send();
 		} else {
 			/* if not IE we use ajax */
 		  	$.ajaxSetup({ cache: false });
@@ -286,14 +289,30 @@
 		addHeader("currentTable","Now",2, create);
 
 		/* There isn't any kind of age indication in these packets as of now, so we have to remember the last packet time and check against that */
-		if ( lastTime != dataAr[lastCh].time ) {
-			seconds = 0;
-			lastTime = dataAr[lastCh].time;
-			oldData = false;
-		} else if (seconds > 11) {
-			oldData = true;
-			customFaults(null);
-		}	
+
+		if ( 255 == parseInt(dataAr["age_inverter"].sampleValue) ){
+
+			if ( lastTime != dataAr[lastCh].time ) {
+				seconds = 0;
+				lastTime = dataAr[lastCh].time;
+				oldData = false;
+			} else if (seconds > 30) {
+				oldData = true;
+				customFaults(null);
+			}
+		
+		} else {
+
+			if ( lastTime != dataAr[lastCh].time ) {
+				seconds = 0;
+				lastTime = dataAr[lastCh].time;
+				oldData = false;
+			} else if (seconds > 10) {
+				oldData = true;
+				customFaults(null);
+			}	
+
+		}
 		lastTime=dataAr[lastCh].time;
 		nowTimeStamp=dataAr[lastCh].time;
 
@@ -553,7 +572,7 @@
 	
 
 	function updatePlotArrays(dataAr){
-		console.log("updateplotarray");
+		//console.log("updateplotarray");
 		/* push new data into chart arrays */
 		/* if isn't null and the time on the packet does not equal the time of the last pushed element */
 		if ( null !=  dataAr["b_state_of_charge"].avg && dataAr["b_state_of_charge"].time != data.b_state_array[data.b_state_array.length-1][0] ) {
@@ -613,7 +632,7 @@
 			var xdr = new XDomainRequest();
 			xdr.open("get", urlDay+"?t="+new Date().getTime());
 			xdr.onload = function() {
-			console.log("parse dayData");
+			//console.log("parse dayData");
 			dataS = $.parseJSON(xdr.responseText);
 
 			processDayData(dataS,dataAr,create);
@@ -930,14 +949,14 @@
 	/* loads the history json to create the 24 hour data as well as the striplines */
 	function loadHistory(){
 
-		console.log("request history");
+		//console.log("request history");
 
 		    // If internet explorer, use Microsoft XDR
 		if ( isIE ){
 			var xdr = new XDomainRequest();
 			xdr.open("get", urlHist+"?t="+new Date().getTime());
 			xdr.onload = function() {
-			console.log("parse history");
+			//console.log("parse history");
 			dataS = $.parseJSON(xdr.responseText);
 
 			processHist(dataS);
@@ -965,7 +984,7 @@
 
 	/* processes the history json into 24 hour data and arrays for the striplines */
 	function processHist(hist){
-		console.log("got history");
+		//console.log("got history");
 		var color_green;
 		var color_yellow =  '#f7a11a';
 		var color_red;
@@ -1018,7 +1037,7 @@
 
 	/* plots the graphs */
 	function plotGraphs(){
-		console.log("plot");
+		//console.log("plot");
 		/* take data from the json and put it in an array suitable for flot */
 		var dataArray = data.b_state_array;
 		//console.log(dataArray);
@@ -1274,6 +1293,25 @@
 		return now_utc.toString("yyyy-MM-dd HH:mm:ss");
 
 	}
+	function toggleAlarmPos(){
+
+		if ( "-260px" == $("#alarmControl").css("bottom") ) {
+
+			alarmUp();
+
+		} else {
+
+			alarmDown();
+
+		}
+	}
+	function alarmUp(){
+		$( "#alarmControl" ).animate({ "bottom": "50px" }, "fast" );
+	}
+
+	function alarmDown(){
+		$( "#alarmControl" ).animate({ "bottom": "-260px" }, "fast" );
+	}
 
 	$(document).ready(function(){
 		console.log("start");
@@ -1330,7 +1368,7 @@
 
 
 <div id="alarmControl">
-	<h3 style="color: #ffffff;">Alarm Controls</h3>
+	<h3 style="color: #ffffff;" onclick="toggleAlarmPos()">Alarm Controls<br><span style="font-size:.75em;">click to show/hide</span></h3>
 	
 	<p style="color: white; padding-left: 10px; padding-bottom: 10px; font-weight: bold; text-align: left;">Silenced:
 		<span style="color: blue; background-color: white; padding-left: 10px; padding-right: 10px; border-radius: 3px;" id="controlSilence"> false </span>

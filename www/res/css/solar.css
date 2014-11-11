@@ -41,8 +41,9 @@
 		background-color: #ff6419;
 }
 	div.caution p {
+		text-align: center;
 		font-size: 1.5em;
-		margin: 0px;
+		margin: 10px;
 		margin-left: 75px;
 		font-weight: bold;
 	}
@@ -316,7 +317,9 @@
 		text-align: center;
 		padding: 10px;
 		border-radius: 10px;
-		float: right;
+		position: fixed;
+		right: 10px;
+		bottom: -260px
 
 
 	}
