@@ -316,6 +316,8 @@
 
 			/* plot graphs */
 			if ( create && parseInt(dataAr["age_bmk"].sampleValue) < 100 ) plotGraphs();
+
+			if ( create ) location.href = "#tables";
 		} else {
 			noData = true;
 			customFaults(null);

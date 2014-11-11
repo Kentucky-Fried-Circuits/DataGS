@@ -146,6 +146,13 @@
 			case 6: 
 				fault = "BMK IN FAULT MODE!";
 				break;
+			case 7: 
+				fault = "GENERATOR START FAULT - CHECK FUEL LEVEL";
+				break;
+			case 8: 
+				fault = "CHARGER FAULT - OVER TEMPERATURE - CLEAN PRO-VERTER VENTS AND/OR REDUCE CHARGE RATE";
+				break;
+
 			default:
 				fault = "UNKNOWN FAULT";
 				break;
@@ -153,6 +160,7 @@
 			
 		return fault;
 	}
+
 
 	function customFaults(dataAr){
 
@@ -245,6 +253,7 @@
 		} else {
 			warn(s);
 			alarmUp();
+			location.href = "#alarm";
 			return true;
 		}
 
