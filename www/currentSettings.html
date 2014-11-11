@@ -195,9 +195,13 @@
 		    var xdr = new XDomainRequest();
 		    xdr.open("get", urlNow+"?t="+new Date().getTime());
 		    xdr.onload = function() {
-		       
-			dataS = $.parseJSON(xdr.responseText);
-			processResponse(dataS, true);
+		       	if ( "" != xdr.responseText ) {
+				dataS = $.parseJSON(xdr.responseText);
+				processResponse(dataS, true);
+			} else {
+				$("#settingsTable").hide();
+				setTimeout(loadData,10000);
+			}
 		    };
 		    xdr.onerror = function() {
 			$("#settingsTable").hide();
@@ -484,7 +488,7 @@
 
 		*/
 
-
+		
 	
 	}
 
