@@ -16,7 +16,7 @@
 		window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '');
 	}
 
-	var root = window.location.origin + "/data/";
+	var root = window.location.origin + ":8080/data/";
 
 
 
@@ -27,6 +27,7 @@
 	var urlChannel = root+"channels.json";
 	var urlLive = root+"live.json";
 	var urlDay = root+"dayStats.json";
+	var urlHostname = root+"hostname.json";
 
 	if ( msieversion() ) {
 		isIE = true;
@@ -37,4 +38,5 @@
 		//urlChannel = root+"channels.dat";
 		urlLive = root+"live.dat";
 		urlDay = root+"dayStats.dat";
+		urlHostname = root+"hostname.dat";
 	}

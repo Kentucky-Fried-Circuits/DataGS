@@ -47,7 +47,7 @@
 						
 	</div>
 	<div style="text-align: center;">
-		<h1>PRO-Verter RMK: Current Conditions</h1>
+		<h1 id="headline">PRO-Verter RMK: Current Conditions</h1>
 				<!--Note: This server will be down for scheduled maintenance from 7PM to 9PM CST today.-->
 
 		<br />
@@ -131,6 +131,42 @@
 
 
 	}
+
+	/* headline */
+	function loadHeadline(){
+
+		// If internet explorer, use Microsoft XDR
+		if ( isIE ) {
+		    var xdr = new XDomainRequest();
+		    xdr.open("get", urlHostname+"?t="+new Date().getTime());
+		    xdr.onload = function() {
+		       
+			dataS = $.parseJSON(xdr.responseText);
+			$("#headline").html("PRO-Verter RMK ("+dataS.hostname+"): Current Conditions");
+			
+			
+		    };
+		    xdr.send();
+		} else {
+			/* if not IE we use ajax */
+		  	$.ajaxSetup({ cache: false });
+			$.ajax({
+				type: "GET",
+				url: urlHostname,
+				dataType: "html",
+				crossDomain : true
+			})
+			.done(function( dataS ) {
+
+				dataS = $.parseJSON(dataS);
+				$("#headline").html("PRO-Verter RMK ("+dataS.hostname+"): Current Conditions");
+				
+			});
+
+		}
+
+	}
+
 	/* returns oject with channel information */
 	function getChObj(channel){
 		for (var i = 0 ; i < channels.length ; i++ ) {
@@ -199,7 +235,6 @@
 	function loadData() {
 		//console.log(urlNow);
 		
-		console.log("Load data called");
 
 		// If internet explorer, use Microsoft XDR
 		if ( isIE ) {
@@ -1340,7 +1375,7 @@
 		});
 		/* request data and start timer */
 		//loadData();
-
+		loadHeadline();
 		loadChannelData();
 		
 	
