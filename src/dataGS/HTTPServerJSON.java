@@ -51,7 +51,7 @@ public class HTTPServerJSON extends NanoHTTPD {
 		File file = new File(documentRoot,uri);
 	
 		
-		System.err.println("# Checking if " + file.getAbsoluteFile() + " exists and is not a directory");
+	//	System.err.println("# Checking if " + file.getAbsoluteFile() + " exists and is not a directory");
 		
 	
 		
