@@ -3,8 +3,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -98,7 +100,7 @@ public class DataGS implements ChannelData, JSONData {
 	public static final int JSON_HISTORY_FILES  = 2;
 	public static final int JSON_HISTORY_BY_DAY = 3;
 	public static final int JSON_DAY_STATS      = 4;
-
+	public static final int JSON_HOSTNAME       = 5;
 
 
 	/*
@@ -131,6 +133,15 @@ public class DataGS implements ChannelData, JSONData {
 			synchronized ( dataRecent) {
 				return dataRecent.toRecentStats();				
 			}			
+		} else if ( JSON_HOSTNAME == resource ) {
+			String hostname="unknown";
+			try {
+				hostname=InetAddress.getLocalHost().getHostName();
+			} catch ( UnknownHostException e ) {
+				System.err.println("# UnknownHostException while trying to determine local hostname");
+			}
+			
+			return "{" + UtilJSON.putString("hostname", hostname) + "}";
 		}
 
 
