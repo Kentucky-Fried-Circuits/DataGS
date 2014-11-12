@@ -20,6 +20,10 @@ public class DiskFreeTest {
 				long avail = store.getUsableSpace() / 1024;
 				System.out.format("%-30s %12d %12d %12d %b %s %s%n", store.toString(), total, used, avail,store.isReadOnly(),store.name(),store.type());
 				
+				if ( store.toString().startsWith("/media/usb0") ) {
+					System.out.println("# this is our USB drive");
+				}
+				
 			} catch ( Exception e ) {
 				e.printStackTrace();
 			}
