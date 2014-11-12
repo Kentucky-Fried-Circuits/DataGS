@@ -166,7 +166,7 @@
         {
             "id": "i_status",
             "title": "",
-            "description": "",
+            "description": "Inverter Status",
             "units": "",
             "precision": 2,
             "sortOrder": 0,
@@ -177,7 +177,7 @@
         {
             "id": "i_fault",
             "title": "",
-            "description": "",
+            "description": "Fault Code",
             "units": "",
             "precision": 2,
             "sortOrder": 0,
@@ -187,7 +187,7 @@
         {
             "id": "i_dc_volts",
             "title": "DC Volts",
-            "description": "",
+            "description": "VDC (Inveter)",
             "units": "volts",
             "precision": 1,
             "sortOrder": 0,
@@ -198,7 +198,7 @@
         {
             "id": "i_dc_amps",
             "title": "",
-            "description": "",
+            "description": "DC Amps (Inverter)",
             "units": "",
             "precision": 0,
             "sortOrder": 0,
@@ -219,7 +219,7 @@
         {
             "id": "i_ac_volts_in",
             "title": "",
-            "description": "",
+            "description": "VAC In (Inverter)",
             "units": "volts",
             "precision": 2,
             "sortOrder": 0,
@@ -247,7 +247,7 @@
         {
             "id": "i_temp_battery",
             "title": "Battery Temperature",
-            "description": "",
+            "description": "Battery Temp (C )",
             "units": "C",
             "precision": 2,
             "sortOrder": 0,
@@ -259,7 +259,7 @@
         {
             "id": "i_temp_transformer",
             "title": "",
-            "description": "",
+            "description": "Tranformer Temp (C )",
             "units": "C",
             "precision": 2,
             "sortOrder": 0,
@@ -270,7 +270,7 @@
         {
             "id": "i_temp_fet",
             "title": "",
-            "description": "",
+            "description": "FET Temp (C )",
             "units": "C",
             "precision": 2,
             "sortOrder": 0,
@@ -281,7 +281,7 @@
         {
             "id": "i_amps_in",
             "title": "",
-            "description": "",
+            "description": "AC Amps IN",
             "units": "",
             "precision": 2,
             "sortOrder": 0,
@@ -292,7 +292,7 @@
         {
             "id": "i_amps_out",
             "title": "",
-            "description": "",
+            "description": "AC Amps Out",
             "units": "",
             "precision": 2,
             "sortOrder": 0,
@@ -303,7 +303,7 @@
         {
             "id": "i_ac_hz",
             "title": "",
-            "description": "",
+            "description": "AC Out Hz",
             "units": "",
             "precision": 1,
             "sortOrder": 0,
@@ -782,7 +782,7 @@
         {
             "id": "a_temperature",
             "title": "",
-            "description": "",
+            "description": "AGS Temp (C )",
             "units": "C",
             "precision": 2,
             "sortOrder": 0,
@@ -830,7 +830,7 @@
         {
             "id": "b_state_of_charge",
             "title": " Battery SOC",
-            "description": "",
+            "description": "SOC (BMK)",
             "units": "%",
             "precision": 0,
             "sortOrder": 0,
@@ -842,7 +842,7 @@
         {
             "id": "b_dc_volts",
             "title": "",
-            "description": "",
+            "description": "VDC (BMK)",
             "units": "",
             "precision": 2,
             "sortOrder": 0,
@@ -853,7 +853,7 @@
         {
             "id": "b_dc_amps",
             "title": "",
-            "description": "",
+            "description": "DC Amps (BMK)",
             "units": "",
             "precision":1,
             "sortOrder": 0,
@@ -882,7 +882,7 @@
         {
             "id": "b_amph_in_out",
             "title": "",
-            "description": "",
+            "description": "Ah In/Out (BMK)",
             "units": "",
             "precision": 0,
             "sortOrder": 0,
