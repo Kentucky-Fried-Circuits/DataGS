@@ -239,16 +239,16 @@
 			/* iterate through years array and add headers */
 			var table = "<tr>";
 			for ( var j = 0 ; j < years.length ; j++ ) {
-				table+="<th><input class=\"inputCheck\" type=\"checkbox\" onclick=\"checkYear("+years[j]+")\">"+years[j]+"</th>";
+				table+="<th><span style=\"font-size: 1.5em;\"><input class=\"inputCheck\" type=\"checkbox\" onclick=\"checkYear("+years[j]+")\">"+years[j]+"</span></th>";
 			}
 			table +="</tr>"
 			$("#files").append(table);
 			/* iterate through years again with months to add checkboxes */
 			table = "<tr>";
 			for ( var j = 0 ; j < years.length ; j++ ) {
-				table +="<td style=\"vertical-align: top;\">";				
+				table +="<td style=\"vertical-align: top; padding: 5px 5px 5px 5px;\">";				
 				for ( var i = 0 ; i < months[years[j]].length ; i++ ) {
-					table+="<input class=\"inputCheck\" type=\"checkbox\" name=\"months[]\" value=\""+years[j]+""+months[years[j]][i]+"\">"+calMonths[parseInt(months[years[j]][i],10)]+"<br>";				
+					table+="<span style=\"font-size: 1.5em; padding: 5px 5px 5px 5px;\"><input class=\"inputCheck\" type=\"checkbox\" name=\"months[]\" value=\""+years[j]+""+months[years[j]][i]+"\">"+calMonths[parseInt(months[years[j]][i],10)]+"</span><br>";				
 				}
 				table +="</td>";
 			}
