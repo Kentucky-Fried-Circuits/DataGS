@@ -1,5 +1,7 @@
 package dataGS;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+
 public class UtilJSON {
 	/**
 	 * Make a JSON object with a double. Convert a NaN to "null".
@@ -41,6 +43,18 @@ public class UtilJSON {
 	 * @return string with JSON representation 
 	 */
 	public static String putString(String title, String value) {
-		return "\"" + title + "\": \"" + value + "\""; 		
+		return "\"" + title + "\": \"" + StringEscapeUtils.escapeJson(value) + "\""; 		
+	}
+	
+	/**
+	 * Make a JSON object with an boolean value.
+	 * @param object name
+	 * @param string value
+	 * @return string with JSON representation 
+	 */
+	public static String putBoolean(String title, boolean value) {
+		if ( value ) 
+			return "\"" + title + "\": true";
+		return "\"" + title + "\": false";
 	}
 }
