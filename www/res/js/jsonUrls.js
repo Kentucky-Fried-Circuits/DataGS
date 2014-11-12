@@ -27,7 +27,7 @@
 	var urlChannel = root+"channels.json";
 	var urlLive = root+"live.json";
 	var urlDay = root+"dayStats.json";
-	var urlHostname = root+"hostname.json";
+	var urlHostname = root+"hostinfo.json";
 
 	if ( msieversion() ) {
 		isIE = true;
@@ -38,5 +38,5 @@
 		//urlChannel = root+"channels.dat";
 		urlLive = root+"live.dat";
 		urlDay = root+"dayStats.dat";
-		urlHostname = root+"hostname.dat";
+		urlHostname = root+"hostinfo.dat";
 	}

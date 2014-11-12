@@ -239,7 +239,7 @@
 			/* iterate through years array and add headers */
 			var table = "<tr>";
 			for ( var j = 0 ; j < years.length ; j++ ) {
-				table+="<th><input type=\"checkbox\" onclick=\"checkYear("+years[j]+")\">"+years[j]+"</th>";
+				table+="<th><input class=\"inputCheck\" type=\"checkbox\" onclick=\"checkYear("+years[j]+")\">"+years[j]+"</th>";
 			}
 			table +="</tr>"
 			$("#files").append(table);
@@ -248,7 +248,7 @@
 			for ( var j = 0 ; j < years.length ; j++ ) {
 				table +="<td style=\"vertical-align: top;\">";				
 				for ( var i = 0 ; i < months[years[j]].length ; i++ ) {
-					table+="<input type=\"checkbox\" name=\"months[]\" value=\""+years[j]+""+months[years[j]][i]+"\">"+calMonths[parseInt(months[years[j]][i],10)]+"<br>";				
+					table+="<input class=\"inputCheck\" type=\"checkbox\" name=\"months[]\" value=\""+years[j]+""+months[years[j]][i]+"\">"+calMonths[parseInt(months[years[j]][i],10)]+"<br>";				
 				}
 				table +="</td>";
 			}
@@ -354,8 +354,10 @@ this goes in the submit input if GET doesn't cut it
 onclick="setMonths()"
 -->
 	<form style="text-align: center;" method="GET" action="historicalMonth.html" name="monthForm" id="monthF" >
-		<input  type="button" name="CheckAll" value="Un-Select All" onClick="checkAll(document.monthForm.elements['months[]'],false)" >
-		<table style="margin-left:auto; margin-right: auto;" id="files"></table>
+		<!--<input  type="button" name="CheckAll" value="Un-Select All" onClick="checkAll(document.monthForm.elements['months[]'],false)" >-->
+		<table style="margin-left:auto; margin-right: auto;" id="files">
+			
+		</table>
 		<div style="text-align: center; margin-left:auto; margin-right: auto;">
 			
 		</div>
