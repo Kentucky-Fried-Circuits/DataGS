@@ -222,7 +222,7 @@
 	function getSumChannels(){
 		var sumChanAr = [];
 		for (var i = 0 ; i < channels.length ; i++ ) {
-			if ( channels[i].summaryStatsFromHistory != null && channels[i].summaryStatsFromHistory == "true") {
+			if ( channels[i].historyByDay != null && channels[i].historyByDay == "true") {
 				sumChanAr.push(channels[i].id);
 			}
 		}

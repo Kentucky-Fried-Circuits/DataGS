@@ -829,7 +829,7 @@
         },
         {
             "id": "b_state_of_charge",
-            "title": " Battery SOC",
+            "title": "Battery SOC",
             "description": "SOC (BMK)",
             "units": "%",
             "precision": 0,
