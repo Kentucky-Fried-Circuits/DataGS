@@ -74,7 +74,7 @@ public class DataRecent {
 	}
 
 
-	public String toJSON() {
+	public String toRecentJSON() {
 		StringBuilder s=new StringBuilder();
 		s.append("{\"history\": [");
 		
@@ -82,7 +82,12 @@ public class DataRecent {
 		/* convert channelNames list to an array ... since we are about to hit it a million times */
 		String[] channelNames = new String[channelIndexes.size()];
 		for ( int i=0 ; i<channelNames.length ; i++ ) {
-			channelNames[i]=channelIndexes.get(i);
+			/* channelName contains the name if we are going to put it into recent.json, otherwise it will be null */
+			if ( channelDesc.containsKey(channelIndexes.get(i)) && channelDesc.get(channelIndexes.get(i)).recent ) {
+				channelNames[i]=channelIndexes.get(i);
+			} else {
+				channelNames[i]=null;
+			}
 		}
 
 		synchronized ( points ) {
@@ -94,6 +99,11 @@ public class DataRecent {
 				
 				s.append("\"data\": {");
 				for ( int j=1 ; j<point.length ; j++ ) {
+					/* skip channels with null channelName */
+					if ( null == channelNames[j] )
+						continue;
+
+					
 					s.append( UtilJSON.putDouble(channelNames[j], point[j]));
 					s.append(",\n");
 				}
@@ -119,7 +129,7 @@ public class DataRecent {
 		return s.toString();
 	}
 	
-	public String toRecentStats() {
+	public String toDayStatsJSON() {
 		/* spin for the circular FIFO for each day and generate statistics for all channels within */
 		int n=channelIndexes.size();
 		
