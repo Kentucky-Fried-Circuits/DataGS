@@ -159,6 +159,9 @@
 		text-align: right;
 		width: 250px;
 	}
+	TH.rightMem {
+		text-align: right;
+	}
 	TD.right {
 		text-align: right;
 	}
@@ -304,6 +307,7 @@
 	    display: inline;
 	    background-image: url(../images/greenLed.png);
 	    background-image: url(../images/greenLedOff.png);
+	    background-image: url(../images/Exclamation.64.png);
 
 	}
 
@@ -323,6 +327,21 @@
 
 
 	}
+
+	#memoryData{
+		
+		background-color: #e05a26;
+		text-align: center;
+		padding: 10px;
+		border-radius: 10px;
+		position: fixed;
+		left: 10px;
+		bottom: -255px
+
+
+	}
+
+
 	.controlButton{
 		width: 150px;
 		height: 50px;

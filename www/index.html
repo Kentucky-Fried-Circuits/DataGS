@@ -76,13 +76,12 @@
 	var nowTimeStamp = 0;
 	var chrgLED = 0;
 	var invLED = 0;
+	var dayKB = 2*1000;
 	var isIE = msieversion();
 	var channels;
 
 
 	
-
-
 	/* This script kindly provided by Microsoft */
 	function msieversion(){
 		var ua = window.navigator.userAgent
@@ -137,7 +136,9 @@
 	}
 
 	/* headline */
-	function loadHeadline(){
+	function updateHeadline(){
+		
+		//urlHostname = "http://192.168.10.226/data/hostinfo.json?_=1415809551047";
 
 		// If internet explorer, use Microsoft XDR
 		if ( isIE ) {
@@ -146,8 +147,7 @@
 		    xdr.onload = function() {
 		       
 			dataS = $.parseJSON(xdr.responseText);
-			$("#headline").html("PRO-Verter RMK ("+dataS.hostname+"): Current Conditions");
-			
+			processHostInfo(dataS, false);			
 			
 		    };
 		    xdr.send();
@@ -163,13 +163,112 @@
 			.done(function( dataS ) {
 
 				dataS = $.parseJSON(dataS);
-				$("#headline").html("PRO-Verter RMK ("+dataS.hostname+"): Current Conditions");
+				processHostInfo(dataS, false);
 				
 			});
 
 		}
 
 	}
+	/* headline */
+	function loadHeadline(){
+		
+		//urlHostname = "http://192.168.10.226/data/hostinfo.json?_=1415809551047";
+
+		// If internet explorer, use Microsoft XDR
+		if ( isIE ) {
+		    var xdr = new XDomainRequest();
+		    xdr.open("get", urlHostname+"?t="+new Date().getTime());
+		    xdr.onload = function() {
+		       
+			dataS = $.parseJSON(xdr.responseText);
+			processHostInfo(dataS, true);			
+			
+		    };
+		    xdr.send();
+		} else {
+			/* if not IE we use ajax */
+		  	$.ajaxSetup({ cache: false });
+			$.ajax({
+				type: "GET",
+				url: urlHostname,
+				dataType: "html",
+				crossDomain : true
+			})
+			.done(function( dataS ) {
+
+				dataS = $.parseJSON(dataS);
+				processHostInfo(dataS, true);
+				
+			});
+
+		}
+
+	}
+
+	function processHostInfo(dataS, create){
+		$("#headline").html("PRO-Verter RMK ("+dataS.hostname+"): Current Conditions");
+		var total = getMemory("/mnt/data","total",dataS.drives);
+		var free = getMemory("/mnt/data","avail",dataS.drives);
+		var used = getMemory("/mnt/data","used",dataS.drives);
+		var daysLeft = total/dayKB;
+		
+		if ( -1 != total ) {
+			addLineMem("memTable", "Total Space:", commaSeparateNumber((total/1000).toFixed(0))+" MB", "total_space", create);
+			addLineMem("memTable", "Free Space:<br>Percent:", formatMem(free,total), "free_space", create);
+			addLineMem("memTable", "Used Space:<br>Percent:", formatMem(used,total), "used_space", create);
+			addLineMem("memTable", "Days Left:<br><span style=\"font-size: .75em\">approximate</span>", commaSeparateNumber((total/dayKB).toFixed(0)), "days_left", create);
+		} else {
+			addLineMem("memTable", "", "Data Unavailable", "total_space", create);
+
+		}
+		/* if USB is plugged in */
+		if ( -1 != getMemory("/media/usb0","total",dataS.drives) ) {
+			$(".usbRow").show();
+			
+			/* safe to remove? */
+			var readOnly = getMemory("/media/usb0","readOnly",dataS.drives)
+			if ( !readOnly ) {
+				$("#usbMsg").html("File copy in progess<br>DO NOT REMOVE<br>EXTERNAL STORAGE</span>");
+				$("#usbMsg").css("background-color","red");
+				$("#usbMsg").css("color","white");
+				MemUp();
+			} else {
+				$("#usbMsg").html("File copy is complete.<br>You may safely remove<br>external storage</span>");
+				$("#usbMsg").css("background-color","green");
+				$("#usbMsg").css("color","white");
+			}
+			
+
+		} else {
+			$(".usbRow").hide();
+		}
+		
+		/* warning if low on space */
+		if ( daysLeft <= 30 ) {
+			$("#memWarn").show();
+		} else {
+			$("#memWarn").hide();
+		}
+		
+	}
+	
+	function getMemory(driveName, statName, drives){
+		for ( var i = 0 ; i < drives.length ; i++ ) {
+
+			if ( -1 != drives[i]["description"].indexOf( driveName ) ) {
+				return drives[i][statName];
+			} 
+		}
+		return "-1";
+
+	}
+	
+	function formatMem(mem,total){
+		return commaSeparateNumber((mem/1000).toFixed(0))+" MB<br>"+((mem/total)*100).toFixed(0)+"%";
+	}
+
+
 
 	/* returns oject with channel information */
 	function getChObj(channel){
@@ -427,85 +526,84 @@
 	
 	/* inverter rows */
 	function inverterRows(dataAr, create){
-
-
-
-		/* Add category header */
-		addCat("currentTable","Data Supplied By Inverter ("+magnumInverterModel(parseInt(dataAr["i_model"].sampleValue),0)+")", create);
+		if ( parseInt(dataAr["age_inverter"].sampleValue) < 200 ) {
+			/* Add category header */
+			addCat("currentTable","Data Supplied By Inverter ("+magnumInverterModel(parseInt(dataAr["i_model"].sampleValue),0)+")", create);
 
 	
 
-		/* Status */
-		addLine("currentTable","Status:",magnumInverterStatus(parseInt(dataAr['i_status'].sampleValue)),"iStatus", create);
+			/* Status */
+			addLine("currentTable","Status:",magnumInverterStatus(parseInt(dataAr['i_status'].sampleValue)),"iStatus", create);
 
-		/* LEDs */
-		addLEDs(dataAr, create);
+			/* LEDs */
+			addLEDs(dataAr, create);
 		
-		addLine("currentTable","Battery Temperature:",magnumTemperature(dataAr['i_temp_battery'].avg),"batTemp", create);
-		addLine("currentTable","Transformer Temperature:",magnumTemperature(dataAr['i_temp_transformer'].avg),"i_tempTransformer", create);
-		addLine("currentTable","FET Temperature:",magnumTemperature(dataAr['i_temp_fet'].avg),"i_tempFet", create);
+			addLine("currentTable","Battery Temperature:",magnumTemperature(dataAr['i_temp_battery'].avg),"batTemp", create);
+			addLine("currentTable","Transformer Temperature:",magnumTemperature(dataAr['i_temp_transformer'].avg),"i_tempTransformer", create);
+			addLine("currentTable","FET Temperature:",magnumTemperature(dataAr['i_temp_fet'].avg),"i_tempFet", create);
 
-		/* AC output voltage is displayed if appropriate length even if export 
-		no AC current if export */
+			/* AC output voltage is displayed if appropriate length even if export 
+			no AC current if export */
 
-		var displayMeters=false;
-		if ( (null==dataAr['length_inverter'] || parseInt(dataAr['length_inverter'].sampleValue)>=20) && magnumInverterModel(parseInt(dataAr["i_model"].sampleValue),3) != 1 ) {
-			displayMeters=true;
-		}
-
-		var exportMeters=false;
-		var vacScale=1.0;
-
-		if ( ! displayMeters && parseInt(dataAr['length_inverter'].sampleValue)>=20 ) {
-			exportMeters=true;
-
-			if ( 1==magnumInverterModel(parseInt(dataAr["i_model"].sampleValue),3) ) {
-				vacScale=2.0;
+			var displayMeters=false;
+			if ( (null==dataAr['length_inverter'] || parseInt(dataAr['length_inverter'].sampleValue)>=20) && magnumInverterModel(parseInt(dataAr["i_model"].sampleValue),3) != 1 ) {
+				displayMeters=true;
 			}
 
-			/* AC out */
-			var s;
-			if ( dataAr['i_ac_volts_out'].avg >= 80 ) {
-				s = magnumExportVoltageScale(dataAr['i_ac_volts_out'].avg,vacScale).toFixed(getChObj("i_ac_volts_out").precision)+" volts AC";
-			} else { 
-				s = "Inactive.";
-			}
-			addLine("currentTable",'AC Out:',s,"i_acOut", create);
-		}
+			var exportMeters=false;
+			var vacScale=1.0;
 
-		if ( displayMeters ) {
-			/* AC out */
-			var s;
-			if ( dataAr['i_ac_volts_out'].avg >= 80 ) {
-				s= "Approximately "+magnumExportVoltageScale(dataAr['i_ac_volts_out'].avg,vacScale).toFixed(getChObj("i_ac_volts_out").precision)+" volts AC";
-				if ( 1 == magnumInverterModel(parseInt(dataAr["i_model"].sampleValue),4) )
-					s+=" @ "+dataAr["i_amps_out"].avg.toFixed(getChObj("i_amps_out").precision)+" amps";
-			} else { 
-				s="Inactive.";
-			}
-			addLine("currentTable",'AC Out:',s,"i_acOut", create);
+			if ( ! displayMeters && parseInt(dataAr['length_inverter'].sampleValue)>=20 ) {
+				exportMeters=true;
 
-			/* AC in */
-			if ( dataAr['i_ac_volts_in'].avg >= 80 && 1 == magnumInverterModel(parseInt(dataAr["i_model"].sampleValue),4)) {
-				s="Approximately "+dataAr['i_amps_in'].avg.toFixed(getChObj("i_amps_in").precision)+" amps";
-			} else { 
-				s="Inactive.";
-			}
-			addLine("currentTable",'AC In:',s,"i_acIn", create);
+				if ( 1==magnumInverterModel(parseInt(dataAr["i_model"].sampleValue),3) ) {
+					vacScale=2.0;
+				}
 
-			/* AC frequency */
-			addLine("currentTable",'AC Frequency:',dataAr['i_ac_hz'].avg.toFixed(getChObj("i_ac_hz").precision),"i_acFreq", create);
+				/* AC out */
+				var s;
+				if ( dataAr['i_ac_volts_out'].avg >= 80 ) {
+					s = magnumExportVoltageScale(dataAr['i_ac_volts_out'].avg,vacScale).toFixed(getChObj("i_ac_volts_out").precision)+" volts AC";
+				} else { 
+					s = "Inactive.";
+				}
+				addLine("currentTable",'AC Out:',s,"i_acOut", create);
+			}
+
+			if ( displayMeters ) {
+				/* AC out */
+				var s;
+				if ( dataAr['i_ac_volts_out'].avg >= 80 ) {
+					s= "Approximately "+magnumExportVoltageScale(dataAr['i_ac_volts_out'].avg,vacScale).toFixed(getChObj("i_ac_volts_out").precision)+" volts AC";
+					if ( 1 == magnumInverterModel(parseInt(dataAr["i_model"].sampleValue),4) )
+						s+=" @ "+dataAr["i_amps_out"].avg.toFixed(getChObj("i_amps_out").precision)+" amps";
+				} else { 
+					s="Inactive.";
+				}
+				addLine("currentTable",'AC Out:',s,"i_acOut", create);
+
+				/* AC in */
+				if ( dataAr['i_ac_volts_in'].avg >= 80 && 1 == magnumInverterModel(parseInt(dataAr["i_model"].sampleValue),4)) {
+					s="Approximately "+dataAr['i_amps_in'].avg.toFixed(getChObj("i_amps_in").precision)+" amps";
+				} else { 
+					s="Inactive.";
+				}
+				addLine("currentTable",'AC In:',s,"i_acIn", create);
+
+				/* AC frequency */
+				addLine("currentTable",'AC Frequency:',dataAr['i_ac_hz'].avg.toFixed(getChObj("i_ac_hz").precision),"i_acFreq", create);
 
 			
-			/* DC volts / amps */
-			if ( parseInt( dataAr['age_bmk'].sampleValue > 250 ) || "1" != dataAr['b_fault'].sample ) {
-				//echo magnumGetSparkHTML($station_id,'i_watts',$hours);
-				//echo "<br>";
-			}
-			s = dataAr['i_dc_volts'].avg.toFixed(getChObj("i_dc_volts").precision)+" VDC @ "+ dataAr['i_dc_amps'].avg.toFixed(getChObj("i_dc_amps").precision) +
-				" amps ("+ (dataAr['i_dc_volts'].avg * dataAr['i_dc_amps'].avg ).toFixed(0) +" watts)";
-			addLine("currentTable","DC volts / amps:<br><span style=\"font-size: 0.8em;\">(Values are approximate)</span>",s,"i_dcVoltsAmps", create);
+				/* DC volts / amps */
+				if ( parseInt( dataAr['age_bmk'].sampleValue > 250 ) || "1" != dataAr['b_fault'].sample ) {
+					//echo magnumGetSparkHTML($station_id,'i_watts',$hours);
+					//echo "<br>";
+				}
+				s = dataAr['i_dc_volts'].avg.toFixed(getChObj("i_dc_volts").precision)+" VDC @ "+ dataAr['i_dc_amps'].avg.toFixed(getChObj("i_dc_amps").precision) +
+					" amps ("+ (dataAr['i_dc_volts'].avg * dataAr['i_dc_amps'].avg ).toFixed(0) +" watts)";
+				addLine("currentTable","DC volts / amps:<br><span style=\"font-size: 0.8em;\">(Values are approximate)</span>",s,"i_dcVoltsAmps", create);
 			
+			}
 		}
 	
 	}
@@ -545,6 +643,18 @@
 
 		if ( create ) {
 			$(tableID).append("<tr><th class=\"right\">"+name+"</th><td id=\""+id+"\">"+val+"</td></tr>");
+		} else {
+			$("#"+id).html(val);
+		}
+	}
+
+	function addLineMem(tableID, name, val, id, create){
+		tableID="#"+tableID;
+		
+		
+
+		if ( create ) {
+			$(tableID).append("<tr><th class=\"rightMem\">"+name+"</th><td id=\""+id+"\">"+val+"</td></tr>");
 		} else {
 			$("#"+id).html(val);
 		}
@@ -986,7 +1096,8 @@
 	/* loads the history json to create the 24 hour data as well as the striplines */
 	function loadHistory(){
 
-
+		$("#loadingContainer").show();
+		$("#loadingMsg").html("Loading history...");
 		    // If internet explorer, use Microsoft XDR
 		if ( isIE ){
 			var xdr = new XDomainRequest();
@@ -997,8 +1108,9 @@
 				customFaults(null);
 			};
 			xdr.onload = function() {
+				
 				dataS = $.parseJSON(xdr.responseText);
-
+				
 				processHist(dataS);
 
 			};
@@ -1048,6 +1160,7 @@
 		
 		var histAr = hist.history;
 		//$. each (hist.history, function (packet, entry) {
+		$("#loadingMsg").html("Loading BMK charts...");
 		for ( var i = 0 ; i < histAr.length ; i++ ) {
 			
 			
@@ -1064,7 +1177,7 @@
 			
 			
 		}	
-	
+		
 		
 		
 
@@ -1081,6 +1194,9 @@
 
 	/* plots the graphs */
 	function plotGraphs(){
+
+		$("#loadingContainer").hide();
+
 		/* take data from the json and put it in an array suitable for flot */
 		var dataArray = data.b_state_array;
 		var minBatt = 100;
@@ -1238,7 +1354,6 @@
 		avgArray[0]=0;
 
 		/* iterate through notAvgArray and take the average of every 60 */
-		
 		for ( i = 0; i < notAvgArray.length; i++) {
 		
 			/* if packet time is more than ten minutes difference to the the startTime */
@@ -1268,7 +1383,6 @@
 			count++;
 
 		}
-
 		/* get last average */
 
 		avgArray[j]/=count;
@@ -1305,7 +1419,7 @@
 			loadData();
 		}
 
-		//loadLiveData();
+		updateHeadline();
 
 		
 		setTimeout(timerTick,1000);
@@ -1332,6 +1446,29 @@
 		return now_utc.toString("yyyy-MM-dd HH:mm:ss");
 
 	}
+
+
+	function toggleMemPos(){
+
+		if ( "-255px" == $("#memoryData").css("bottom") ) {
+
+			MemUp();
+
+		} else {
+
+			MemDown();
+
+		}
+	}
+
+	function MemUp(){
+		$( "#memoryData" ).animate({ "bottom": "50px" }, "fast" );
+	}
+
+	function MemDown(){
+		$( "#memoryData" ).animate({ "bottom": "-255px" }, "fast" );
+	}
+
 	function toggleAlarmPos(){
 
 		if ( "-260px" == $("#alarmControl").css("bottom") ) {
@@ -1387,6 +1524,11 @@
 <div id="bar" style="width: 100%; position: fixed; bottom: 0; left: 0; z-index: 2; background: #e0e0e0; text-align: center;">
 	<span id="bottomar" style="margin-left: 10px; float: left;" >Data from approximately <span id="age">Loading...</span> seconds ago</span>
 </div>
+
+<div style="text-align: center;" id="loadingContainer">
+	<h1 id="loadingMsg"></h1>
+</div>
+
 <div id="alarm" style="text-align: center; font-size: 1.5em; padding: 5px; margin-left: 75px; margin-right: 75px; font-weight: bold;display: none;">
 	<p id="alarmMessage">
 	The inverter has faulted!
@@ -1413,6 +1555,21 @@
 	<button class="controlButton" onclick="silenceAlarm(false)">Unsilence Alarm</button><br>
 	<button class="controlButton" onclick="dismiss();">Dismiss</button><br>
 	<button class="controlButton" onclick="testAlarm();">Test Alarm</button><br>
+</div>
+
+<div id="memoryData"  onclick="toggleMemPos()">
+	<div>
+	
+	<span id="memWarn" style="color: white; text-align: center; font-size: 1.5em; display: none;"><img src="res/images/Exclamation.64.png"><br>Memory Low</span>	
+	<h3 style="color: #ffffff; padding-bottom: 10px">Memory<br><span style="font-size:.75em;">click to show/hide</span></h3>
+	</div>
+	
+	<table id="memTable">
+		
+		<tr style="display: none" class="usbRow"><td colspan="2" style="text-align: center;" id="usbMsg" >External Storage is inserted</td></tr>
+		<tr><th style="background-color: #9D3F1B;" colspan="2">System Memory</th></tr>
+
+	</table>
 </div>
 
 

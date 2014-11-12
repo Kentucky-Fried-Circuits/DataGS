@@ -152,7 +152,9 @@
 			case 8: 
 				fault = "CHARGER FAULT - OVER TEMPERATURE - CLEAN PRO-VERTER VENTS AND/OR REDUCE CHARGE RATE";
 				break;
-
+			case 9: 
+				fault = "PROVERTER NOT CONNECTED TO THE MAGNUM NETWORK<br><span style=\"font-size:.75em;\">OR MAGNUM DEVICES ARE POWERED OFF</span>";
+				break;
 			default:
 				fault = "UNKNOWN FAULT";
 				break;
@@ -215,7 +217,7 @@
 			/* no connection with Inverter */
 			if ( parseInt(dataAr["age_inverter"].sampleValue) > 100 ) {
 				s += "<hr>";
-				s += faultMessages(2);
+				s += faultMessages(9);
 			}
 
 			/* Data old */
