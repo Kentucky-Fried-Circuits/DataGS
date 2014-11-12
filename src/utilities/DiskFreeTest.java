@@ -11,8 +11,14 @@ public class DiskFreeTest {
 		
 //		Path root = FileSystems.getDefault().getPath("www/foo.bar");
 
-		for (Path root : FileSystems.getDefault().getRootDirectories()) {
-			System.out.print(root + ": ");
+		
+		
+		
+		//for (Path root : FileSystems.getDefault().getRootDirectories()) {
+		for ( int i=0 ; i<args.length ; i++ ) {
+			Path root = FileSystems.getDefault().getPath(args[i]);
+			
+			System.out.print(root + " ");
 
 			try	{
 				FileStore store = Files.getFileStore(root);
