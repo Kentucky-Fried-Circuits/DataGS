@@ -125,9 +125,6 @@ public class DataGS implements ChannelData, JSONData {
 				return "invalid";
 			}
 		} else if ( JSON_DAY_STATS == resource ) {
-			//synchronized ( historyJSON ) {
-			//return dayStatsJson();
-			//}
 			synchronized ( dataRecent) {
 				return dataRecent.toRecentStats();				
 			}			

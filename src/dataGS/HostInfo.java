@@ -48,25 +48,8 @@ public class HostInfo {
 		sb.append("{");
 		sb.append( UtilJSON.putString("hostname", hostname) + "," );
 		
-		/*
-{ 
-hostname: "S1000",
-drives(or whatever you want to call it): [
-{	dir: "/ (rootfs)", //this looks the same as description, so if they won't be different, just keep one
-total: 3023728,
-used: 1322424,
-avail: 1527992,
-readOnly: false,
-name: "rootfs",
-type: "rootfs",
-description: "/ (rootfs)"
-},
-...
 
-]
-}
-		 */
-		
+		/* drive space and status */
 		sb.append( "\"drives\": [");
 		
 		for (FileStore store : FileSystems.getDefault().getFileStores()) {
@@ -86,8 +69,7 @@ description: "/ (rootfs)"
 				sb.append( UtilJSON.putString("description", store.toString())  );
 				
 				sb.append("},");
-				
-//				System.out.format("%-30s %12d %12d %12d %b %s %s%n", store.toString(), total, used, avail,store.isReadOnly(),store.name(),store.type());				
+								
 			} catch ( Exception e ) {
 				e.printStackTrace();
 			}
