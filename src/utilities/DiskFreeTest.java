@@ -11,14 +11,14 @@ public class DiskFreeTest {
 
 		//		Path root = FileSystems.getDefault().getPath("www/foo.bar");
 
-		System.out.println("# store, total, used, available, readyOnly, name");
+		System.out.println("# store, total, used, available, readyOnly, name, type");
 
 		for (FileStore store : FileSystems.getDefault().getFileStores()) {
 			try { 
 				long total = store.getTotalSpace() / 1024;
 				long used = (store.getTotalSpace() - store.getUnallocatedSpace()) / 1024;
 				long avail = store.getUsableSpace() / 1024;
-				System.out.format("%-30s %12d %12d %12d %b %s%n", store, total, used, avail,store.isReadOnly(),store.name());
+				System.out.format("%-30s %12d %12d %12d %b %s %s%n", store.toString(), total, used, avail,store.isReadOnly(),store.name(),store.type());
 				
 			} catch ( Exception e ) {
 				e.printStackTrace();
