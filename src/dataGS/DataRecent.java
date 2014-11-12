@@ -27,7 +27,7 @@ public class DataRecent {
 		Iterator<Entry<String, ChannelDescription>> it = channelDesc.entrySet().iterator();
 		while ( it.hasNext() ) {
 			Map.Entry<String, ChannelDescription> pairs = (Map.Entry<String, ChannelDescription>)it.next();
-			if ( pairs.getValue().history ) {
+			if ( pairs.getValue().dayStats ) {
 				channelIndexes.add(pairs.getKey());
 			}
 		}
