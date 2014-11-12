@@ -111,7 +111,7 @@ public class DataGS implements ChannelData, JSONData {
 			}
 		} else if ( JSON_RECENT_DATA == resource ) {
 			synchronized ( dataRecent) {
-				return dataRecent.toJSON();				
+				return dataRecent.toRecentJSON();				
 			}
 		} else if ( JSON_HISTORY_FILES == resource ) {
 			synchronized ( historyDayLogFilesJSON ) {
@@ -126,7 +126,7 @@ public class DataGS implements ChannelData, JSONData {
 			}
 		} else if ( JSON_DAY_STATS == resource ) {
 			synchronized ( dataRecent) {
-				return dataRecent.toRecentStats();				
+				return dataRecent.toDayStatsJSON();				
 			}			
 		} else if ( JSON_HOST_INFO == resource ) {
 			return HostInfo.toJSON();
