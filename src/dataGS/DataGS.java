@@ -384,6 +384,11 @@ public class DataGS implements ChannelData, JSONData {
 						j++;
 					}
 				}
+				
+				System.err.println("-------------------> headerTokens");
+				for ( int i=0 ; i<headerTokens.length ; i++ ) {
+					System.err.println("# headerTokens[" + i + "] is " + headerTokens[i] );
+				}
 
 				//				for ( int i=0 ; i<fieldsToParse.length && fieldsToParse[i] != -1 ; i++ ) {
 				//					System.out.printf("fieldsToParse[%d]=%d (key for that field is headerTokens[%d]='%s')\n",

@@ -121,11 +121,11 @@ public class HistoryPointExport {
 				}
 				
 				/* print the key if the description isn't available */
-				if ( ! chanDesc.containsKey(pairs.getKey()) || 0==chanDesc.get( pairs.getKey() ).description.length() ) {
+//				if ( ! chanDesc.containsKey(pairs.getKey()) || 0==chanDesc.get( pairs.getKey() ).description.length() ) {
 					csvHeader.append(StringEscapeUtils.escapeCsv(pairs.getKey()) + ",");
-				} else {
-					csvHeader.append( StringEscapeUtils.escapeCsv( chanDesc.get( pairs.getKey() ).description) + ",");
-				}
+//				} else {
+//					csvHeader.append( StringEscapeUtils.escapeCsv( chanDesc.get( pairs.getKey() ).description) + ",");
+//				}
 				csvData.append(",");
 			}
 			
