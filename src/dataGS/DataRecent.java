@@ -76,7 +76,7 @@ public class DataRecent {
 
 	public String toRecentJSON() {
 		StringBuilder s=new StringBuilder();
-		s.append("{\"history\": [");
+		s.append("{\"recent\": [");
 		
 		
 		/* convert channelNames list to an array ... since we are about to hit it a million times */
