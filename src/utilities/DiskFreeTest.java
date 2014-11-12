@@ -1,13 +1,13 @@
 package utilities;
 
 
-import java.net.URI;
-import java.nio.file.*;
-import java.text.NumberFormat;
+import java.nio.file.FileStore;
+import java.nio.file.FileSystems;
+//import java.text.NumberFormat;
 
 public class DiskFreeTest {
 	public static void main(String args[]) {
-		NumberFormat nf = NumberFormat.getNumberInstance();
+//		NumberFormat nf = NumberFormat.getNumberInstance();
 
 		//		Path root = FileSystems.getDefault().getPath("www/foo.bar");
 
