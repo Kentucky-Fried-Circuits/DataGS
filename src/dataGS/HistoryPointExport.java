@@ -11,7 +11,7 @@ import org.apache.commons.lang3.StringEscapeUtils;
  * static class for converting a HistoryPoint into JSON or CSV
  * @author James Jarvis
  */
-public class HistoryPointJSON {
+public class HistoryPointExport {
 
 	
 	public static String toJSON(long time, Map<String, SynchronizedSummaryData> data, Map<String, ChannelDescription> chanDesc) {

@@ -233,7 +233,7 @@ public class DataGS implements ChannelData, JSONData {
 			/* loglocal */
 			if ( null != logLocal) {
 				/* log line to local file */
-				logLocal.log( HistoryPointJSON.toCSV( data, channelDesc )[0], new Date(now), HistoryPointJSON.toCSV( data, channelDesc )[1] );
+				logLocal.log( HistoryPointExport.toCSV( data, channelDesc )[0], new Date(now), HistoryPointExport.toCSV( data, channelDesc )[1] );
 			}
 
 			/* clear statistics for next pass */
