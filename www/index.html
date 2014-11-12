@@ -721,7 +721,7 @@
 			data.b_state_array.push([dataAr["b_state_of_charge"].time, dataAr["b_state_of_charge"].avg]);
 		}
 		if ( null != dataAr["b_dc_watts"].avg && dataAr["b_dc_watts"].time != data.b_watts[data.b_watts.length-1][0] ) {
-			data.b_watts.push([dataAr["b_dc_volts"].time, dataAr["b_dc_watts"].avg]);
+			data.b_watts.push([dataAr["b_dc_watts"].time, dataAr["b_dc_watts"].avg]);
 		}
 		if ( null != dataAr["b_amph_in_out"].sampleValue && dataAr["b_amph_in_out"].time != data.amp_in_out[data.amp_in_out.length-1][0] ) {
 			data.amp_in_out.push([ dataAr["b_amph_in_out"].time, dataAr["b_amph_in_out"].sampleValue ]);
@@ -1126,7 +1126,7 @@
 	/* processes the history json into 24 hour data and arrays for the striplines */
 	function processHist(hist){
 
-		if ( 0 == hist.history.length ) {
+		if ( 0 == hist.recent.length ) {
 			setTimeout(loadHistory,10000);
 			return;
 		}
@@ -1147,7 +1147,7 @@
 
 		/* iterate through the history object array */
 		
-		var histAr = hist.history;
+		var histAr = hist.recent;
 		//$. each (hist.history, function (packet, entry) {
 		$("#loadingMsg").html("Loading BMK charts...");
 		for ( var i = 0 ; i < histAr.length ; i++ ) {
@@ -1157,7 +1157,7 @@
 			/* add data to the flot chart arrays */
 			if ( null !=  histAr[i].data.b_state_of_charge && 100 >= histAr[i].data.b_state_of_charge ) 
 				data.b_state_array.push([histAr[i].time, histAr[i].data.b_state_of_charge]);
-			if ( null !=  histAr[i].data.b_dc_volts && null !=  histAr[i].data.b_dc_amps ) 
+			if ( null !=  histAr[i].data.b_dc_watts ) 
 				data.b_watts.push([histAr[i].time, histAr[i].data.b_dc_watts]);
 			if ( null !=  histAr[i].data.b_amph_in_out ) 
 				data.amp_in_out.push([histAr[i].time, histAr[i].data.b_amph_in_out]);
@@ -1168,8 +1168,6 @@
 		}	
 		
 		
-		
-
 		loadDataCreate();
 		
 		timerTick();
