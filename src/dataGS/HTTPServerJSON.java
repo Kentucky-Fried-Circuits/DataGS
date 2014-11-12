@@ -202,9 +202,9 @@ public class HTTPServerJSON extends NanoHTTPD {
 		} else if ( uri.endsWith( "/data/dayStats.json" ) ) {
 			/* summarized 24 hour data */
 			response = new NanoHTTPD.Response( Response.Status.OK, MIME_JSON, data.getJSON( DataGS.JSON_DAY_STATS ), gzipAllowed );
-		} else if ( uri.endsWith( "/data/hostname.json" ) ) {
+		} else if ( uri.endsWith( "/data/hostinfo.json" ) ) {
 			/* meta info */
-			response = new NanoHTTPD.Response( Response.Status.OK, MIME_JSON, data.getJSON( DataGS.JSON_HOSTNAME ), gzipAllowed );
+			response = new NanoHTTPD.Response( Response.Status.OK, MIME_JSON, data.getJSON( DataGS.JSON_HOST_INFO ), gzipAllowed );
 		}
 
 
@@ -225,9 +225,9 @@ public class HTTPServerJSON extends NanoHTTPD {
 		} else if ( uri.endsWith( "/data/dayStats.dat" ) ) {
 			/* summarized 24 hour data */
 			response = new NanoHTTPD.Response( Response.Status.OK, MIME_PLAINTEXT, data.getJSON( DataGS.JSON_DAY_STATS ), gzipAllowed );
-		} else if ( uri.endsWith( "/data/hostname.dat" ) ) {
+		} else if ( uri.endsWith( "/data/hostinfo.dat" ) ) {
 			/* meta info */
-			response = new NanoHTTPD.Response( Response.Status.OK, MIME_PLAINTEXT, data.getJSON( DataGS.JSON_HOSTNAME ), gzipAllowed );
+			response = new NanoHTTPD.Response( Response.Status.OK, MIME_PLAINTEXT, data.getJSON( DataGS.JSON_HOST_INFO ), gzipAllowed );
 		}
 		/* serve from filesystem */
 		else {
