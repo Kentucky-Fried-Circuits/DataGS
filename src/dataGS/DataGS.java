@@ -140,7 +140,7 @@ public class DataGS implements ChannelData, JSONData {
 			} catch ( UnknownHostException e ) {
 				System.err.println("# UnknownHostException while trying to determine local hostname");
 			}
-			
+
 			return "{" + UtilJSON.putString("hostname", hostname) + "}";
 		}
 
@@ -456,9 +456,9 @@ public class DataGS implements ChannelData, JSONData {
 			historyDayLogFilesJSON="\"files\":[]";
 			return;
 		} 
-		
+
 		historyDayLogFilesJSON="\"files\":["+filesToJson( files )+"]";
-		
+
 		System.err.println("# " + files.length + " files listed for historyFiles.json");
 		System.err.flush();
 
@@ -504,7 +504,7 @@ public class DataGS implements ChannelData, JSONData {
 		/* if data hashtable doesn't have the key for this channel, we add it
 		 * the mode (sampled or averaged) is read from channel description or defaults to sample  */
 		if ( ! data.containsKey(ch) ) {
-//			System.err.println("# Putting value " + s + " to data (" + ch + " as SynchronizedSummaryData with mode " + channelDesc.get(ch).mode + ")");
+			//			System.err.println("# Putting value " + s + " to data (" + ch + " as SynchronizedSummaryData with mode " + channelDesc.get(ch).mode + ")");
 
 			if ( channelDesc.containsKey(ch) ) {
 				data.put(ch, new SynchronizedSummaryData( channelDesc.get(ch).mode ) );
@@ -1086,18 +1086,10 @@ public class DataGS implements ChannelData, JSONData {
 
 			String[] files = new UtilFiles().listFilesForFolder(logLocalDir, true);
 
-			if ( null != files && 0 != files.length ) {
+			createSummaryStatsFromHistory( files );
 
-				createSummaryStatsFromHistory( files );
-
-				System.err.println("# SummaryHistoryThread completed summarizing logLocalFiles in "+((System.currentTimeMillis()-startTime)/1000)+" seconds");
-				historyStatsByDayReady = true;
-			} else if ( 0 == files.length ) { 
-				/* still valid, we just didn't have any files to load */
-				historyStatsByDayReady = true;
-			} else {
-				historyStatsByDayReady = false;
-			}
+			System.err.println("# SummaryHistoryThread completed summarizing logLocalFiles in "+((System.currentTimeMillis()-startTime)/1000)+" seconds");
+			historyStatsByDayReady = true;
 		}
 
 	}
