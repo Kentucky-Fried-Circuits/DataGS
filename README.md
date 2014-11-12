@@ -44,7 +44,7 @@ Returned as `application/json` if URI ends with `.json` or as `text/plain` if th
 
 Todo: fill in details
 
-### /data/hostname.json or /data/hostname.dat
+### /data/hostinfo.json or /data/hostinfo.dat
 
 Hostname of server as `application/json` if URI ends with `.json` or as `text/plain` if the URI ends with `.dat`
 

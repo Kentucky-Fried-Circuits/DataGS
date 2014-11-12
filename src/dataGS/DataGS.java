@@ -100,7 +100,7 @@ public class DataGS implements ChannelData, JSONData {
 	public static final int JSON_HISTORY_FILES  = 2;
 	public static final int JSON_HISTORY_BY_DAY = 3;
 	public static final int JSON_DAY_STATS      = 4;
-	public static final int JSON_HOSTNAME       = 5;
+	public static final int JSON_HOST_INFO      = 5;
 
 
 	/*
@@ -133,7 +133,7 @@ public class DataGS implements ChannelData, JSONData {
 			synchronized ( dataRecent) {
 				return dataRecent.toRecentStats();				
 			}			
-		} else if ( JSON_HOSTNAME == resource ) {
+		} else if ( JSON_HOST_INFO == resource ) {
 			String hostname="unknown";
 			try {
 				hostname=InetAddress.getLocalHost().getHostName();
@@ -1054,7 +1054,7 @@ public class DataGS implements ChannelData, JSONData {
 
 	/* Main method */
 	public static void main(String[] args) throws IOException {
-		System.err.println("# Major version: 2014-11-11 (precision)");
+		System.err.println("# Major version: 2014-11-12 (precision)");
 		System.err.println("# java.library.path: " + System.getProperty( "java.library.path" ));
 
 		DataGS d=new DataGS();
