@@ -361,6 +361,8 @@ public class RecordMagWeb {
 		a_gen_runtime_minutes=buff[96]*6;
 		a_voltage=(buff[97]/10.0)*vScale;
 		a_days_since_last=buff[98];
+		
+		/* todo 99 is days since last 100% SOC, 100 & 101 are total generator run time in hours since AGS boot */
 
 		/* RTR */
 		rtr_revision=buff[103]/10.0;

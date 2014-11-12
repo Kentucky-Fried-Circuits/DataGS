@@ -1092,6 +1092,9 @@ public class DataGS implements ChannelData, JSONData {
 
 				System.err.println("# SummaryHistoryThread completed summarizing logLocalFiles in "+((System.currentTimeMillis()-startTime)/1000)+" seconds");
 				historyStatsByDayReady = true;
+			} else if ( 0 == files.length ) { 
+				/* still valid, we just didn't have any files to load */
+				historyStatsByDayReady = true;
 			} else {
 				historyStatsByDayReady = false;
 			}
