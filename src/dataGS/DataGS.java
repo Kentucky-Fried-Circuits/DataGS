@@ -295,7 +295,7 @@ public class DataGS implements ChannelData, JSONData {
 			Map.Entry<String, ChannelDescription> pairs = (Map.Entry<String, ChannelDescription>)it.next();
 
 			/* instantiate the SynchronizedSummaryData for that channel */
-			if ( pairs.getValue().summaryStatsFromHistory ) {
+			if ( pairs.getValue().historyByDay ) {
 				ssd.put( pairs.getValue().id, new SynchronizedSummaryData(pairs.getValue().mode) );
 			}
 		}
@@ -344,7 +344,7 @@ public class DataGS implements ChannelData, JSONData {
 			Map.Entry<String, ChannelDescription> pairs = (Map.Entry<String, ChannelDescription>)it.next();
 
 			/* instantiate the SynchronizedSummaryData for that channel */
-			if ( pairs.getValue().summaryStatsFromHistory ) {
+			if ( pairs.getValue().historyByDay ) {
 				thisFileStats.put( pairs.getValue().id, new SynchronizedSummaryData(pairs.getValue().mode) );
 			}
 		}
@@ -483,7 +483,7 @@ public class DataGS implements ChannelData, JSONData {
 
 
 		/* we don't need to do anything if we aren't using the channel */
-		if ( ! processAllData && (! channelDesc.containsKey(ch) || (! channelDesc.get(ch).log && ! channelDesc.get(ch).history)) ) {
+		if ( ! processAllData && (! channelDesc.containsKey(ch) || (! channelDesc.get(ch).log && ! channelDesc.get(ch).dayStats)) ) {
 			return;
 		}
 
@@ -905,7 +905,7 @@ public class DataGS implements ChannelData, JSONData {
 			/* if history is true */
 			ChannelDescription cd = (ChannelDescription) chIt.next().getValue();
 
-			if ( cd.history && cd.mode == ChannelDescription.Modes.AVERAGE ){
+			if ( cd.dayStats && cd.mode == ChannelDescription.Modes.AVERAGE ){
 
 				/* create the SyncDescStat */
 				ds = new SynchronizedDescriptiveStatistics();

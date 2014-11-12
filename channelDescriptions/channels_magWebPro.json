@@ -170,7 +170,7 @@
             "units": "",
             "precision": 2,
             "sortOrder": 0,
-            "history": "true",
+            "dayStats": "true",
             "mode": "SAMPLE",
             "log": "true"
         },
@@ -193,7 +193,7 @@
             "sortOrder": 0,
             "mode": "AVERAGE",
             "log": "true",
-            "summaryStatsFromHistory": "true"
+            "historyByDay": "true"
         },
         {
             "id": "i_dc_amps",
@@ -212,7 +212,7 @@
             "units": "",
             "precision": 0,
             "sortOrder": 0,
-            "history": "true",
+            "dayStats": "true",
             "mode": "AVERAGE",
             "log": "true"
         },
@@ -251,10 +251,10 @@
             "units": "C",
             "precision": 2,
             "sortOrder": 0,
-            "history": "true",
+            "dayStats": "true",
             "mode": "AVERAGE",
             "log": "true",
-            "summaryStatsFromHistory": "true"
+            "historyByDay": "true"
         },
         {
             "id": "i_temp_transformer",
@@ -263,7 +263,7 @@
             "units": "C",
             "precision": 2,
             "sortOrder": 0,
-            "history": "true",
+            "dayStats": "true",
             "mode": "AVERAGE",
             "log": "true"
         },
@@ -274,7 +274,7 @@
             "units": "C",
             "precision": 2,
             "sortOrder": 0,
-            "history": "true",
+            "dayStats": "true",
             "mode": "AVERAGE",
             "log": "true"
         },
@@ -285,7 +285,7 @@
             "units": "",
             "precision": 2,
             "sortOrder": 0,
-            "history": "true",
+            "dayStats": "true",
             "mode": "AVERAGE",
             "log": "true"
         },
@@ -296,7 +296,7 @@
             "units": "",
             "precision": 2,
             "sortOrder": 0,
-            "history": "true",
+            "dayStats": "true",
             "mode": "AVERAGE",
             "log": "true"
         },
@@ -307,7 +307,7 @@
             "units": "",
             "precision": 1,
             "sortOrder": 0,
-            "history": "true",
+            "dayStats": "true",
             "mode": "AVERAGE",
             "log": "true"
         },
@@ -786,7 +786,7 @@
             "units": "C",
             "precision": 2,
             "sortOrder": 0,
-            "history": "true",
+            "dayStats": "true",
             "mode": "AVERAGE",
             "log": "true"
         },
@@ -806,7 +806,7 @@
             "units": "",
             "precision": 2,
             "sortOrder": 0,
-            "history": "true",
+            "dayStats": "true",
             "mode": "AVERAGE"
         },
         {
@@ -835,9 +835,10 @@
             "precision": 0,
             "sortOrder": 0,
             "mode": "AVERAGE",
-            "history": "true",
+            "dayStats": "true",
             "log": "true",
-            "summaryStatsFromHistory": "true"
+            "historyByDay": "true",
+            "recent": "true"
         },
         {
             "id": "b_dc_volts",
@@ -847,7 +848,7 @@
             "precision": 2,
             "sortOrder": 0,
             "mode": "AVERAGE",
-			"history": "true",
+			"dayStats": "true",
             "log": "true"
         },
         {
@@ -858,7 +859,7 @@
             "precision":1,
             "sortOrder": 0,
             "mode": "AVERAGE",
-			"history": "true",
+			"dayStats": "true",
             "log": "true"
         },
         {
@@ -886,9 +887,10 @@
             "units": "",
             "precision": 0,
             "sortOrder": 0,
-            "history": "true",
+            "dayStats": "true",
             "mode": "SAMPLE",
-            "log": "true"
+            "log": "true",
+            "recent": "true"
         },
         {
             "id": "b_amph_trip",
@@ -942,8 +944,9 @@
             "units": "",
             "precision": 0,
             "sortOrder": 0,
-            "history": "true",
-            "mode": "AVERAGE"
+            "dayStats": "true",
+            "mode": "AVERAGE",
+            "recent": "true"
         },
         {
             "id": "i_ac_volts_out_over_80",
@@ -952,7 +955,7 @@
             "units": "",
             "precision": 0,
             "sortOrder": 0,
-            "history": "true",
+            "dayStats": "true",
             "mode": "AVERAGE"
         },
         {
@@ -962,7 +965,7 @@
             "units": "",
             "precision": 0,
             "sortOrder": 0,
-            "history": "true",
+            "dayStats": "true",
             "mode": "AVERAGE"
         },
         {
@@ -972,7 +975,7 @@
             "units": "",
             "precision": 0,
             "sortOrder": 0,
-            "history": "true",
+            "dayStats": "true",
             "mode": "AVERAGE"
         }
     ]

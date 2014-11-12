@@ -34,7 +34,7 @@ public class HistoryPointJSON {
 				pairs = (Map.Entry<String, SynchronizedSummaryData>)it.next();
 
 
-				if ( false==chanDesc.get(pairs.getKey()).history ) {
+				if ( false==chanDesc.get(pairs.getKey()).dayStats ) {
 					/* skip adding because channelDescription history is false */
 					continue;
 				}

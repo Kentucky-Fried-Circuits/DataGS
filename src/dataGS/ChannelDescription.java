@@ -21,10 +21,10 @@ sortOrder: order in which to initially display. Not guaranteed to be unique. Dea
 	public String units;
 	public int precision;
 	public int sortOrder;
-	public boolean history;
+	public boolean dayStats;
 	public boolean log;
-	public boolean summaryStatsFromHistory;
-	
+	public boolean historyByDay;
+	public boolean recent;
 	
 	public static enum Modes {
 		AVERAGE, SAMPLE
@@ -40,9 +40,9 @@ sortOrder: order in which to initially display. Not guaranteed to be unique. Dea
 		this.units=units;
 		this.precision=precision;
 		this.sortOrder=sortOrder;
-		this.history=history;
+		this.dayStats=history;
 		this.log=log;
-		this.summaryStatsFromHistory=summaryStatsFromHistory;
+		this.historyByDay=summaryStatsFromHistory;
 	}
 	
 	public ChannelDescription(String id) {
@@ -53,9 +53,9 @@ sortOrder: order in which to initially display. Not guaranteed to be unique. Dea
 		units="";
 		precision=2;
 		sortOrder=0;
-		history=false;
+		dayStats=false;
 		log=false;
-		summaryStatsFromHistory = false;
+		historyByDay = false;
 	}
 	
 	public void setMode(Modes m) {

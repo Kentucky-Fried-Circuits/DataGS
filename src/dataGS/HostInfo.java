@@ -5,36 +5,7 @@ import java.net.UnknownHostException;
 import java.nio.file.FileStore;
 import java.nio.file.FileSystems;
 
-import org.apache.commons.lang3.StringEscapeUtils;
-
-public class HostInfo {
-	
-	
-//	public String hostname;
-	
-//	public StorageInfo[] stores;
-	
-	
-	public void update() {
-		System.out.println("# store, total, used, available, readyOnly, name, type");
-
-		for (FileStore store : FileSystems.getDefault().getFileStores()) {
-			try { 
-				long total = store.getTotalSpace() / 1024;
-				long used = (store.getTotalSpace() - store.getUnallocatedSpace()) / 1024;
-				long avail = store.getUsableSpace() / 1024;
-				System.out.format("%-30s %12d %12d %12d %b %s %s%n", store.toString(), total, used, avail,store.isReadOnly(),store.name(),store.type());
-				
-				if ( store.toString().startsWith("/media/usb0") ) {
-					System.out.println("# this is our USB drive");
-				}
-				
-			} catch ( Exception e ) {
-				e.printStackTrace();
-			}
-		}	
-	}
-	
+public class HostInfo {	
 	public static String toJSON() {
 		StringBuilder sb = new StringBuilder();
 		
