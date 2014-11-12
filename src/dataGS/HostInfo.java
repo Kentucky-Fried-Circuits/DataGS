@@ -48,10 +48,30 @@ public class HostInfo {
 		sb.append("{");
 		sb.append( UtilJSON.putString("hostname", hostname) + "," );
 		
+		/*
+{ 
+hostname: "S1000",
+drives(or whatever you want to call it): [
+{	dir: "/ (rootfs)", //this looks the same as description, so if they won't be different, just keep one
+total: 3023728,
+used: 1322424,
+avail: 1527992,
+readOnly: false,
+name: "rootfs",
+type: "rootfs",
+description: "/ (rootfs)"
+},
+...
+
+]
+}
+		 */
+		
+		sb.append( "\"drives\": [");
 		
 		for (FileStore store : FileSystems.getDefault().getFileStores()) {
 			try {
-				sb.append( "\"" + StringEscapeUtils.escapeJson( store.toString() ) + "\": {");
+				sb.append( "{");
 				
 				long total = store.getTotalSpace() / 1024;
 				long used = (store.getTotalSpace() - store.getUnallocatedSpace()) / 1024;
@@ -77,6 +97,7 @@ public class HostInfo {
 		if ( ',' == sb.charAt(sb.length()-1) ) {
 			sb.deleteCharAt(sb.length()-1);
 		}
+		sb.append("]"); /* close drives */
 		
 		sb.append("}");
 		
