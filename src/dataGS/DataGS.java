@@ -27,6 +27,7 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.commons.math3.stat.descriptive.SynchronizedDescriptiveStatistics;
 
@@ -232,8 +233,10 @@ public class DataGS implements ChannelData, JSONData {
 
 			/* loglocal */
 			if ( null != logLocal) {
+				/* String array [0] is the line to be written and [1] is the headers if the headers are required  */
+				String[] lineAndHeader = HistoryPointExport.toCSV( data, channelDesc );
 				/* log line to local file */
-				logLocal.log( HistoryPointExport.toCSV( data, channelDesc )[0], new Date(now), HistoryPointExport.toCSV( data, channelDesc )[1] );
+				logLocal.log( lineAndHeader[0], new Date(now), lineAndHeader[1] );
 			}
 
 			/* clear statistics for next pass */
@@ -368,7 +371,7 @@ public class DataGS implements ChannelData, JSONData {
 			/* first record is header */
 			if ( null == headerTokens ) {
 				headerTokens = new String[csvRecord.size()];
-				fieldsToParse=new int[csvRecord.size()+1];
+				fieldsToParse = new int[csvRecord.size()+1];
 				int j=0;
 
 				for ( int i=0 ; i<csvRecord.size() ; i++ ) {
@@ -387,7 +390,7 @@ public class DataGS implements ChannelData, JSONData {
 				
 				//System.err.println("-------------------> headerTokens");
 				for ( int i=0 ; i<headerTokens.length ; i++ ) {
-					//System.err.println("# headerTokens[" + i + "] is " + headerTokens[i] );
+					System.err.println("# headerTokens[" + i + "] is " + headerTokens[i] );
 				}
 
 				//				for ( int i=0 ; i<fieldsToParse.length && fieldsToParse[i] != -1 ; i++ ) {
@@ -413,10 +416,10 @@ public class DataGS implements ChannelData, JSONData {
 
 				try {
 					/* get rid of anything besides numbers and decimal point */
-					String v=csvRecord.get(fieldsToParse[i]).replaceAll( "[^0-9.]", "" );
-
+					String v=csvRecord.get(fieldsToParse[i]);
+					
 					/* skip parsing if we have null or empty string */
-					if ( null == v || 0 == v.length() )
+					if ( null == v || 0 == v.length() || !NumberUtils.isNumber(v) )
 						continue;
 
 					d=Double.parseDouble(v);

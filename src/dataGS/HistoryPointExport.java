@@ -12,7 +12,8 @@ import org.apache.commons.lang3.StringEscapeUtils;
  * @author James Jarvis
  */
 public class HistoryPointExport {
-
+	public final static String DEFAULT_DATE_LABEL="Data Date (UTC)";
+	public final static String DEFAULT_MILLISECONDS_LABEL="Milliseconds";
 	
 	public static String toJSON(long time, Map<String, SynchronizedSummaryData> data, Map<String, ChannelDescription> chanDesc) {
 		StringBuilder json=new StringBuilder();
@@ -91,8 +92,9 @@ public class HistoryPointExport {
 	public static String[] toCSV(Map<String, SynchronizedSummaryData> data, Map<String, ChannelDescription> chanDesc) {
 		/* csv[0] will be the data line and csv[1] will be the header line */
 		String[] csv={"",""};
-		
+		/* csvHeader is the description and csvToken */
 		StringBuilder csvHeader=new StringBuilder();
+		StringBuilder csvToken=new StringBuilder();
 		StringBuilder csvData=new StringBuilder();
 
 		Iterator<Entry<String, SynchronizedSummaryData>> it = data.entrySet().iterator();
@@ -123,11 +125,14 @@ public class HistoryPointExport {
 				}
 				
 				/* print the key if the description isn't available */
-//				if ( ! chanDesc.containsKey(pairs.getKey()) || 0==chanDesc.get( pairs.getKey() ).description.length() ) {
+				if ( ! chanDesc.containsKey(pairs.getKey()) || 0 == chanDesc.get( pairs.getKey() ).description.length() ) {
 					csvHeader.append(StringEscapeUtils.escapeCsv(pairs.getKey()) + ",");
-//				} else {
-//					csvHeader.append( StringEscapeUtils.escapeCsv( chanDesc.get( pairs.getKey() ).description) + ",");
-//				}
+					csvToken.append(StringEscapeUtils.escapeCsv(pairs.getKey()) + ",");
+				} else {
+					csvHeader.append( StringEscapeUtils.escapeCsv( chanDesc.get( pairs.getKey() ).description) + ",");
+					csvToken.append(StringEscapeUtils.escapeCsv(pairs.getKey()) + ",");
+				}
+				
 				csvData.append(",");
 			}
 			
@@ -141,7 +146,8 @@ public class HistoryPointExport {
 		}
 
 		csv[0]=csvData.toString();
-		csv[1]=csvHeader.toString();
+		csv[1]="\""+ DEFAULT_DATE_LABEL +"\",\""+ DEFAULT_MILLISECONDS_LABEL+"\","+csvToken.toString()+
+				"\n\""+DEFAULT_DATE_LABEL +"\",\""+ DEFAULT_MILLISECONDS_LABEL+"\","+csvHeader.toString();
 		
 		return csv;
 	}

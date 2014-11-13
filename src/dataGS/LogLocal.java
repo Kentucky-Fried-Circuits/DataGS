@@ -118,7 +118,7 @@ public class LogLocal {
 			/* write header if file didn't already exist */
 			if ( writeHeader ) {
 				
-				writer.write("\""+labelDate +"\",\""+ labelMilliseconds+"\","+header + "\r\n");
+				writer.write(header + "\r\n");
 			}
 			/* write line */
 			writer.write(line + "\r\n");

@@ -794,11 +794,12 @@
         {
             "id": "a_gen_runtime_minutes",
             "title": "",
-            "description": "",
+            "description": "Generator Runtime",
             "units": "",
             "precision": 2,
             "sortOrder": 0,
-            "mode": "SAMPLE"
+            "mode": "SAMPLE",
+            "log": "true"
         },
         {
             "id": "a_voltage",
@@ -840,11 +841,12 @@
         {
             "id": "a_gen_run_hours_since_boot",
             "title": "",
-            "description": "",
+            "description": "Total Generator Runtime Since Boot",
             "units": "",
             "precision": 2,
             "sortOrder": 0,
-            "mode": "SAMPLE"
+            "mode": "SAMPLE",
+            "log": "true"
         },
         {
             "id": "b_state_of_charge",
