@@ -173,13 +173,13 @@
 			/* Check for inverter faults */
 			if ( 0x00 != parseInt(dataAr["i_fault"].sampleValue) ) {
 				s += "<hr>";
-				s += magnumInverterFault(parseInt(dataAr["i_fault"].sampleValue));
+				s += "INVERTER FAULT: "+magnumInverterFault(parseInt(dataAr["i_fault"].sampleValue));
 			}
 
 			/* Check for AGS faults */
 			if ( -1 != magnumAGSStatus(parseInt(dataAr['a_status'].sampleValue)).indexOf("Fault") ) {
 				s += "<hr>";
-				s += magnumAGSStatus(parseInt(dataAr['a_status'].sampleValue));
+				s += "AGS FAULT: "+magnumAGSStatus(parseInt(dataAr['a_status'].sampleValue));
 			}
 
 

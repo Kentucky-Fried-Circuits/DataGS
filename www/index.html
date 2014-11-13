@@ -417,7 +417,14 @@
 			/* plot graphs */
 			if ( create && parseInt(dataAr["age_bmk"].sampleValue) < 100 ) plotGraphs();
 
-			if ( create ) location.href = "#tables";
+			/* start page timer */
+			if ( create ) {
+
+				location.href = "#tables";
+				timerTick();
+
+			}
+
 		} else {
 			noData = true;
 			customFaults(null);
@@ -621,6 +628,7 @@
 			addLine("currentTable",'AGS Voltage:', dataAr['a_voltage'].avg.toFixed(getChObj("a_voltage").precision)+" VDC","ags_volt", create);
 			addLine("currentTable",'Generator Runtime:', parseInt(dataAr['a_gen_runtime_minutes'].sampleValue)+" minutes","ags_genRun", create);
 			addLine("currentTable",'Days Since Last Run:', parseInt(dataAr['a_days_since_last'].sampleValue) + " days","ags_daysSince", create);
+			addLine("currentTable",'Total Generator Runtime:<br><span style=\"font-size: 0.8em;\">Since Boot</span>', parseInt(dataAr['a_gen_run_hours_since_boot'].sampleValue)+" hours","ags_genRunHours", create);
 
 		} else {
 	
@@ -631,7 +639,7 @@
 			addLine("currentTable",'AGS Voltage:', "No Data","ags_volt", false);
 			addLine("currentTable",'Generator Runtime:', "No Data","ags_genRun", false);
 			addLine("currentTable",'Days Since Last Run:', "No Data","ags_daysSince", false);
-
+			addLine("currentTable",'Generator Runtime:', "No Data","ags_genRunHours", create);
 		}
 
 	}
@@ -1086,7 +1094,7 @@
 	function loadHistory(){
 
 		$("#loadingContainer").show();
-		$("#loadingMsg").html("Loading history...");
+		$("#loadingMsg").html("Loading...");
 		    // If internet explorer, use Microsoft XDR
 		if ( isIE ){
 			var xdr = new XDomainRequest();
@@ -1170,7 +1178,7 @@
 		
 		loadDataCreate();
 		
-		timerTick();
+		
 		
 
 	
