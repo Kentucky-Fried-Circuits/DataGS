@@ -18,7 +18,7 @@ function magnumLowVACDropout(val,iModel) {
 			case 192: return "UPS Mode";
 			case 254: return "EMS over-ride open relay";
 			case 255: return "EMS over-ride open relay";
-			default: return "Export Unknown Value: " . val;
+			default: return "Export Unknown Value: " + val;
 		}
 	} else {
 		switch (val) {
@@ -34,7 +34,7 @@ function magnumLowVACDropout(val,iModel) {
 			case 192: return "UPS Mode";
 			case 254: return "EMS over-ride open relay";
 			case 255: return "EMS over-ride open relay";
-			default: return "Unknown Value: " . val;
+			default: return "Unknown Value: " + val;
 		}
 	}
 }
@@ -175,7 +175,7 @@ function magnumChargerLED(val) {
 	if ( 1==val || val>14 ) return 'Charging LED on';
 	if ( val >= 7 ) return 'Charging LED Flashing';
 	if ( val >= 2 ) return 'Charging LED Slowly Flashing';
-	return 'Invalid Charging LED value: ' . val;
+	return 'Invalid Charging LED value: ' + val;
 }
 
 function magnumInverterLED(val) {
@@ -183,7 +183,7 @@ function magnumInverterLED(val) {
 	if ( 1==val || val>14 ) return 'Inverting LED On';
 	if ( val >= 7 ) return 'Inverting LED Flashing';
 	if ( val >= 2 ) return 'Inverting LED Slowly Flashing';
-	return 'Invalid Inverting LED value: ' . val;
+	return 'Invalid Inverting LED value: ' + val;
 }
 
 
@@ -263,7 +263,7 @@ function magnumAGSMode(val) {
 		case 2: return "Test";
 		case 4: return "Enabled with Quiet Time";
 		case 5: return "On";
-		default: return "Unknown Value: " . val;
+		default: return "Unknown Value: " + val;
 	}
 }
 
@@ -298,6 +298,6 @@ function magnumInverterFault(val) {
 		case 0x81: return "High Battery Temperature";
 		case 0x90: return "Open Transformer TCO Temperature Cutout";
 		case 0x91: return "Open Input 30 amp AC Breaker CB3";
-		default: return "Unknown Fault: Code" . val;
+		default: return "Unknown Fault: Code" + val;
 	}
 }
