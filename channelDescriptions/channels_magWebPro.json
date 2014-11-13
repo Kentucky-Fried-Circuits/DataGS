@@ -48,12 +48,13 @@
         },
         {
             "id": "age_inverter",
-            "title": "",
-            "description": "",
+            "title": "Inverter Age (255 indicates old data)",
+            "description": "Inverter Age (255 indicates old data)",
             "units": "",
             "precision": 2,
             "sortOrder": 0,
-            "mode": "SAMPLE"
+            "mode": "SAMPLE",
+            "log": "true"
         },
         {
             "id": "length_inverter",
@@ -207,7 +208,7 @@
         },
         {
             "id": "i_ac_volts_out",
-            "title": "",
+            "title": "VAC Out (Inverter)",
             "description": "",
             "units": "",
             "precision": 0,
