@@ -107,7 +107,9 @@ public class RecordMagWeb {
 	
 	/* AGS 0xA2 parameters */
 	public int a_days_since_last;
-
+	public int a_days_since_last_full;
+	public int a_gen_run_hours_since_boot;
+	
 	/* BMK parameters */
 	public int b_state_of_charge;
 	public double b_dc_volts, b_dc_amps, b_dc_min_volts, b_dc_max_volts;
@@ -363,6 +365,8 @@ public class RecordMagWeb {
 		a_days_since_last=buff[98];
 		
 		/* todo 99 is days since last 100% SOC, 100 & 101 are total generator run time in hours since AGS boot */
+		a_days_since_last_full=buff[99];
+		a_gen_run_hours_since_boot=((buff[100]<<8) + buff[101]);
 
 		/* RTR */
 		rtr_revision=buff[103]/10.0;
