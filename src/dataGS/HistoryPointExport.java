@@ -100,9 +100,11 @@ public class HistoryPointExport {
 			while (it.hasNext()) {
 				Map.Entry<String, SynchronizedSummaryData> pairs = (Map.Entry<String, SynchronizedSummaryData>)it.next();
 
-				if ( false==chanDesc.get(pairs.getKey()).log ) {
+				
+				if ( !chanDesc.containsKey( pairs.getKey() ) || false==chanDesc.get(pairs.getKey()).log ) {
 					continue;
 				}
+				
 				
 				//System.err.println("## HistoryPointJSON is adding " + pairs.getKey() + " because history is true");
 				

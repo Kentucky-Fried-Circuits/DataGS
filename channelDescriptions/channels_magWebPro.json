@@ -826,6 +826,24 @@
             "precision": 2,
             "sortOrder": 0,
             "mode": "SAMPLE"
+        },       
+        {
+            "id": "a_days_since_last_full",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "a_gen_run_hours_since_boot",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
         },
         {
             "id": "b_state_of_charge",
