@@ -177,7 +177,7 @@
 			}
 
 			/* Check for AGS faults */
-			if ( -1 != magnumAGSStatus(parseInt(dataAr['a_status'].sampleValue)).indexOf("fault") ) {
+			if ( -1 != magnumAGSStatus(parseInt(dataAr['a_status'].sampleValue)).indexOf("Fault") ) {
 				s += "<hr>";
 				s += magnumAGSStatus(parseInt(dataAr['a_status'].sampleValue));
 			}
