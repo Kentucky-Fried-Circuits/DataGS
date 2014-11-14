@@ -570,7 +570,7 @@
 						lineWidth: 0
 					},
 					color: "red"
-				}, {
+				}/*, {
 					data: flot[key][2],
 					label: "Temperature",
 					lines: {
@@ -587,7 +587,7 @@
 						lineWidth: 0
 					},
 					color: "red"
-				} ];
+				} */];
 
 					var optionsEdit = {
 						series: {
@@ -663,7 +663,7 @@
 				var tOrS = 3;
 				var units = "C";
 
-				if ( "SOC" == item.series.label ) {
+				if ( "Average SOC" == item.series.label ) {
 					tOrS = 1;
 					units = "%";
 				}
