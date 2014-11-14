@@ -254,8 +254,7 @@
             "sortOrder": 0,
             "dayStats": "true",
             "mode": "AVERAGE",
-            "log": "true",
-            "historyByDay": "true"
+            "log": "true"
         },
         {
             "id": "i_temp_transformer",
