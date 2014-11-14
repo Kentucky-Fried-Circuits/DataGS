@@ -238,7 +238,7 @@
 
 			if ( "" == xdr.responseText ) {
 				$("#files").html("");
-				$("#lH1").html("Building Summary. Please be patient, this process could take a couple minutes.");
+				$("#lH1").html("Summary not available at this time. Try again in a couple minutes.");
 				$("#loading").show();
 				setTimeout(loadSummary,1000*10);
 			} else {
@@ -262,7 +262,7 @@
 			.done(function( dataS ) {
 				if ( undefined == dataS ) {
 					$("#files").html("");
-					$("#lH1").html("Building Summary. Please be patient, this process could take a couple minutes.");
+					$("#lH1").html("Summary not available at this time. Try again in a couple minutes.");
 					$("#loading").show();
 					setTimeout(loadSummary,1000*10);
 				} else {
@@ -483,7 +483,7 @@
 		/* i_temp_battery */
 		//line+="<td>"+lineAr.i_temp_battery_min+"</td><td>"+lineAr.i_temp_battery_min+"</td><td>"+lineAr.i_temp_battery_min+"</td>";
 
-		line+="<td style=\"text-align: center;\">Raw Data: (<a href=\""+txtLink+"\" >TXT</a>) (<a href=\""+csvLink+"\" >CSV</a>)</td></tr>";
+		line+="<td style=\"text-align: center;\">Raw Data: (<a href=\""+txtLink+"\" target=\"_blank\" >TXT</a>) (<a href=\""+csvLink+"\" target=\"_blank\" >CSV</a>)</td></tr>";
 
 		yearMonth = (lineAr.day+"").substr(0,6);
 		day = (lineAr.day+"").substr(6,2);
@@ -555,7 +555,7 @@
 				data0[key] = [{
 
 					data: flot[key][0],
-					label: "SOC",
+					label: "Average SOC",
 					lines: {
 						show: true,
 						lineWidth: 3
@@ -714,7 +714,7 @@
 	</div>
 	
 	
-	<h4 style="text-align: center;"><a href="table.html" target="_blank">Fault Code Reference</a></h4>
+	<h4 style="text-align: center;"><a href="table.html" target="_blank">Fault and Status Code Reference</a></h4>
 	<table style="margin-left:auto; margin-right: auto;" id="files"></table>
 <br>
 <br>

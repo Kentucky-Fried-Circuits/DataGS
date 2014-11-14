@@ -65,7 +65,7 @@ function magnumInverterModel(val,voltage) {
 	m='';
 	switch ( val ) {
 		// v=base voltage, s=scale factor from 12v, e=export, m=model, l=loadAmps, i=inputAmps, 2=inputAC2, 1=inputAC1, c=invChgAmps
-		//              v  s e m    l i 2 1 c
+		//             v  s e m     l i 2 1 c
 		case 0x06: m= "12|1|0|MM612|0|0|0|0|0"; break;
 		case 0x07: m= "12|1|0|MM612-AE|0|0|0|0|0"; break;
 		case 0x08: m= "12|1|0|MM1212|0|0|0|0|0"; break;
@@ -73,6 +73,7 @@ function magnumInverterModel(val,voltage) {
 		case 0x0A: m= "12|1|1|MM1012E|0|0|0|0|0"; break;
 		case 0x0B: m= "12|1|0|MM1512|0|0|0|0|0"; break;
 		case 0x0C: m= "12|1|1|MMS912E|0|0|0|0|0"; break;
+		case 0x0D: m= "12|1|1|MMA1012|0|0|0|0|0"; break;
 		case 0x0F: m= "12|2|0|ME1512|0|0|0|0|0"; break;
 		case 0x14: m= "12|2|0|ME2012|0|0|0|0|0"; break;
 		case 0x15: m= "12|1|0|RS2212|0|0|0|0|0"; break;
@@ -94,6 +95,7 @@ function magnumInverterModel(val,voltage) {
 		case 0x59: m= "24|1|1|MS4124PE|0|0|0|0|0"; break;
 		case 0x5A: m= "24|1|1|MS4124E|0|0|0|0|0"; break;
 		case 0x5B: m= "24|1|0|MS2024|0|0|0|0|0"; break;
+		case 0x67: m= "24|1|0|MSH4024|1|1|0|1|1"; break;
 		case 0x68: m= "24|1|0|MSH4024M|1|1|0|1|1"; break;
 		case 0x69: m= "24|1|0|MS4024|0|0|0|0|0"; break;
 		case 0x6A: m= "24|1|0|MS4024AE|0|0|0|0|0"; break;
@@ -101,10 +103,11 @@ function magnumInverterModel(val,voltage) {
 		case 0x6C: m= "48|1|0|INV_48V|0|0|0|0|0"; break;
 		case 0x6F: m= "48|1|0|MS4448AE|0|0|0|0|0"; break;
 		case 0x70: m= "48|1|0|MS3748AEJ|0|0|0|0|0"; break;
+		case 0x72: m= "48|1|0|MS4048|0|0|0|0|0"; break;
 		case 0x73: m= "48|1|0|MS4448PAE|1|1|0|0|1"; break;
 		case 0x74: m= "48|1|0|MS3748PAEJ|1|1|0|0|1"; break;
 		case 0x75: m= "48|1|0|MS4348PE|0|0|0|0|0"; break;
-		default: m="12|1|0|Unknown Value: 0x%02X ("+val+")|1|1|1|1|1";
+		default: m="12|1|0|Unknown Value: 0x"+val.toString(16)+" ("+val+")|1|1|1|1|1";
 	}
 	var parts=m.split("|");
 	if ( 1==voltage ) return parts[0]; /* nominal DC voltage */
@@ -219,7 +222,7 @@ function magnumAGSStatus(val) {
 		case  2: return "Ready";
 		case  3: return "Manual Run";
 		case  4: return "AC In";
-		case  5: return "In Quiet Tme";
+		case  5: return "In Quiet Time";
 		case  6: return "Start in Test Mode";
 		case  7: return "Start on Temperature";
 		case  8: return "Start on Voltage";

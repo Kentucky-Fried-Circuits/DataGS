@@ -694,7 +694,9 @@
 		} else {
 			invLED= "<img src=\"res/images/greenLedOff.png\" style=\"height:11px;image-rendering:optimizeQuality;\" >&nbsp; Inverting LED Off";// + invLED;
 		}
-		
+
+		//invLED= "<img src=\"res/images/greenLed.png\" style=\"height:11px;image-rendering:optimizeQuality;\" >&nbsp; "+ invLED;
+
 		var chgLED = magnumChargerLED(parseInt(dataAr['i_led_charge'].sampleValue));
 		
 		if ( -1 == chgLED.indexOf("off") ){
@@ -702,7 +704,7 @@
 		} else {
 			chgLED= "<img src=\"res/images/greenLedOff.png\" style=\"height:11px;image-rendering:optimizeQuality;\" >&nbsp; Charging LED Off";// + chgLED;
 		}
-
+		//chgLED= "<img src=\"res/images/greenLed.png\" style=\"height:11px;image-rendering:optimizeQuality;\" >&nbsp; "+ chgLED;
 		var s = invLED + "<br>" + chgLED;
 
 		addLine("currentTable", "LEDs:", s ,"leds",create);
@@ -951,7 +953,7 @@
 		var unit = getChUnit(id,"");
 		if ( null == prec ) prec = 1;
 
-		if ( 252 == val[id].max || 0 == val[id].min ) {
+		if ( 250 < val[id].max || 0 == val[id].min ) {
 			if ( create ) {
 
 				$("#"+tableID).append("<tr id=\"hour_"+id+"\">"+
@@ -984,6 +986,8 @@
 
 	}
 
+	
+
 	function addHourLineSpec(tableID,id,title,val,create){
 		var chObj = getChObj(id);
 
@@ -1013,40 +1017,21 @@
 					
 					return;
 
-				} else if ( "a_temperature" == id && (252 == val[id].max || 0 == val[id].min) ) {
-
+				} 
+				if ( 250 < val[id].max ) {
 					if ( create ) {
 
 						$("#"+tableID).append("<tr id=\"hour_"+id+"\">"+
 							"<th class=\"right\">"+title+"</th>"+
-							"<td colspan = \"3\">Was Disconnected...</td></tr>");
+							"<td colspan = \"3\"><i>Was Disconnected...</i></td></tr>");
 
 					} else {
 
-						$("#hour_"+id).html(+
-							"<th class=\"right\">"+title+"</th>"+
-							"<td colspan = \"3\">Was Disconnected...</td>");
+						$("#hour_"+id).html("<th class=\"right\">"+title+"</th>"+
+							"<td colspan = \"3\"><i>Was Disconnected...</i></td>");
 
 					}
-					
 					return;
-				}
-
-				if ( create ) {
-
-					$("#"+tableID).append("<tr id=\"hour_"+id+"\">"+
-						"<th class=\"right\">"+title+"</th>"+
-						"<td>"+val[id].min.toFixed(prec)+unit+"</td>"+
-						"<td>"+val[id].max.toFixed(prec)+unit+"</td>"
-						+"<td>"+val[id].avg.toFixed(prec)+unit+"</td></tr>");
-
-				} else {
-
-					$("#hour_"+id).html("<th class=\"right\">"+title+"</th>"+
-						"<td>"+val[id].min.toFixed(prec)+unit+"</td>"+
-						"<td>"+val[id].max.toFixed(prec)+unit+"</td>"+
-						"<td>"+val[id].avg.toFixed(prec)+unit+"</td>");
-
 				}
 			}
 
@@ -1569,19 +1554,19 @@
 
 
 <div id="tables" style=" display: table; margin-left: auto; margin-right: auto;width:70%">
-<div style=" width: 50%; display: table-cell;">
+	<div style=" width: 50%; display: table-cell;">
 	
-	<table id="currentTable" style="width: 95%; margin-left: auto; margin-right: auto;">
+		<table id="currentTable" style="width: 95%; margin-left: auto; margin-right: auto;">
 		
-	</table>
-</div>
+		</table>
+	</div>
 
-<div style="width: 50%; display: table-cell; ">
+	<div style="width: 50%; display: table-cell; ">
 	
-	<table id="hourTable" style="width: 95%; margin-left: auto; margin-right: auto;">
+		<table id="hourTable" style="width: 95%; margin-left: auto; margin-right: auto;">
 		
-	</table>
-</div>
+		</table>
+	</div>
 
 </div>
 <div style="clear: both;">

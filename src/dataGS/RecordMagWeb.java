@@ -414,14 +414,16 @@ public class RecordMagWeb {
 		rCRC = (buff[125] << 8) + buff[126];
 		lCRC=crc_chk(buff,1,124);
 
+		
+		
 		/* special cases */
-	
 		
 		/* BMK watts */
 		b_dc_watts = b_dc_volts * b_dc_amps;
 		
 		/* if i_ac_volts is more than 80 */
-		if ( i_ac_volts_out > 80 ) {
+		
+		if ( i_ac_volts_out > 80 && age_inverter < 250 ) {
 			
 			i_ac_volts_out_over_80 = i_ac_volts_out;
 			
@@ -432,7 +434,7 @@ public class RecordMagWeb {
 		}
 		
 		/* i_amps_out when inverting */
-		if ( i_amps_out<100 && 0x01!=i_status && 0x02!=i_status && 0x04!=i_status && 0x08!=i_status ) {
+		if ( i_amps_out < 100 && 0x01 != i_status && 0x02 != i_status && 0x04 != i_status && 0x08 != i_status ) {
 			
 			i_amps_out_inverting = i_amps_out;
 			
@@ -443,7 +445,7 @@ public class RecordMagWeb {
 		}
 		
 		/* i_amps_out when charging */
-		if ( i_amps_out<100 && i_status>=0x01 && i_status<=0x08 ) {
+		if ( i_amps_out < 100 && i_status >= 0x01 && i_status <= 0x08 ) {
 			
 			i_amps_out_charging = i_amps_out;
 			
