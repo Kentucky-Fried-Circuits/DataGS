@@ -467,7 +467,7 @@
 		nowTimeStamp=dataAr[lastCh].time;
 
 	
-		addLine("currentTable","Data Date:","<span id=\"convDate\">"+getUTCTime(dataAr[lastCh].time)+"</span><br>Report received <span id=\"ageRep\">"+commaSeparateNumber(seconds)+"</span> seconds ago","date", create);
+		addLine("currentTable","Data Date (UTC):","<span id=\"convDate\">"+getUTCTime(dataAr[lastCh].time)+"</span><br>Report received <span id=\"ageRep\">"+commaSeparateNumber(seconds)+"</span> seconds ago","date", create);
 	
 	}
 	
@@ -487,7 +487,7 @@
 		
 			$('#ampHours').html( commaSeparateNumber(parseFloat(dataAr["b_amph_in_out"].sampleValue).toFixed(getChObj("b_amph_in_out").precision)) + " amp hours");
 
-
+			
 			
 			
 
@@ -506,21 +506,29 @@
 	function batteryCharts(dataAr,create){
 		if ( parseInt(dataAr["age_bmk"].sampleValue) < 100 ) {		
 			addCat("currentTable","Data Supplied By Battery Monitor (ME-BMK)", create);
-			addLine("currentTable","State of Charge:<br><span style=\"font-size:.75em;\">10 minute averages</span>","<span id=\"battCharge\">Loading...</span><br>"+
+			addLine("currentTable","State of Charge:<br><span style=\"font-size:.75em;\">(10 minute averages)</span>","<span id=\"battCharge\">Loading...</span><br>"+
 					"<div style=\"width: 100%;height: 70px;padding: 00px 00px 00px 00px;margin-left:auto;margin-right:auto;\">"+
 						"<div id=\"chargeChart\" style=\"width: 100%;height: 100%;font-size: 14px;line-height: 1em;\"  onclick=\"SOCtoggle()\" ></div>"+
 					"</div>"+
 					"<span id=\"SOCTicks\" style=\"font-size:.8em\"></span>","battSOCCell", create);
-			addLine("currentTable","volts / amps:<br><span style=\"font-size:.75em;\">10 minute averages</span>","<span id=\"voltsAmps\">Loading...</span><br>"+
+
+			addLine("currentTable","Watts In/Out:<br><span style=\"font-size:.75em;\">(10 minute averages)</span>",
 					"<div style=\"width: 100%;height: 70px;padding: 00px 00px 00px 00px;margin-left:auto;margin-right:auto;\">"+
 						"<div id=\"voltsChart\" style=\"width: 100%;height: 100%;font-size: 14px;line-height: 1em;\"  onclick=\"SOCtoggle()\" ></div>"+
 					"</div>"+
 					"<span id=\"SOCTicks\" style=\"font-size:.8em\"></span>","voltsAmpsCell", create);
-			addLine("currentTable","Amp Hours In / Out:<br><span style=\"font-size:.75em;\">10 minute averages</span>","<span id=\"ampHours\">Loading...</span><br>"+
+
+			addLine("currentTable",'DC Volts:',dataAr['b_dc_volts'].avg.toFixed(getChObj("b_dc_volts").precision)+" VDC","b_dc_volts", create);
+			addLine("currentTable",'DC Amps:',dataAr['b_dc_amps'].avg.toFixed(getChObj("b_dc_amps").precision)+" amps","b_dc_amps", create);
+			addLine("currentTable",'DC Watts:',dataAr['b_dc_watts'].avg.toFixed(getChObj("b_dc_watts").precision)+" watts","b_dc_watts", create);
+
+			addLine("currentTable","Amp Hours In / Out:<br><span style=\"font-size:.75em;\">(10 minute averages)</span>","<span id=\"ampHours\">Loading...</span><br>"+
 					"<div style=\"width: 100%;height: 70px;padding: 00px 00px 00px 00px;margin-left:auto;margin-right:auto;\">"+
 						"<div id=\"ampChart\" style=\"width: 100%;height: 100%;font-size: 14px;line-height: 1em;\"  onclick=\"SOCtoggle()\" ></div>"+
 					"</div>"+
 					"<span id=\"SOCTicks\" style=\"font-size:.8em\"></span>","ampHoursCell", create);
+
+
 
 			if ( ! create ) plotGraphs();
 
@@ -582,24 +590,57 @@
 				/* AC out */
 				var s;
 				if ( dataAr['i_ac_volts_out'].avg >= 80 ) {
+
 					s= "Approximately "+magnumExportVoltageScale(dataAr['i_ac_volts_out'].avg,vacScale).toFixed(getChObj("i_ac_volts_out").precision)+" volts AC";
-					if ( 1 == magnumInverterModel(parseInt(dataAr["i_model"].sampleValue),4) )
-						s+=" @ "+dataAr["i_amps_out"].avg.toFixed(getChObj("i_amps_out").precision)+" amps";
+					addLine("currentTable",'AC Out Volts:',s,"ac_out_volts", create );
+					if ( 1 == magnumInverterModel(parseInt(dataAr["i_model"].sampleValue),4) ){
+						s="Approximately "+dataAr["i_amps_out"].avg.toFixed(getChObj("i_amps_out").precision)+" amps";
+						addLine("currentTable",'AC Out Amps:',s , "ac_out_amps", create );
+						addLine("currentTable",'AC Out Watts:',"Approximately "+(dataAr["i_ac_volts_out"].avg*dataAr["i_amps_out"].avg).toFixed(0) ,"ac_out_watts", create );
+					}
+
+					//addLine("currentTable",'AC Out Volts:',s,"ac_out_volts", create );
+					//addLine("currentTable",'AC Out Amps:',s , "ac_out_amps", create );
+					//addLine("currentTable",'AC Out Watts:',(dataAr["i_ac_volts_out"].avg*dataAr["i_amps_out"].avg).toFixed(0) ,"ac_out_watts", create );
+
 				} else { 
+
 					s="Inactive.";
+					addLine("currentTable",'AC Out Volts:',s,"ac_out_volts", create );
+					addLine("currentTable",'AC Out Amps:',s , "ac_out_amps", create );
+					addLine("currentTable",'AC Out Watts:',s ,"ac_out_watts", create );
+
 				}
-				addLine("currentTable",'AC Out:',s,"i_acOut", create);
+				//addLine("currentTable",'AC Out:',s,"i_acOut", create);
 
 				/* AC in */
 				if ( dataAr['i_ac_volts_in'].avg >= 80 && 1 == magnumInverterModel(parseInt(dataAr["i_model"].sampleValue),4)) {
+
 					s="Approximately "+dataAr['i_amps_in'].avg.toFixed(getChObj("i_amps_in").precision)+" amps";
+					addLine("currentTable",'AC In Volts:',s,"ac_in_volts", create );
+					addLine("currentTable",'AC In Amps:',"Approximately "+dataAr['i_amps_in'].avg.toFixed(getChObj("i_amps_in").precision), "ac_in_amps" , create);
+					addLine("currentTable",'AC In Watts:',"Approximately "+(dataAr['i_amps_in'].avg*dataAr['i_ac_volts_in'].avg).toFixed(0),"ac_in_watts", create );
+					//console.log("dfd");
+					$("#row_ac_in_amps").show();
+					$("#row_ac_in_watts").show();					
+
 				} else { 
 					s="Inactive.";
+					addLine("currentTable",'AC In Volts:',s,"ac_in_volts", create );
+					addLine("currentTable",'AC In Amps:',s , "ac_in_amps", create );
+					addLine("currentTable",'AC In Watts:',s ,"ac_in_watts", create );
+					$("#row_ac_in_amps").hide();
+					$("#row_ac_in_watts").hide();
+
+					
+					
+					
 				}
-				addLine("currentTable",'AC In:',s,"i_acIn", create);
+
+				//addLine("currentTable",'AC In:',s,"i_acIn", create);
 
 				/* AC frequency */
-				addLine("currentTable",'AC Frequency:',dataAr['i_ac_hz'].avg.toFixed(getChObj("i_ac_hz").precision),"i_acFreq", create);
+				addLine("currentTable",'AC Frequency: <span style=\"font-size: 0.8em;\">(Hz)</span>',dataAr['i_ac_hz'].avg.toFixed(getChObj("i_ac_hz").precision),"i_acFreq", create);
 
 			
 				/* DC volts / amps */
@@ -626,9 +667,12 @@
 			addLine("currentTable",'Status:', magnumAGSStatus(parseInt(dataAr['a_status'].sampleValue)),"ags_status", create);
 			addLine("currentTable",'AGS Temperature:', magnumAGSTemperature(dataAr['a_temperature'].avg),"ags_temp", create);
 			addLine("currentTable",'AGS Voltage:', dataAr['a_voltage'].avg.toFixed(getChObj("a_voltage").precision)+" VDC","ags_volt", create);
-			addLine("currentTable",'Generator Runtime:', parseInt(dataAr['a_gen_runtime_minutes'].sampleValue)+" minutes","ags_genRun", create);
+
+			addLine("currentTable",'Generator Runtime:<br><span style=\"font-size: 0.8em;\">(Current Cycle)</span>', parseFloat(dataAr['a_gen_runtime_minutes'].sampleValue).toFixed(1)+" hours","ags_genRun", create);
+
 			addLine("currentTable",'Days Since Last Run:', parseInt(dataAr['a_days_since_last'].sampleValue) + " days","ags_daysSince", create);
-			addLine("currentTable",'Total Generator Runtime:<br><span style=\"font-size: 0.8em;\">Since Boot</span>', parseInt(dataAr['a_gen_run_hours_since_boot'].sampleValue)+" hours","ags_genRunHours", create);
+
+			addLine("currentTable",'Total Generator Runtime:<br><span style=\"font-size: 0.8em;\"> (Since AGS Boot)</span>', parseInt(dataAr['a_gen_run_hours_since_boot'].sampleValue)+" hours","ags_genRunHours", create);
 
 		} else {
 	
@@ -637,9 +681,9 @@
 			addLine("currentTable",'Status:', "No Data","ags_status", false);
 			addLine("currentTable",'AGS Temperature:',"No Data","ags_temp", false);
 			addLine("currentTable",'AGS Voltage:', "No Data","ags_volt", false);
-			addLine("currentTable",'Generator Runtime:', "No Data","ags_genRun", false);
+			addLine("currentTable",'Generator Runtime:<br><span style=\"font-size: 0.8em;\">(Current Cycle)</span>', "No Data","ags_genRun", false);
 			addLine("currentTable",'Days Since Last Run:', "No Data","ags_daysSince", false);
-			addLine("currentTable",'Generator Runtime:', "No Data","ags_genRunHours", create);
+			addLine("currentTable",'Total Generator Runtime:<br><span style=\"font-size: 0.8em;\"> (Since AGS Boot)</span>', "No Data","ags_genRunHours", create);
 		}
 
 	}
@@ -651,7 +695,7 @@
 		
 
 		if ( create ) {
-			$(tableID).append("<tr><th class=\"right\">"+name+"</th><td id=\""+id+"\">"+val+"</td></tr>");
+			$(tableID).append("<tr id=\"row_"+id+"\"><th class=\"right\">"+name+"</th><td id=\""+id+"\">"+val+"</td></tr>");
 		} else {
 			$("#"+id).html(val);
 		}
