@@ -101,7 +101,8 @@ public class RecordMagWeb {
 
 
 	/* AGS 0xA1 parameters */
-	public int a_status, a_temperature,a_gen_runtime_minutes;
+	public int a_status, a_temperature;
+	public double a_gen_runtime_minutes;
 	public double a_voltage;
 	public double a_revision;
 	
@@ -360,7 +361,8 @@ public class RecordMagWeb {
 		a_status=buff[93];
 		a_revision=buff[94]/10.0;
 		a_temperature=buff[95];
-		a_gen_runtime_minutes=buff[96]*6;
+		a_gen_runtime_minutes=buff[96];
+		a_gen_runtime_minutes/=10.0;
 		a_voltage=(buff[97]/10.0)*vScale;
 		a_days_since_last=buff[98];
 		
