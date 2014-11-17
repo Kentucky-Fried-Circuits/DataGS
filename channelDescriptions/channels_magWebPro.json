@@ -793,7 +793,7 @@
         {
             "id": "a_gen_runtime_minutes",
             "title": "",
-            "description": "Generator Runtime",
+            "description": "Generator Runtime (Current Cycle)",
             "units": "",
             "precision": 2,
             "sortOrder": 0,
@@ -840,7 +840,7 @@
         {
             "id": "a_gen_run_hours_since_boot",
             "title": "",
-            "description": "Total Generator Runtime Since Boot",
+            "description": "Total Generator Runtime (Since AGS Boot)",
             "units": "",
             "precision": 2,
             "sortOrder": 0,
