@@ -596,7 +596,7 @@
 					if ( 1 == magnumInverterModel(parseInt(dataAr["i_model"].sampleValue),4) ){
 						s="Approximately "+dataAr["i_amps_out"].avg.toFixed(getChObj("i_amps_out").precision)+" amps";
 						addLine("currentTable",'AC Out Amps:',s , "ac_out_amps", create );
-						addLine("currentTable",'AC Out Watts:',"Approximately "+(dataAr["i_ac_volts_out"].avg*dataAr["i_amps_out"].avg).toFixed(0) ,"ac_out_watts", create );
+						addLine("currentTable",'AC Out Watts:',"Approximately "+(dataAr["i_ac_volts_out"].avg*dataAr["i_amps_out"].avg).toFixed(0)+" watts" ,"ac_out_watts", create );
 					}
 
 					//addLine("currentTable",'AC Out Volts:',s,"ac_out_volts", create );
@@ -616,7 +616,7 @@
 				/* AC in */
 				if ( dataAr['i_ac_volts_in'].avg >= 80 && 1 == magnumInverterModel(parseInt(dataAr["i_model"].sampleValue),4)) {
 
-					s="Approximately "+dataAr['i_amps_in'].avg.toFixed(getChObj("i_amps_in").precision)+" amps";
+					s="Approximately "+dataAr['i_ac_volts_in'].avg.toFixed(getChObj("i_ac_volts_in").precision)+" volts";
 					addLine("currentTable",'AC In Volts:',s,"ac_in_volts", create );
 					addLine("currentTable",'AC In Amps:',"Approximately "+dataAr['i_amps_in'].avg.toFixed(getChObj("i_amps_in").precision), "ac_in_amps" , create);
 					addLine("currentTable",'AC In Watts:',"Approximately "+(dataAr['i_amps_in'].avg*dataAr['i_ac_volts_in'].avg).toFixed(0),"ac_in_watts", create );
