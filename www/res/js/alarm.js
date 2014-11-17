@@ -138,7 +138,7 @@
 				fault = "TRIGGERED BY TEST BUTTON<br><span style=\"font-size:.75em;\">CLICK DISMISS TO CLEAR</span>";
 				break;
 			case 4: 
-				fault = "NO RESPONSE FROM SERVER!<br><span style=\"font-size:.75em;\">PLEASE CHECK TO MAKE SURE YOU ARE STILL CONNECTED TO THE INTERNET!</span>";
+				fault = "NO RESPONSE FROM SERVER!<br><span style=\"font-size:.75em;\">PLEASE CHECK TO MAKE SURE YOU ARE STILL CONNECTED TO NETWORK!</span>";
 				break;
 			case 5: 
 				fault = "PRO-VERTER INTERNAL ERROR: DATA NOT UPDATING<br><span style=\"font-size:.75em;\">CONTACT SUPPORT OR POWER CYCLE PROVERTER</span>";
