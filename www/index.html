@@ -771,33 +771,42 @@
 	function updatePlotArrays(dataAr){
 		/* push new data into chart arrays */
 		/* if isn't null and the time on the packet does not equal the time of the last pushed element */
-		if ( null !=  dataAr["b_state_of_charge"].avg && dataAr["b_state_of_charge"].time != data.b_state_array[data.b_state_array.length-1][0] ) {
-			data.b_state_array.push([dataAr["b_state_of_charge"].time, dataAr["b_state_of_charge"].avg]);
+		
+		if ( data.b_state_array.length != 0 ) {
+			if ( null !=  dataAr["b_state_of_charge"].avg && dataAr["b_state_of_charge"].time != data.b_state_array[data.b_state_array.length-1][0] ) {
+				data.b_state_array.push([dataAr["b_state_of_charge"].time, dataAr["b_state_of_charge"].avg]);
+			}
+			while (data.b_state_array[0][0] < dayAgo ) {
+				data.b_state_array.shift();
+			}
 		}
-		if ( null != dataAr["b_dc_watts"].avg && dataAr["b_dc_watts"].time != data.b_watts[data.b_watts.length-1][0] ) {
-			data.b_watts.push([dataAr["b_dc_watts"].time, dataAr["b_dc_watts"].avg]);
+		if ( data.b_watts.length != 0 ) {	
+			if ( null != dataAr["b_dc_watts"].avg && dataAr["b_dc_watts"].time != data.b_watts[data.b_watts.length-1][0] ) {
+				data.b_watts.push([dataAr["b_dc_watts"].time, dataAr["b_dc_watts"].avg]);
+			}
+			while (data.b_watts[0][0] < dayAgo ) {
+				data.b_watts.shift();
+			}
 		}
-		if ( null != dataAr["b_amph_in_out"].sampleValue && dataAr["b_amph_in_out"].time != data.amp_in_out[data.amp_in_out.length-1][0] ) {
-			data.amp_in_out.push([ dataAr["b_amph_in_out"].time, dataAr["b_amph_in_out"].sampleValue ]);
+		if ( data.amp_in_out.length != 0 ) {
+			if ( null != dataAr["b_amph_in_out"].sampleValue && dataAr["b_amph_in_out"].time != data.amp_in_out[data.amp_in_out.length-1][0] ) {
+				data.amp_in_out.push([ dataAr["b_amph_in_out"].time, dataAr["b_amph_in_out"].sampleValue ]);
+			}
+			while (data.amp_in_out[0][0] < dayAgo ) {
+				data.amp_in_out.shift();
+			}
 		}
 
 		/* if array has more than 24 hours of data, shift data out */
-	
+
 
 		var dayAgo = (new Date().getTime())-(1000*60*60*24);
 
-		while (data.b_state_array[0][0] < dayAgo ) {
-			data.b_state_array.shift();
-		}
 
-		while (data.b_watts[0][0] < dayAgo ) {
-			data.b_watts.shift();
-		}
 
-		while (data.amp_in_out[0][0] < dayAgo ) {
-			data.amp_in_out.shift();
-		}
 
+
+		
 
 	}
 
@@ -1042,9 +1051,9 @@
 			if ( val[id].max != 5e-324 ) {
 				
 				var prec = chObj.precision;
-
+				console.log(val[id].max);
 				if ( "b_state_of_charge" == id && 100 < val[id].max ) {
-
+					
 					if ( create ) {
 
 						$("#"+tableID).append("<tr id=\"hour_"+id+"\">"+
@@ -1063,6 +1072,7 @@
 
 				} 
 				if ( 250 < val[id].max ) {
+					console.log("hello");
 					if ( create ) {
 
 						$("#"+tableID).append("<tr id=\"hour_"+id+"\">"+
@@ -1077,7 +1087,9 @@
 					}
 					return;
 				}
+				addHourLine(tableID,id,title,val,create)
 			}
+				
 
 		} 
 		
@@ -1192,7 +1204,7 @@
 			
 
 			/* add data to the flot chart arrays */
-			if ( null !=  histAr[i].data.b_state_of_charge && 100 >= histAr[i].data.b_state_of_charge ) 
+			if ( null !=  histAr[i].data.b_state_of_charge ) 
 				data.b_state_array.push([histAr[i].time, histAr[i].data.b_state_of_charge]);
 			if ( null !=  histAr[i].data.b_dc_watts ) 
 				data.b_watts.push([histAr[i].time, histAr[i].data.b_dc_watts]);
@@ -1222,138 +1234,143 @@
 		$("#loadingContainer").hide();
 
 		/* take data from the json and put it in an array suitable for flot */
-		var dataArray = data.b_state_array;
-		var minBatt = 100;
+		if ( 0 != data.b_state_array.length ) {
+			var dataArray = data.b_state_array;
+			var minBatt = 100;
 
-		dataArray = tenMinuteAverages(dataArray);
+			dataArray = tenMinuteAverages(dataArray);
 		
-		for ( var i = 0; i<dataArray.length; i++ ) {
+			for ( var i = 0; i<dataArray.length; i++ ) {
 
-			battArray[i]=[i,dataArray[i]];
+				battArray[i]=[i,dataArray[i]];
 	
-			if ( Math.round( battArray[i][1] ) < Math.round( minBatt ) ) {
+				if ( Math.round( battArray[i][1] ) < Math.round( minBatt ) ) {
 		
-				minBatt=battArray[i][1];
+					minBatt=battArray[i][1];
+				}
 			}
-		}
 		
-		/* options for flot */
-		var optionsEditSpark = {
+			/* options for flot */
+			var optionsEditSpark = {
 
-			series: {
-				shadowSize: 0
-			},
-			grid: {
-				borderWidth: 0,
-				show: true,
-				hoverable: true,
-				autoHighlight: false
-			},
-			xaxis: {
-				ticks:0,
-				tickLength:0
-			},
-			yaxis: {
-				max: 100,
-				min: 0,
-				ticks: 2,
-				tickLength: 0
-			}
-
-		};
-		/* data for flot */
-		var data2 = [{
-				data: battArray,
-				bars: {
-					show: true,
-					lineWidth:0,
-					barWidth: .5,
-					align: "left",
-					fill: 1
-				}, 
-				color: "#008000"
-	
-			}
-			  ];
-		/* plot the flot chart */
-		$.plot("#chargeChart", data2,optionsEditSpark);
-		
-		/* take data from the json and put it in an array suitable for flot */
-		dataArray = data.b_watts;
-		dataArray = tenMinuteAverages(dataArray);
-		for ( var i = 0; i<dataArray.length; i++ ) {
-			voltsArray[i]=[i,dataArray[i]];
-		}
-		/* plot the flot chart */
-		$.plot("#voltsChart", [{
-				data: voltsArray,
-				bars: {
-					show: true,
-					lineWidth:0,
-					barWidth: .5,
-					align: "left",
-					fill: 1
+				series: {
+					shadowSize: 0
 				},
-				color: "#000000",	
-				threshold: [{
-					below: 0, 
-					color: '#f04040'
-				}]
-			}], {
 				grid: {
 					borderWidth: 0,
+					show: true,
 					hoverable: true,
 					autoHighlight: false
 				},
 				xaxis: {
-					tickLength: 0,	
-					ticks:0
+					ticks:0,
+					tickLength:0
 				},
 				yaxis: {
-					tickLength: 0,
-					ticks: 4
+					max: 100,
+					min: 0,
+					ticks: 2,
+					tickLength: 0
 				}
-		});
+
+			};
+			/* data for flot */
+			var data2 = [{
+					data: battArray,
+					bars: {
+						show: true,
+						lineWidth:0,
+						barWidth: .5,
+						align: "left",
+						fill: 1
+					}, 
+					color: "#008000"
+	
+				}
+				  ];
+			/* plot the flot chart */
+			$.plot("#chargeChart", data2,optionsEditSpark);
+		}
 
 		/* take data from the json and put it in an array suitable for flot */
-		dataArray = data.amp_in_out;
-		dataArray = tenMinuteAverages(dataArray);
-		for ( var i = 0; i<dataArray.length; i++ ) {
-			ampArray[i]=[i,dataArray[i]];
+		if ( 0 != data.b_watts.length ){
+			dataArray = data.b_watts;
+			dataArray = tenMinuteAverages(dataArray);
+			for ( var i = 0; i<dataArray.length; i++ ) {
+				voltsArray[i]=[i,dataArray[i]];
+			}
+			/* plot the flot chart */
+			$.plot("#voltsChart", [{
+					data: voltsArray,
+					bars: {
+						show: true,
+						lineWidth:0,
+						barWidth: .5,
+						align: "left",
+						fill: 1
+					},
+					color: "#000000",	
+					threshold: [{
+						below: 0, 
+						color: '#f04040'
+					}]
+				}], {
+					grid: {
+						borderWidth: 0,
+						hoverable: true,
+						autoHighlight: false
+					},
+					xaxis: {
+						tickLength: 0,	
+						ticks:0
+					},
+					yaxis: {
+						tickLength: 0,
+						ticks: 4
+					}
+			});
 		}
-		/* plot the flot chart */
-		$.plot("#ampChart", [{
-				data: ampArray,
-				bars: {
-					show: true,
-					lineWidth:0,
-					barWidth: .5,
-					align: "left",
-					fill: 1
-				},	
-				color: '#000000',
-				threshold: [{
-					below: 0,
-					color: '#f04040'
-				}, {
-					below: 0, 
-					color: '#f7a11a'
-				}]
-			}], {
-				grid: {
-					borderWidth: 0,
-					hoverable: true,
-					autoHighlight: false
-				},
-				xaxis: {
-					tickLength: 0,	
-					ticks:0
-				},
-				yaxis: {
-					tickLength: 0,
-					ticks: 4
-				}
-		});
+		/* take data from the json and put it in an array suitable for flot */
+		if ( 0 != data.amp_in_out.length ) {
+			dataArray = data.amp_in_out;
+			dataArray = tenMinuteAverages(dataArray);
+			for ( var i = 0; i<dataArray.length; i++ ) {
+				ampArray[i]=[i,dataArray[i]];
+			}
+			/* plot the flot chart */
+			$.plot("#ampChart", [{
+					data: ampArray,
+					bars: {
+						show: true,
+						lineWidth:0,
+						barWidth: .5,
+						align: "left",
+						fill: 1
+					},	
+					color: '#000000',
+					threshold: [{
+						below: 0,
+						color: '#f04040'
+					}, {
+						below: 0, 
+						color: '#f7a11a'
+					}]
+				}], {
+					grid: {
+						borderWidth: 0,
+						hoverable: true,
+						autoHighlight: false
+					},
+					xaxis: {
+						tickLength: 0,	
+						ticks:0
+					},
+					yaxis: {
+						tickLength: 0,
+						ticks: 4
+					}
+			});
+		}
 
 	}
 
