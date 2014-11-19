@@ -470,9 +470,11 @@
 				if ( -1 != key.indexOf(chanSumAr[j]) && -1 != key.indexOf("max") ) lineMax = parseFloat(lineAr[key]).toFixed(prec);
 				if ( -1 != key.indexOf(chanSumAr[j]) && -1 != key.indexOf("avg") ) lineAvg = parseFloat(lineAr[key]).toFixed(prec);
 			}
-			
-			line+="<td>"+lineMin+"</td><td>"+lineMax+"</td><td>"+lineAvg+"</td>";
-	
+			if ( chanSumAr[j] == "b_state_of_charge" && lineMax == 255 ) {
+				line+="<td colspan=\"3\"><i>Was Thinking...</i></td>"
+			} else {			
+				line+="<td>"+lineMin+"</td><td>"+lineMax+"</td><td>"+lineAvg+"</td>";
+			}
 		}
 		/* b_state_of_charge */
 		//line+="<td>"+lineAr.b_state_of_charge_min+"</td><td>"+lineAr.b_state_of_charge_max+"</td><td>"+Math.round(lineAr.b_state_of_charge_avg)+"</td>";
