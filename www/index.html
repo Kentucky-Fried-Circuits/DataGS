@@ -551,9 +551,6 @@
 			/* Status */
 			addLine("currentTable","Status:",magnumInverterStatus(parseInt(dataAr['i_status'].sampleValue)),"iStatus", create);
 
-			/* LEDs */
-			addLEDs(dataAr, create);
-		
 			addLine("currentTable","Battery Temperature:",magnumTemperature(dataAr['i_temp_battery'].avg),"batTemp", create);
 			addLine("currentTable","Transformer Temperature:",magnumTemperature(dataAr['i_temp_transformer'].avg),"i_tempTransformer", create);
 			addLine("currentTable","FET Temperature:",magnumTemperature(dataAr['i_temp_fet'].avg),"i_tempFet", create);
@@ -727,33 +724,7 @@
 			$(tableID).append("<tr><th style=\"background-color: #9D3F1B;\" colspan=\"2\">"+title+"</th></tr>");
 	}
 
-	/* appends LED row to the given tableID */
-	function addLEDs(dataAr, create){
 
-
-		var invLED = magnumInverterLED(parseInt(dataAr['i_led_invert'].sampleValue));
-
-		if ( -1 == invLED.indexOf("off") ){
-			invLED= "<img src=\"res/images/greenLed.png\" style=\"height:11px;image-rendering:optimizeQuality;\" >&nbsp; Inverting LED On"; //+ invLED;
-		} else {
-			invLED= "<img src=\"res/images/greenLedOff.png\" style=\"height:11px;image-rendering:optimizeQuality;\" >&nbsp; Inverting LED Off";// + invLED;
-		}
-
-		//invLED= "<img src=\"res/images/greenLed.png\" style=\"height:11px;image-rendering:optimizeQuality;\" >&nbsp; "+ invLED;
-
-		var chgLED = magnumChargerLED(parseInt(dataAr['i_led_charge'].sampleValue));
-		
-		if ( -1 == chgLED.indexOf("off") ){
-			chgLED= "<img src=\"res/images/greenLed.png\" style=\"height:11px;image-rendering:optimizeQuality;\" >&nbsp; Charging LED On"; //+ chgLED;
-		} else {
-			chgLED= "<img src=\"res/images/greenLedOff.png\" style=\"height:11px;image-rendering:optimizeQuality;\" >&nbsp; Charging LED Off";// + chgLED;
-		}
-		//chgLED= "<img src=\"res/images/greenLed.png\" style=\"height:11px;image-rendering:optimizeQuality;\" >&nbsp; "+ chgLED;
-		var s = invLED + "<br>" + chgLED;
-
-		addLine("currentTable", "LEDs:", s ,"leds",create);
-			
-	}
 
 	
 	function addHourCat(tableID, title, create){
@@ -882,13 +853,13 @@
 			addHourCat("hourTable","Data Supplied By Battery Monitor (ME-BMK)", create);
 		
 			/* State Of Charge */
-			addHourLineSpec("hourTable","b_state_of_charge","State of Charge:",dayData.dayStats,create);
+			addHourLineSpec("hourTable","b_state_of_charge_clean","State of Charge:",dayData.dayStats,create);
 
 			/* DC Volts */
-			addHourLine("hourTable","b_dc_volts","DC Volts:",dayData.dayStats,create );
+			addHourLine("hourTable","b_dc_volts_clean","DC Volts:",dayData.dayStats,create );
 
 			/* DC Amps */
-			addHourLine("hourTable","b_dc_amps","DC Amps:",dayData.dayStats,create );
+			addHourLine("hourTable","b_dc_amps_clean","DC Amps:",dayData.dayStats,create );
 
 			/* specail case */
 			addHourLine("hourTable","b_dc_watts","DC Watts:",dayData.dayStats,create );
@@ -933,17 +904,17 @@
 
 				addHourLine("hourTable","i_amps_out_charging","AC amps Out:<br><span style=\"font-size: 0.8em;\">(when charging)</span>",dayData.dayStats,create );
 
-				addHourLine("hourTable","i_amps_in","AC amps In:",dayData.dayStats,create );
+				addHourLine("hourTable","i_amps_in_clean","AC amps In:",dayData.dayStats,create );
 				
-				addHourLine("hourTable","i_ac_hz","AC Frequency: <span style=\"font-size: 0.8em;\">(Hz)</span>",dayData.dayStats,create );
+				addHourLine("hourTable","i_ac_hz_clean","AC Frequency: <span style=\"font-size: 0.8em;\">(Hz)</span>",dayData.dayStats,create );
 			
 				
 			}
 
 			/* temperatures */
-			updateHourRowTemp("hourTable","i_temp_battery","Battery Temperature:",dayData.dayStats, create);
-			updateHourRowTemp("hourTable","i_temp_transformer","Transformer Temperature:",dayData.dayStats, create);
-			updateHourRowTemp("hourTable","i_temp_fet","FET Temperature:",dayData.dayStats, create);
+			updateHourRowTemp("hourTable","i_temp_battery_clean","Battery Temperature:",dayData.dayStats, create);
+			updateHourRowTemp("hourTable","i_temp_transformer_clean","Transformer Temperature:",dayData.dayStats, create);
+			updateHourRowTemp("hourTable","i_temp_fet_clean","FET Temperature:",dayData.dayStats, create);
 
 
 		}
@@ -959,8 +930,8 @@
 			} else {
 				addHourCat("hourTable","AGS", create);
 			}
-			updateHourRowTempAGS("hourTable","a_temperature","AGS Temperature:",dayData.dayStats, create);
-			addHourLine("hourTable","a_voltage","AGS Voltage: <span style=\"font-size: 0.8em;\">(volts DC)</span>",dayData.dayStats,create );
+			updateHourRowTempAGS("hourTable","a_temperature_clean","AGS Temperature:",dayData.dayStats, create);
+			addHourLine("hourTable","a_voltage_clean","AGS Voltage: <span style=\"font-size: 0.8em;\">(volts DC)</span>",dayData.dayStats,create );
 		}
 
 	}
@@ -1051,7 +1022,7 @@
 			if ( val[id].max != 5e-324 ) {
 				
 				var prec = chObj.precision;
-				console.log(val[id].max);
+		
 				if ( "b_state_of_charge" == id && 100 < val[id].max ) {
 					
 					if ( create ) {

@@ -7,6 +7,7 @@ import java.nio.file.FileSystems;
 
 public class HostInfo {	
 	public static String toJSON() {
+		String firmwareDate = "2014-11-19";
 		StringBuilder sb = new StringBuilder();
 		
 		String hostname="unknown";
@@ -18,6 +19,7 @@ public class HostInfo {
 
 		sb.append("{");
 		sb.append( UtilJSON.putString("hostname", hostname) + "," );
+		sb.append( UtilJSON.putString("firmware_date", firmwareDate) + "," );
 		
 
 		/* drive space and status */

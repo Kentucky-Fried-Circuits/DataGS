@@ -122,7 +122,7 @@
 		       
 			dataS = $.parseJSON(xdr.responseText);
 			$("#headline").html("PRO-Verter RMK ("+dataS.hostname+"): Current Settings");
-			
+			$("#firmware_date_pro").html(dataS.firmware_date);
 			
 		    };
 		    xdr.send();
@@ -139,7 +139,7 @@
 
 				dataS = $.parseJSON(dataS);
 				$("#headline").html("PRO-Verter RMK ("+dataS.hostname+"): Current Settings");
-				
+				$("#firmware_date_pro").html(dataS.firmware_date);
 			});
 
 		}
@@ -648,6 +648,12 @@
 	<tr class="battMon"><th class="right">Battery Size:</th><td id="r_bmk_battery_size">Loading...</td></tr>
 	<tr>
 		<th style="background-color: #9D3F1B;" colspan="2">PRO-Verter RMK</th>
+	</tr>
+	<tr>
+		<th class="right">Firmware Date:</th>
+		<td id="firmware_date_pro">Loading...</td>
+	</tr>
+		<th style="background-color: #9D3F1B;" colspan="2">Embedded Protocol Converter</th>
 	</tr>
 	<tr>
 		<th class="right">Firmware Date:</th>

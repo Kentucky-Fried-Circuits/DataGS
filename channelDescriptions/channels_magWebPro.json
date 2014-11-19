@@ -997,6 +997,187 @@
             "sortOrder": 0,
             "dayStats": "true",
             "mode": "AVERAGE"
+        },
+        {
+            "id": "b_state_of_charge_clean",
+            "title": "Battery SOC",
+            "description": "SOC (BMK)",
+            "units": "%",
+            "precision": 0,
+            "sortOrder": 0,
+            "mode": "AVERAGE",
+            "dayStats": "true",
+            "recent": "true"
+        },
+        {
+            "id": "b_dc_volts_clean",
+            "title": "",
+            "description": "VDC (BMK)",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "AVERAGE",
+			"dayStats": "true"
+        },
+        {
+            "id": "b_dc_amps_clean",
+            "title": "",
+            "description": "DC Amps (BMK)",
+            "units": "",
+            "precision":1,
+            "sortOrder": 0,
+            "mode": "AVERAGE",
+			"dayStats": "true"
+        },
+        {
+            "id": "i_ac_volts_out_clean",
+            "title": "VAC Out (Inverter)",
+            "description": "",
+            "units": "",
+            "precision": 0,
+            "sortOrder": 0,
+            "dayStats": "true",
+            "mode": "AVERAGE"
+        },
+        {
+            "id": "i_temp_battery_clean",
+            "title": "Battery Temperature",
+            "description": "Battery Temp (C )",
+            "units": "C",
+            "precision": 2,
+            "sortOrder": 0,
+            "dayStats": "true",
+            "mode": "AVERAGE"
+        },
+        {
+            "id": "i_temp_transformer_clean",
+            "title": "",
+            "description": "Tranformer Temp (C )",
+            "units": "C",
+            "precision": 2,
+            "sortOrder": 0,
+            "dayStats": "true",
+            "mode": "AVERAGE"
+        },
+        {
+            "id": "i_temp_fet_clean",
+            "title": "",
+            "description": "FET Temp (C )",
+            "units": "C",
+            "precision": 2,
+            "sortOrder": 0,
+            "dayStats": "true",
+            "mode": "AVERAGE"
+        },
+        {
+            "id": "i_amps_in_clean",
+            "title": "",
+            "description": "AC Amps IN",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "dayStats": "true",
+            "mode": "AVERAGE"
+        },
+        {
+            "id": "i_amps_out_clean",
+            "title": "",
+            "description": "AC Amps Out",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "dayStats": "true",
+            "mode": "AVERAGE"
+        },
+        {
+            "id": "i_ac_hz_clean",
+            "title": "",
+            "description": "AC Out Hz",
+            "units": "",
+            "precision": 1,
+            "sortOrder": 0,
+            "dayStats": "true",
+            "mode": "AVERAGE"
+        },
+        {
+            "id": "a_temperature_clean",
+            "title": "",
+            "description": "AGS Temp (C )",
+            "units": "C",
+            "precision": 2,
+            "sortOrder": 0,
+            "dayStats": "true",
+            "mode": "AVERAGE"
+        },
+        {
+            "id": "a_voltage_clean",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "dayStats": "true",
+            "mode": "AVERAGE"
+        },
+        {
+            "id": "b_dc_power",
+            "title": "",
+            "description": "DC Power (RMK)",
+            "units": "",
+            "precision": 0,
+            "sortOrder": 0,
+            "mode": "AVERAGE",
+            "dayStats": "true",
+            "log": "true",
+            "recent": "true"
+        },
+        {
+            "id": "i_dc_power",
+            "title": "",
+            "description": "DC Power (Inverter)",
+            "units": "",
+            "precision": 0,
+            "sortOrder": 0,
+            "mode": "AVERAGE",
+            "dayStats": "true",
+            "log": "true",
+            "recent": "true"
+        },
+        {
+            "id": "calc_add_power",
+            "title": "",
+            "description": "Calculated Additional Power",
+            "units": "",
+            "precision": 0,
+            "sortOrder": 0,
+            "mode": "AVERAGE",
+            "dayStats": "true",
+            "log": "true",
+            "recent": "true"
+        },
+        {
+            "id": "gen_power",
+            "title": "",
+            "description": "Generator Power",
+            "units": "",
+            "precision": 0,
+            "sortOrder": 0,
+            "mode": "AVERAGE",
+            "dayStats": "true",
+            "log": "true",
+            "recent": "true"
+        },
+        {
+            "id": "load_power",
+            "title": "",
+            "description": "Load Power",
+            "units": "",
+            "precision": 0,
+            "sortOrder": 0,
+            "mode": "AVERAGE",
+            "dayStats": "true",
+            "log": "true",
+            "recent": "true"
         }
     ]
 
