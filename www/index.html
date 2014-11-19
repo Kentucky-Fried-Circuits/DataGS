@@ -1068,13 +1068,11 @@
 
 	function addHourLine(tableID,id,title,val,create){
 		var chObj = getChObj(id);
-
-
 		/* if channel exists */
 		if ( null != chObj && null != val[id] ) {
 			var unit = getChUnit(id,"");
 			/* if max is 5e-324 then that means we don't have data for that channel, which is not an error, it just means the inverter doesn't have a feature that others might have */
-			if ( val[id].max != 5e-324 ) {
+			if ( val[id].max != -1.7976931348623157e+308 ) {
 
 				var prec = chObj.precision;
 
