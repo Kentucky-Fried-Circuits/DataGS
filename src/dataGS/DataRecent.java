@@ -141,7 +141,7 @@ public class DataRecent {
 		/* initialize our min max average values */
 		for ( int i=0 ; i < min.length ; i++ ) {
 			min[i]=Double.MAX_VALUE;
-			max[i]=Double.MIN_VALUE;
+			max[i]= -Double.MAX_VALUE;
 			avg[i]=0.0;
 			count[i]=0;
 		}
