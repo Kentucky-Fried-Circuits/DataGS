@@ -36,7 +36,24 @@ public class RecordMagWeb {
 	public int i_stack_mode;
 	public double i_revision;
 	public int i_model;
-
+	
+	/* TODO clean 24Hour parameters */
+	public double a_temperature_clean;
+	public double a_voltage_clean;
+	
+	public double b_state_of_charge_clean;
+	public double b_dc_volts_clean, b_dc_amps_clean, b_dc_min_volts_clean, b_dc_max_volts_clean;
+	
+	
+	public double i_dc_volts_clean;
+	public double i_dc_amps_clean, i_ac_volts_out_clean, i_ac_volts_in_clean;
+	public double i_led_invert_clean, i_led_charge_clean;
+	public double i_temp_battery_clean, i_temp_transformer_clean, i_temp_fet_clean;
+	public double i_amps_in_clean, i_amps_out_clean;
+	public double i_ac_hz_clean;
+	
+	
+	
 	/* remote */
 	public int r_search_watts;
 	public int r_battery_size;
@@ -129,6 +146,8 @@ public class RecordMagWeb {
 
 	/* calculated values to make it easier for us to run statistics */
 	public double i_ac_volts_out_over_80,i_amps_out_inverting,i_amps_out_charging,b_dc_watts;
+	public double i_ac_volts_out_over_80_clean,i_amps_out_inverting_clean,i_amps_out_charging_clean,b_dc_watts_clean;
+	public double b_dc_power, i_dc_power,calc_add_power,gen_power,load_power;
 	
 	
 	public RecordMagWeb() {
@@ -455,6 +474,64 @@ public class RecordMagWeb {
 			
 			i_amps_out_charging = Double.NaN;
 			
+		}
+		
+		b_dc_power = b_dc_watts;
+		i_dc_power =  i_dc_amps * i_dc_volts;
+		calc_add_power = b_dc_power - i_dc_power;
+		gen_power =  i_ac_volts_in * i_amps_in;
+		load_power = i_ac_volts_out * i_amps_out;
+		
+		
+		/* TODO clean 24 hour stats  */
+		
+		if (age_ags_0xA1 < 255){
+			a_temperature_clean = a_temperature;
+			a_voltage_clean = a_voltage;
+			
+		} else {
+			a_temperature_clean = Double.NaN;
+			a_voltage_clean = Double.NaN;
+		}
+		
+		if (age_bmk < 255){
+			
+			b_state_of_charge_clean = b_state_of_charge;
+			b_dc_volts_clean = b_dc_volts; 
+			b_dc_amps_clean = b_dc_amps; 
+			b_dc_min_volts_clean = b_dc_min_volts; 
+			b_dc_max_volts_clean = b_dc_max_volts;
+		} else {
+			b_state_of_charge_clean = Double.NaN;
+			b_dc_volts_clean = Double.NaN;
+			b_dc_amps_clean = Double.NaN;
+			b_dc_min_volts_clean = Double.NaN;
+			b_dc_max_volts_clean = Double.NaN;
+		}
+		
+		if (age_bmk < 255){
+			i_dc_volts_clean = i_dc_volts;
+			i_dc_amps_clean = i_dc_amps;
+			i_ac_volts_out_clean = i_ac_volts_out;
+			i_ac_volts_in_clean = i_ac_volts_in;
+			i_temp_battery_clean = i_temp_battery;
+			i_temp_transformer_clean = i_temp_transformer;
+			i_temp_fet_clean = i_temp_fet;
+			i_amps_in_clean = i_amps_in;
+			i_amps_out_clean = i_amps_out;
+			i_ac_hz_clean = i_ac_hz;
+		} else {
+			
+			i_dc_volts_clean = Double.NaN;
+			i_dc_amps_clean = Double.NaN;
+			i_ac_volts_out_clean = Double.NaN;
+			i_ac_volts_in_clean = Double.NaN;
+			i_temp_battery_clean = Double.NaN;
+			i_temp_transformer_clean = Double.NaN;
+			i_temp_fet_clean = Double.NaN;
+			i_amps_in_clean = Double.NaN;
+			i_amps_out_clean = Double.NaN;
+			i_ac_hz_clean = Double.NaN;
 		}
 		
 		
