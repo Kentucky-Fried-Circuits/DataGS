@@ -1,8 +1,10 @@
 package dataGS;
 
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 
@@ -14,16 +16,50 @@ import org.apache.commons.lang3.StringEscapeUtils;
 public class HistoryPointExport {
 	public final static String DEFAULT_DATE_LABEL="Data Date (UTC)";
 	public final static String DEFAULT_MILLISECONDS_LABEL="Milliseconds";
-	
+
+	private static Comparator<String> comp = new Comparator<String>() {
+
+		public int compare(String o1, String o2) {
+
+			String[] kp1 = o1.split( "\\|" );
+			String[] kp2 = o2.split( "\\|" );
+			int i1;
+			int i2;
+			try{
+				i1 = Integer.parseInt(kp1[0]+'0');
+			} catch (Exception e){
+				i1 = 0;
+			}
+			try{
+				i2 = Integer.parseInt(kp2[0]+'0');
+			} catch (Exception e){
+				i2 = 0;
+			}
+
+			if ( i1 > i2 )
+				return 1;
+
+			if ( i1 < i2 )
+				return -1;
+
+			if ( i1 == i2 ) {
+				return kp1[1].compareTo( kp2[1] );
+
+			}
+
+			return o1.compareTo( o2 );
+		}
+	};
+
 	public static String toJSON(long time, Map<String, SynchronizedSummaryData> data, Map<String, ChannelDescription> chanDesc) {
 		StringBuilder json=new StringBuilder();
 
 		/* open data element and add the timestamp */
 		json.append("{\"time\":" + time + ","); 
 
-		 /* open data array */
+		/* open data array */
 		json.append("\"data\": {");
-		
+
 
 		/* if we have any data points, we dump them */
 		if ( ! data.isEmpty() ) {
@@ -39,7 +75,7 @@ public class HistoryPointExport {
 					/* skip adding because channelDescription history is false */
 					continue;
 				}
-				
+
 
 				/* if we have have this key in the channel description map, we use the precision from there. Otherwise we
 				 * just go with default precision.
@@ -55,7 +91,7 @@ public class HistoryPointExport {
 					} else {
 						json.append("\"" + StringEscapeUtils.escapeJson( pairs.getKey() ) + "\":" + StringEscapeUtils.escapeJson( numberPrecision(pairs.getValue().getMean(), chanDesc.get( pairs.getKey() ).precision ) ));
 					}
-					
+
 				} else {
 					System.err.println("# No channel description found for " + pairs.getKey() + " using default double.");
 					double mean = pairs.getValue().getMean();
@@ -67,22 +103,22 @@ public class HistoryPointExport {
 				}
 				json.append( "," );
 			}
-			
+
 			/* remove the last comma, if it exists */
 			if ( ',' == json.charAt(json.length()-1) ) {
 				json.deleteCharAt(json.length()-1);
 			}
 		}
 
-		 /* close data array */
+		/* close data array */
 		json.append("}");
-		
+
 		/* close whole data point element */
 		json.append("}");
 
 		return json.toString();
 	}
-	
+
 	/**
 	 * 
 	 * @param data hash map to convert to csv
@@ -97,62 +133,112 @@ public class HistoryPointExport {
 		StringBuilder csvToken=new StringBuilder();
 		StringBuilder csvData=new StringBuilder();
 
+
+
+		//Map< String, String > tHeader = new TreeMap< String, String >(comp);
+		//Map< String, String > tToken = new TreeMap< String, String >(comp);
+		Map< String, String[] > tData = new TreeMap< String, String[] >(comp);
+
+		/* lines holds a value for tData ex) {"Battery SOC","b_state_of_charge","100"} */
+		/* this way we only have to iterate through one map */
+		String value;
+		String token;
+		String header;
+
 		Iterator<Entry<String, SynchronizedSummaryData>> it = data.entrySet().iterator();
 		if ( ! data.isEmpty() ) {
 			while (it.hasNext()) {
 				Map.Entry<String, SynchronizedSummaryData> pairs = (Map.Entry<String, SynchronizedSummaryData>)it.next();
 
-				
+
 				if ( !chanDesc.containsKey( pairs.getKey() ) || false==chanDesc.get(pairs.getKey()).log ) {
 					continue;
 				}
-				
-				
-				//System.err.println("## HistoryPointJSON is adding " + pairs.getKey() + " because history is true");
-				
+
 				/* if we have have this key in the channel description map, we use the precision from there. Otherwise we
 				 * just go with default precision.
 				 */
 				if ( pairs.getValue().mode==ChannelDescription.Modes.SAMPLE ) {
 					/* just dump the current value */
-					csvData.append( StringEscapeUtils.escapeCsv(pairs.getValue().sampleValue + "") );
+					value = StringEscapeUtils.escapeCsv(pairs.getValue().sampleValue + "");
+
 				} else 
-				if ( chanDesc.containsKey(pairs.getKey() )) {
-					csvData.append( StringEscapeUtils.escapeCsv(numberPrecision(pairs.getValue().getMean(), chanDesc.get( pairs.getKey() ).precision )) );
-				} else {
-					System.err.println("# No channel description found for " + pairs.getKey() + " using default double.");
-					csvData.append("" + pairs.getValue().getMean() );
-				}
-				
+					if ( chanDesc.containsKey(pairs.getKey() )) {
+						value = StringEscapeUtils.escapeCsv(numberPrecision(pairs.getValue().getMean(), chanDesc.get( pairs.getKey() ).precision ));
+					} else {
+
+						System.err.println("# No channel description found for " + pairs.getKey() + " using default double.");
+						value ="" + pairs.getValue().getMean();
+					}
+
 				/* print the key if the description isn't available */
 				if ( ! chanDesc.containsKey(pairs.getKey()) || 0 == chanDesc.get( pairs.getKey() ).description.length() ) {
-					csvHeader.append(StringEscapeUtils.escapeCsv(pairs.getKey()) + ",");
-					csvToken.append(StringEscapeUtils.escapeCsv(pairs.getKey()) + ",");
+					header = StringEscapeUtils.escapeCsv(pairs.getKey());
+					token = StringEscapeUtils.escapeCsv(pairs.getKey());
 				} else {
-					csvHeader.append( StringEscapeUtils.escapeCsv( chanDesc.get( pairs.getKey() ).description) + ",");
-					csvToken.append(StringEscapeUtils.escapeCsv(pairs.getKey()) + ",");
+					header = StringEscapeUtils.escapeCsv( chanDesc.get( pairs.getKey() ).description);
+					token = StringEscapeUtils.escapeCsv(pairs.getKey());
+
 				}
+				String[] lines={"","",""};
+				lines[0] = token;
+				lines[1] = header;
+				lines[2] = value;
 				
-				csvData.append(",");
+				tData.put( chanDesc.get( pairs.getKey() ).sortOrder+"|"+pairs.getKey(),lines);
+
 			}
-			
-			
-			/* remove the last commas */
-			if ( ',' == csvHeader.charAt(csvHeader.length()-1) )
-				csvHeader.deleteCharAt(csvHeader.length()-1);
-			if ( ',' == csvData.charAt(csvData.length()-1) )
-				csvData.deleteCharAt(csvData.length()-1);
-			
+
+
+		}
+
+		
+		//		while(xt.hasNext()){
+		//			pairt=xt.next();
+		//			//System.out.println(pairt.getKey()+"=> "+pairt.getValue());
+		//			csvHeader.append(pairt.getValue());
+		//			if ( xt.hasNext() )
+		//				csvHeader.append( "," );
+		//		}
+		//		
+		//		xt = tToken.entrySet().iterator();
+		//		while(xt.hasNext()){
+		//			pairt=xt.next();
+		//			//System.out.println(pairt.getKey()+"=> "+pairt.getValue());
+		//			csvToken.append(pairt.getValue());
+		//			if ( xt.hasNext() )
+		//				csvToken.append( "," );
+		//		}
+
+		Iterator<Entry<String, String[]>>xt = tData.entrySet().iterator();
+		
+		Entry<String, String[]> pairt;
+		
+		String[] line;
+		
+		while(xt.hasNext()){
+			pairt=xt.next();
+			line = pairt.getValue();
+			csvToken.append(line[0]);
+			csvHeader.append(line[1]);
+			csvData.append(line[2]);
+			//System.out.println(line[0]+"=>"+line[2]);
+			if ( xt.hasNext() ){
+				csvToken.append( "," );
+				csvHeader.append( "," );
+				csvData.append( "," );
+			}
+
 		}
 
 		csv[0]=csvData.toString();
 		csv[1]="\""+ DEFAULT_DATE_LABEL +"\",\""+ DEFAULT_MILLISECONDS_LABEL+"\","+csvToken.toString()+
 				"\n\""+DEFAULT_DATE_LABEL +"\",\""+ DEFAULT_MILLISECONDS_LABEL+"\","+csvHeader.toString();
-		
+
 		return csv;
 	}
-	
-	
+
+
 	public static String numberPrecision(double val,int prec){
 		if(Double.isNaN( val )){
 			return "null";
