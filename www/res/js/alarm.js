@@ -14,6 +14,7 @@
 			urls: ['res/sounds/warning.wav'],
 			loop: true
 		});
+	alarmSound.isPlaying = false;
 	/* This starts the warning cycle */
 	function warn(msg){
 		
