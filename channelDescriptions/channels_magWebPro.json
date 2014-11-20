@@ -1122,7 +1122,7 @@
         {
             "id": "b_dc_power",
             "title": "",
-            "description": "DC Power (BMK)",
+            "description": "DC Power (RMK)",
             "units": "",
             "precision": 0,
             "sortOrder": 10,
