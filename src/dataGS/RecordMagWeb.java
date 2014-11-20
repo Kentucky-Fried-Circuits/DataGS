@@ -230,6 +230,23 @@ public class RecordMagWeb {
 		/* as of 2012-02 this can be signed ... needed for MSH inverters */
 		i_dc_amps=((buff[24]<<8) + buff[25]);
 		if ( (buff[24]>>7)==1 ) i_dc_amps -= 65536;
+
+		/*
+		if i_dc_amps > 0 then
+		    if i_status > 0x10 then
+		        i_dc_amps = 0 - i_dc_amps
+		    endif
+	
+	
+		endif
+		*/
+		
+		if (i_dc_amps > 0) {
+		    if ( i_status > 0x10 ){
+		        i_dc_amps = 0 - i_dc_amps;
+			}
+		}
+	
 		
 		i_ac_volts_out=buff[26];
 		i_ac_volts_in=buff[27];

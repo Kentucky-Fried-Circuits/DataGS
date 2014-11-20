@@ -177,6 +177,7 @@ public class HistoryPointExport {
 					token = StringEscapeUtils.escapeCsv(pairs.getKey());
 
 				}
+				/* a new array must be made everytime otherwise the treemap just holds a bunch of references to the same array */
 				String[] lines={"","",""};
 				lines[0] = token;
 				lines[1] = header;
