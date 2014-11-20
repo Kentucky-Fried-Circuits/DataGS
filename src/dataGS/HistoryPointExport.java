@@ -133,10 +133,7 @@ public class HistoryPointExport {
 		StringBuilder csvToken=new StringBuilder();
 		StringBuilder csvData=new StringBuilder();
 
-
-
-		//Map< String, String > tHeader = new TreeMap< String, String >(comp);
-		//Map< String, String > tToken = new TreeMap< String, String >(comp);
+		/* hashmap that has sortOrder|token as a key and a string array [token,header,value] */
 		Map< String, String[] > tData = new TreeMap< String, String[] >(comp);
 
 		/* lines holds a value for tData ex) {"Battery SOC","b_state_of_charge","100"} */
@@ -191,24 +188,6 @@ public class HistoryPointExport {
 
 
 		}
-
-		
-		//		while(xt.hasNext()){
-		//			pairt=xt.next();
-		//			//System.out.println(pairt.getKey()+"=> "+pairt.getValue());
-		//			csvHeader.append(pairt.getValue());
-		//			if ( xt.hasNext() )
-		//				csvHeader.append( "," );
-		//		}
-		//		
-		//		xt = tToken.entrySet().iterator();
-		//		while(xt.hasNext()){
-		//			pairt=xt.next();
-		//			//System.out.println(pairt.getKey()+"=> "+pairt.getValue());
-		//			csvToken.append(pairt.getValue());
-		//			if ( xt.hasNext() )
-		//				csvToken.append( "," );
-		//		}
 
 		Iterator<Entry<String, String[]>>xt = tData.entrySet().iterator();
 		
