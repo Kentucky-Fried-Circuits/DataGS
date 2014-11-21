@@ -8,7 +8,7 @@ The channel description file is in JSON format. It specifies channel names, desc
 a channel.
 
 Example file with one element:
-'''
+```
 {
 	"data": [
         {
@@ -26,9 +26,9 @@ Example file with one element:
         }
 	]
 }
-'''
+```
 
-mode can be '''"SAMPLE"''' or '''"AVERAGE"'''.
+mode can be ```"SAMPLE"``` or ```"AVERAGE"```.
 
 Note that channel id's will be single character letters for data received via TCP/IP / ASCII. Longer channel
 names are possible for data that comes in via WorldDataProcessor via reflection.
