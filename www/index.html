@@ -518,6 +518,12 @@
 					"</div>"+
 					"<span id=\"SOCTicks\" style=\"font-size:.8em\"></span>","voltsAmpsCell", create);
 
+			addLine("currentTable","Calculated Renewable Power:<br><span style=\"font-size:.75em;\">(10 minute averages)</span>",
+					"<div style=\"width: 100%;height: 70px;padding: 00px 00px 00px 00px;margin-left:auto;margin-right:auto;\">"+
+						"<div id=\"calcChart\" style=\"width: 100%;height: 100%;font-size: 14px;line-height: 1em;\"  ></div>"+
+					"</div>"+
+					"<span id=\"SOCTicks\" style=\"font-size:.8em\"></span>","calcCell", create);
+
 			addLine("currentTable",'DC Volts:',dataAr['b_dc_volts'].avg.toFixed(getChObj("b_dc_volts").precision)+" VDC","b_dc_volts", create);
 			addLine("currentTable",'DC Amps:',dataAr['b_dc_amps'].avg.toFixed(getChObj("b_dc_amps").precision)+" amps","b_dc_amps", create);
 			addLine("currentTable",'DC Watts:',dataAr['b_dc_watts'].avg.toFixed(getChObj("b_dc_watts").precision)+" watts","b_dc_watts", create);
@@ -767,7 +773,14 @@
 				data.amp_in_out.shift();
 			}
 		}
-
+		if ( data.calc.length != 0 ) {	
+			if ( null != dataAr["calc_add_power"].avg && dataAr["calc_add_power"].time != data.calc[data.calc.length-1][0] ) {
+				data.calc.push([dataAr["calc_add_power"].time, dataAr["calc_add_power"].avg]);
+			}
+			while (data.calc[0][0] < dayAgo ) {
+				data.calc.shift();
+			}
+		}
 		/* if array has more than 24 hours of data, shift data out */
 
 
@@ -788,11 +801,13 @@
 	var battArray = [];
 	var voltsArray = [];
 	var ampArray = [];
+	var calcArray = [];
 	/* this data object will hold the arrays to be used in the charts. This is done to reuse the code from magnum-dev with minimal pain */
 	var data = {
 			b_state_array: [],
 			b_watts: [],
-			amp_in_out: []
+			amp_in_out: [],
+			calc: []
 	}
 
 	function loadDayData(dataAr,create){
@@ -815,6 +830,7 @@
 			xdr.send();
 		} else {
 			/* if not IE we use ajax */
+
 		  	$.ajaxSetup({ cache: false });
 			$.ajax({
 				type: "GET",
@@ -861,8 +877,12 @@
 			/* DC Amps */
 			addHourLine("hourTable","b_dc_amps_clean","DC Amps:",dayData.dayStats,create );
 
-			/* specail case */
+			/* DC Watts */
 			addHourLine("hourTable","b_dc_watts","DC Watts:",dayData.dayStats,create );
+
+			/* Calculated Renewable Power */
+			addHourLine("hourTable","calc_add_power","Calculated Renewable Power:",dayData.dayStats,create );
+
 			//updateHourWatts("b_dc_watts","DC Watts:", create);
 			//updateHourWatts("hourTable","b_dc_watts","DC Watts:", dayData.dayStats,create);
 		}
@@ -1101,7 +1121,6 @@
 
 	/* loads the history json to create the 24 hour data as well as the striplines */
 	function loadHistory(){
-
 		$("#loadingContainer").show();
 		$("#loadingMsg").html("Loading...");
 		    // If internet explorer, use Microsoft XDR
@@ -1123,6 +1142,9 @@
 			xdr.send();
 		} else {
 			/* if not IE we use ajax */
+	
+			
+
 		  	$.ajaxSetup({ cache: false });
 			$.ajax({
 				type: "GET",
@@ -1178,11 +1200,12 @@
 				data.b_watts.push([histAr[i].time, histAr[i].data.b_dc_watts]);
 			if ( null !=  histAr[i].data.b_amph_in_out ) 
 				data.amp_in_out.push([histAr[i].time, histAr[i].data.b_amph_in_out]);
-
-
+			if ( null !=  histAr[i].data.calc_add_power ) 
+				data.calc.push([histAr[i].time, histAr[i].data.calc_add_power]);
 			
 			
 		}	
+		
 		
 		
 		loadDataCreate();
@@ -1204,7 +1227,6 @@
 		/* take data from the json and put it in an array suitable for flot */
 		if ( 0 != data.b_state_array.length ) {
 			var dataArray = data.b_state_array;
-			var minBatt = 100;
 
 			dataArray = tenMinuteAverages(dataArray);
 		
@@ -1212,10 +1234,10 @@
 
 				battArray[i]=[i,dataArray[i]];
 	
-				if ( Math.round( battArray[i][1] ) < Math.round( minBatt ) ) {
-		
-					minBatt=battArray[i][1];
-				}
+			
+			}
+			while ( battArray.length <= 144 ) {
+				battArray.push([-battArray.length,0]);
 			}
 		
 			/* options for flot */
@@ -1270,6 +1292,9 @@
 			for ( var i = 0; i<dataArray.length; i++ ) {
 				voltsArray[i]=[i,dataArray[i]];
 			}
+			while ( voltsArray.length <= 144 ) {
+				voltsArray.push([-voltsArray.length,0]);
+			}
 			/* plot the flot chart */
 			$.plot("#voltsChart", [{
 					data: voltsArray,
@@ -1297,7 +1322,7 @@
 					},
 					yaxis: {
 						tickLength: 0,
-						ticks: 4
+						ticks: 3
 					}
 			});
 		}
@@ -1307,6 +1332,9 @@
 			dataArray = tenMinuteAverages(dataArray);
 			for ( var i = 0; i<dataArray.length; i++ ) {
 				ampArray[i]=[i,dataArray[i]];
+			}
+			while ( ampArray.length <= 144 ) {
+				ampArray.push([-ampArray.length,0]);
 			}
 			/* plot the flot chart */
 			$.plot("#ampChart", [{
@@ -1338,10 +1366,56 @@
 					},
 					yaxis: {
 						tickLength: 0,
-						ticks: 4
+						ticks: 3
 					}
 			});
 		}
+		if ( 0 != data.calc.length ) {
+			dataArray = data.calc;
+			dataArray = tenMinuteAverages(dataArray);
+			for ( var i = 0; i<dataArray.length; i++ ) {
+				calcArray[i]=[i,dataArray[i]];
+			}
+			while ( calcArray.length <= 144 ) {
+				calcArray.push([-calcArray.length,0]);
+			}
+
+			/* plot the flot chart */
+			$.plot("#calcChart", [{
+					data: calcArray,
+					bars: {
+						show: true,
+						lineWidth:0,
+						barWidth: .5,
+						align: "left",
+						fill: 1
+					},	
+					color: '#000000',
+					threshold: [{
+						below: 0,
+						color: '#f04040'
+					}, {
+						below: 0, 
+						color: '#f7a11a'
+					}]
+				}], {
+					grid: {
+						borderWidth: 0,
+						hoverable: true,
+						autoHighlight: false
+					},
+					xaxis: {
+						tickLength: 0,	
+						ticks:0
+					},
+					yaxis: {
+						tickLength: 0,
+						ticks: 3
+					}
+			});
+		}
+
+
 
 	}
 

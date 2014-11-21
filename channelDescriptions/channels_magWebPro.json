@@ -259,7 +259,7 @@
         {
             "id": "i_temp_transformer",
             "title": "",
-            "description": "Tranformer Temp (C )",
+            "description": "Transformer Temp (C )",
             "units": "C",
             "precision": 2,
             "sortOrder": 190,
@@ -1006,8 +1006,7 @@
             "precision": 0,
             "sortOrder": 0,
             "mode": "AVERAGE",
-            "dayStats": "true",
-            "recent": "true"
+            "dayStats": "true"
         },
         {
             "id": "b_dc_volts_clean",
@@ -1127,9 +1126,7 @@
             "precision": 0,
             "sortOrder": 10,
             "mode": "AVERAGE",
-            "dayStats": "true",
-            "log": "true",
-            "recent": "true"
+            "log": "true"
         },
         {
             "id": "i_dc_power",
@@ -1139,14 +1136,13 @@
             "precision": 0,
             "sortOrder": 20,
             "mode": "AVERAGE",
-            "dayStats": "true",
             "log": "true",
             "recent": "true"
         },
         {
             "id": "calc_add_power",
             "title": "",
-            "description": "Calculated Additional Power",
+            "description": "Calculated Renewable Power",
             "units": "",
             "precision": 0,
             "sortOrder": 30,
@@ -1163,9 +1159,7 @@
             "precision": 0,
             "sortOrder": 40,
             "mode": "AVERAGE",
-            "dayStats": "true",
-            "log": "true",
-            "recent": "true"
+            "log": "true"
         },
         {
             "id": "load_power",
@@ -1175,9 +1169,7 @@
             "precision": 0,
             "sortOrder": 50,
             "mode": "AVERAGE",
-            "dayStats": "true",
-            "log": "true",
-            "recent": "true"
+            "log": "true"
         }
     ]
 
