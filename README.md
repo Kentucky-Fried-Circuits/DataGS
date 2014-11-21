@@ -129,12 +129,14 @@ options.addOption("w", "loglocal-directory", true, "directory for logging csv fi
 
 ### Examples
 ```
-java -Djava.rmi.server.hostname=192.168.10.201 -Dcom.sun.management.jmxremote 
--Dcom.sun.management.jmxremote.port=9010 -Dcom.sun.management.jmxremote.local.only=false 
--Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false 
--DSERIAL_PORT_LIST=/dev/ttyUSB1 
--cp .:bin:commons-cli-1.2.jar:commons-lang3-3.3.2.jar:commons-math3-3.3.jar:gson-2.3.jar:mysql-connector-java-5.1.7-bin.jar:commons-collections4-4.0.jar:jspComm.jar:Serialio.jar:jars/json-lib-2.4-jdk15.jar:jars/commons-io-2.4.jar:jars/commons-io-2.4.jar:jars/commons-csv-1.0.jar 
-dataGS.DataGS -j 8080 -l 4010 -i 10000 -c www/channels_magWebPro.json -r /dev/ttyUSB1 -R 57600 -a
+#!/bin/bash
+cd /home/aprs/DataGS
+# for remote profiling and debugging
+java 
+	-DSERIAL_PORT_LIST=/dev/ttyAMA0 
+	-cp .:jars:bin:jars/commons-cli-1.2.jar:jars/commons-lang3-3.3.2.jar:jars/commons-math3-3.3.jar:jars/gson-2.3.jar:jars/mysql-connector-java-5.1.7-bin.jar:jars/commons-collections4-4.0.jar:jars/jspComm.jar:jars/Serialio.jar:jars/json-lib-2.4-jdk15.jar:jars/commons-io-2.4.jar:jars/commons-csv-1.0.jar 
+	dataGS.DataGS -j 8080 -l 4010 -i 10000 -c channelDescriptions/channels_magWebPro.json 
+	-r /dev/ttyAMA0 -R 57600 -a -w /data/logLocal
 ```
 
 ### Enable remote profile via JMXREMOTE
