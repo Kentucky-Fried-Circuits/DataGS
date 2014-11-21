@@ -3,6 +3,38 @@
 ## Summary
 Gather data from TCP/IP (simple ASCII format) or serial port (WorldData format) and process and make available
 
+## Channel Description File Format
+The channel description file is in JSON format. It specifies channel names, descriptions, and other attributes for
+a channel.
+
+Example file with one element:
+'''
+{
+	"data": [
+        {
+            "id": "age_inverter",
+            "title": "Inverter Age (255 indicates old data)",
+            "description": "Inverter Age (255 indicates old data)",
+            "units": "none",
+            "precision": 2,
+            "sortOrder": 240,
+            "dayStats": "false",
+            "log": "true",
+            "historyByDay": "false",
+            "recent": "false",
+            "mode": "SAMPLE"
+        }
+	]
+}
+'''
+
+mode can be '''"SAMPLE"''' or '''"AVERAGE"'''.
+
+Note that channel id's will be single character letters for data received via TCP/IP / ASCII. Longer channel
+names are possible for data that comes in via WorldDataProcessor via reflection.
+
+
+
 ## Data served via HTTP
 
 ### /data/json.html
