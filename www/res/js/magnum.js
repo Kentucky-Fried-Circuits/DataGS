@@ -252,12 +252,16 @@ function magnumAGSStatus(val) {
 }
 
 function magnumTemperature(tempC) {
-	var tempF=9.0/5.0*tempC + 32.0;
+	if ( null != tempC ){
+		var tempF=9.0/5.0*tempC + 32.0;
 
-	if ( tempC > 0 ) 
-		return tempC.toFixed(0)+"&deg;C / "+tempF.toFixed(0)+"&deg;F";
+		if ( tempC > 0 ) 
+			return tempC.toFixed(0)+"&deg;C / "+tempF.toFixed(0)+"&deg;F";
 
-	return "<u>&lt;</u>"+tempC.toFixed(0)+"&deg;C / <u>&lt;</u>"+tempF.toFixed(0)+"&deg;F";
+		return "<u>&lt;</u>"+tempC.toFixed(0)+"&deg;C / <u>&lt;</u>"+tempF.toFixed(0)+"&deg;F";
+	} else {
+		return "No Data Available";
+	}
 
 }
 
