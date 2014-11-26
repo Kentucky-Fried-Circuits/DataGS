@@ -930,53 +930,6 @@ public class DataGS implements ChannelData, JSONData {
 		}
 	}
 
-	/**
-	 * 
-	 * @return json string for the last 24 hours of summarized data
-	 */
-	private String dayStatsJson(){ 
-		StringBuilder json = new StringBuilder();
-		json.append( "{\"dayStats\": {" );
-		/*
-		"i_dc_volts": {
-			n: 8640,
-			min: 10,
-			max: 34,
-			avg: 23
-		 },
-		 */
-
-		Iterator<Entry<String,DescriptiveStatistics>> DSit = dayStats.entrySet().iterator();
-		DescriptiveStatistics ds;
-		String ch;
-		while ( DSit.hasNext() ) {
-
-			Map.Entry<String, DescriptiveStatistics> pairs = DSit.next();
-
-			ds = pairs.getValue();
-			ch = pairs.getKey();
-			if ( ds.getN() > 0 ){
-				json.append( "\""+ch+"\": {" );
-				json.append( "\"n\": "+ds.getN()+"," );
-
-				json.append( "\"min\": "+ds.getMin()+"," );
-				json.append( "\"max\": "+ds.getMax()+"," );
-				json.append( "\"avg\": "+ds.getMean()+"}" );
-				json.append( "," );
-			}
-
-
-
-		}
-
-		if ( ',' == json.charAt( json.length()-1 ) ) {
-			json.deleteCharAt( json.length()-1 );
-		}
-
-		json.append("}}");
-		return json.toString();
-	}
-
 	public String dailySummaryJSON() {
 		StringBuilder json = new StringBuilder();
 
@@ -1050,7 +1003,7 @@ public class DataGS implements ChannelData, JSONData {
 
 	/* Main method */
 	public static void main(String[] args) throws IOException {
-		System.err.println("# Major version: 2014-11-19 (Ian's Laptop)");
+		System.err.println("# Major version: 2014-11-21 (precision)");
 		System.err.println("# java.library.path: " + System.getProperty( "java.library.path" ));
 
 		DataGS d=new DataGS();

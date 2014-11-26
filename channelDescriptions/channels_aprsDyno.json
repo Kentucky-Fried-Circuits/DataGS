@@ -1,0 +1,30 @@
+{
+	"data": [
+        {
+            "id": "76",
+            "title": "Load Cell",
+            "description": "Moment arm load cell measured by LoadStar",
+            "units": "lbs",
+            "precision": 2,
+            "sortOrder": 20,
+            "dayStats": "false",
+            "log": "true",
+            "historyByDay": "false",
+            "recent": "true",
+            "mode": "AVERAGE"
+        },
+        {
+            "id": "87",
+            "title": "AC Power Output",
+            "description": "3 phase 4 wire AC output measured by Valhalla 2300L",
+            "units": "watts",
+            "precision": 0,
+            "sortOrder": 10,
+            "dayStats": "false",
+            "log": "true",
+            "historyByDay": "false",
+            "recent": "true",
+            "mode": "AVERAGE"
+        }
+	]
+}
