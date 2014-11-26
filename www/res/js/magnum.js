@@ -168,6 +168,8 @@ function magnumInverterStatus(val) {
 	mis[0x40]=['Inverting',''];
 	mis[0x50]=['Inverter Standby',''];
 	mis[0x80]=['Search Mode','Searching for a load. Charger may be on or off.'];
+	mis[0xF3]=['Unknown Status',''];
+	
 
 	return mis[val][0]+"<br>"+mis[val][1];
 	
