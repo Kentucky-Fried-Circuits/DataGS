@@ -935,6 +935,7 @@
 			}
 
 			/* temperatures */
+			
 			updateHourRowTemp("hourTable","i_temp_battery_clean","Battery Temperature:",dayData.dayStats, create);
 			updateHourRowTemp("hourTable","i_temp_transformer_clean","Transformer Temperature:",dayData.dayStats, create);
 			updateHourRowTemp("hourTable","i_temp_fet_clean","FET Temperature:",dayData.dayStats, create);
@@ -971,17 +972,18 @@
 		var unit = getChUnit(id,"");
 		if ( null == prec ) prec = 1;
 
-		
-		if ( create ) {
-			$("#hourTable").append("<tr><th class=\"right\">"+title+"</th>"+
-					"<td id=\""+id+"_min\">"+magnumTemperature(val[id].min)+"</td>"+
-					"<td id=\""+id+"_max\">"+magnumTemperature(val[id].max)+"</td>"+
-					"<td id=\""+id+"_avg\">"+magnumTemperature(val[id].avg)+"</td></tr>");
-		} else {
+		if ( null != val[id].avg ) {
+			if ( create ) {
+				$("#hourTable").append("<tr><th class=\"right\">"+title+"</th>"+
+						"<td id=\""+id+"_min\">"+magnumTemperature(val[id].min)+"</td>"+
+						"<td id=\""+id+"_max\">"+magnumTemperature(val[id].max)+"</td>"+
+						"<td id=\""+id+"_avg\">"+magnumTemperature(val[id].avg)+"</td></tr>");
+			} else {
 			
-			$("#"+id+"_min").html(magnumTemperature(val[id].min));
-			$("#"+id+"_max").html(magnumTemperature(val[id].max));
-			$("#"+id+"_avg").html(magnumTemperature(val[id].avg));
+				$("#"+id+"_min").html(magnumTemperature(val[id].min));
+				$("#"+id+"_max").html(magnumTemperature(val[id].max));
+				$("#"+id+"_avg").html(magnumTemperature(val[id].avg));
+			}
 		}
 	
 
