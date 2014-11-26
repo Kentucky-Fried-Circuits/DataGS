@@ -271,15 +271,31 @@ public class RecordMagWeb {
 		i_stack_mode=buff[35];		
 		
 		i_amps_in=buff[36];
+		
+		System.out.println("pre sign i_amps_in: "+i_amps_in);
+		
 		if ( (buff[36]>>7)==1 ) i_amps_in -= 128;
 		
+		System.out.println("post sign i_amps_in: "+i_amps_in);
+		
 		i_amps_out=buff[37];
+		
+		System.out.println("pre sign i_amps_out: "+i_amps_out);
+		
 		if ( (buff[37]>>7)==1 ) i_amps_out -= 128;
+		
+		System.out.println("post sign i_amps_out: "+i_amps_out);
 		
 		/* when in charge mode, amps out is really amps in minus amps out */
 		if ( 0x01==i_status || 0x02==i_status || 0x04==i_status || 0x08==i_status )
 			i_amps_out=i_amps_in-i_amps_out;
-
+		
+		System.out.println("charge mode i_amps_out: "+i_amps_out);
+		
+		/* add some debugging at line 275 the value of 273 i amps in and i amps out
+		 *  before and after the signs for in an dout to see if we are doing the
+		 *  signs properly 282 to see the effects of that code
+		 *  */
 
 		i_ac_hz=((buff[38]<<8) + buff[39]);
 		i_ac_hz /= 10.0;
