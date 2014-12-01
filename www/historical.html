@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<meta charset="UTF-8">
-		<title>PRO-Verter RMK: Historical Data</title>
+		<title>Historical Data</title>
 	
 	<link href="res/css/solar.css" rel="stylesheet" type="text/css" />
 	<link rel="icon" type="images/favicon" href="res/images/favicon_s.ico" />
@@ -48,7 +48,7 @@
 						
 	</div>
 	<div style="text-align: center;">
-		<h1 id="headline">PRO-Verter RMK: Historical Data</h1>
+		<h1 id="headline">Historical Data</h1>
 				<!--Note: This server will be down for scheduled maintenance from 7PM to 9PM CST today.-->
 
 		<br />
@@ -124,8 +124,8 @@
 		    xdr.onload = function() {
 		       
 			dataS = $.parseJSON(xdr.responseText);
-			$("#headline").html("PRO-Verter RMK ("+dataS.hostname+"): Historical Data");
-			
+											$("#headline").html("PRO-Verter RMK ("+dataS.hostname+"): Historical Data");
+							
 			
 		    };
 		    xdr.onerror = function() {
@@ -147,8 +147,8 @@
 			.done(function( dataS ) {
 
 				dataS = $.parseJSON(dataS);
-				$("#headline").html("PRO-Verter RMK ("+dataS.hostname+"): Historical Data");
-				
+											$("#headline").html("PRO-Verter RMK ("+dataS.hostname+"): Historical Data");
+								
 			});
 
 		}

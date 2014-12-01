@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<meta charset="UTF-8">
-		<title>PRO-Verter RMK: Current Conditions</title>
+		<title>Current Conditions</title>
 	
 	<link href="res/css/solar.css" rel="stylesheet" type="text/css" />
 	<link rel="icon" type="images/favicon" href="res/images/favicon_s.ico" />
@@ -47,16 +47,16 @@
 						
 	</div>
 	<div style="text-align: center;">
-		<h1 id="headline">PRO-Verter RMK: Current Conditions</h1>
+		<h1 id="headline">Current Conditions</h1>
 				<!--Note: This server will be down for scheduled maintenance from 7PM to 9PM CST today.-->
 
 		<br />
 	</div>
 
 <script>if (!window.console){ console = {log: function() {}};}//IE doesn't like calls to console if debugger is not open</script>
+
 <script type="text/javascript" src="res/js/jquery-1.11.1.min.js"></script>
 <script type="text/javascript" src="res/js/excanvas.min.js"></script>
-
 
 <script type="text/javascript" src="res/js/jquery.flot.js"></script>
 <script type="text/javascript" src="res/js/jquery.flot.threshold.js"></script>
@@ -207,8 +207,8 @@
 	}
 
 	function processHostInfo(dataS, create){
-		$("#headline").html("PRO-Verter RMK ("+dataS.hostname+"): Current Conditions");
-		var total = getMemory("/mnt/data","total",dataS.drives);
+				$("#headline").html("PRO-Verter RMK ("+dataS.hostname+"): Current Conditions");
+				var total = getMemory("/mnt/data","total",dataS.drives);
 		var free = getMemory("/mnt/data","avail",dataS.drives);
 		var used = getMemory("/mnt/data","used",dataS.drives);
 		var daysLeft = total/dayKB;
@@ -356,6 +356,7 @@
 			xdr.send();
 		} else {
 			/* if not IE we use ajax */
+
 		  	$.ajaxSetup({ cache: false });
 			$.ajax({
 				type: "GET",
@@ -574,7 +575,6 @@
 
 			var exportMeters=false;
 			var vacScale=1.0;
-
 			if ( ! displayMeters && parseInt(dataAr['length_inverter'].sampleValue)>=20 ) {
 				exportMeters=true;
 
@@ -593,6 +593,17 @@
 			}
 
 			if ( displayMeters ) {
+				
+				/*
+				//dataAr["i_amps_out"].avg = 123;
+
+				if ( parseFloat(dataAr["r_revision"].sampleValue) < 4 ) {
+					if ( dataAr["i_amps_out"].avg >= 0 ){
+						dataAr["i_amps_out"].avg = 128-dataAr["i_amps_out"].avg;
+					}
+				}
+				*/
+
 				/* AC out */
 				var s;
 				if ( dataAr['i_ac_volts_out'].avg >= 80 ) {
@@ -730,7 +741,7 @@
 	function addCat(tableID, title, create){
 		tableID="#"+tableID;
 		if ( create )
-			$(tableID).append("<tr><th style=\"background-color: #9D3F1B;\" colspan=\"2\">"+title+"</th></tr>");
+			$(tableID).append("<tr><th class=\"table_header\" colspan=\"2\">"+title+"</th></tr>");
 	}
 
 
@@ -739,7 +750,7 @@
 	function addHourCat(tableID, title, create){
 		tableID="#"+tableID;
 		if ( create ){
-			$(tableID).append("<tr><th style=\"background-color: #9D3F1B;\" colspan=\"4\">"+title+"<span id=\"inverterModel\"></span></th></tr>");
+			$(tableID).append("<tr><th class=\"table_header\" colspan=\"4\">"+title+"<span id=\"inverterModel\"></span></th></tr>");
 			$(tableID).append("<tr><th></th>"+
 					"<th>Minimum</th>"+
 					"<th>Maximum</th>"+

@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<meta charset="UTF-8">
-		<title>PRO-Verter RMK: Current Settings</title>
+		<title>Current Settings</title>
 	
 	<link href="res/css/solar.css" rel="stylesheet" type="text/css" />
 	<link rel="icon" type="images/favicon" href="res/images/favicon_s.ico" />
@@ -47,7 +47,7 @@
 						
 	</div>
 	<div style="text-align: center;">
-		<h1 id="headline">PRO-Verter RMK: Current Settings</h1>
+		<h1 id="headline">Current Settings</h1>
 				<!--Note: This server will be down for scheduled maintenance from 7PM to 9PM CST today.-->
 
 		<br />
@@ -120,9 +120,9 @@
 		    xdr.open("get", urlHostname+"?t="+new Date().getTime());
 		    xdr.onload = function() {
 		       
-			dataS = $.parseJSON(xdr.responseText);
-			$("#headline").html("PRO-Verter RMK ("+dataS.hostname+"): Current Settings");
-			$("#firmware_date_pro").html(dataS.firmware_date);
+				dataS = $.parseJSON(xdr.responseText);
+								$("#headline").html("PRO-Verter RMK ("+dataS.hostname+"): Current Settings");
+								$("#firmware_date_pro").html(dataS.firmware_date);
 			
 		    };
 		    xdr.send();
@@ -138,8 +138,8 @@
 			.done(function( dataS ) {
 
 				dataS = $.parseJSON(dataS);
-				$("#headline").html("PRO-Verter RMK ("+dataS.hostname+"): Current Settings");
-				$("#firmware_date_pro").html(dataS.firmware_date);
+								$("#headline").html("PRO-Verter RMK ("+dataS.hostname+"): Current Settings");
+								$("#firmware_date_pro").html(dataS.firmware_date);
 			});
 
 		}
@@ -526,7 +526,7 @@
                 <td><span id="localDate">Loading...</span><br />Report received <span id="timerSeconds">Loading...</span> ago.</td>
 	</tr>
 	<tr>
-		<th style="background-color: #9D3F1B;" colspan="2">Inverter Settings</th>
+		<th class="table_header" colspan="2">Inverter Settings</th>
 	</tr>
 	<tr>
 		<th class="right">Model:</th>
@@ -541,7 +541,7 @@
 		<td id="i_stack_mode">Loading...</td>
 	</tr>
 	<tr>
-		<th style="background-color: #9D3F1B;" colspan="2">Remote Settings</th>
+		<th class="table_header" colspan="2">Remote Settings</th>
 	</tr>
 	<tr>
 		<th class="right">Revision:</th>
@@ -593,7 +593,7 @@
 <!--           AGS   Automatic Generator Start Settings (controlled by ME-RC)             -->
 
 	<tr class="RC">
-		<th style="background-color: #9D3F1B;" colspan="2">Automatic Generator Start Settings<br /><span style="font-size: 0.8em;">(controlled by ME-RC)</span></th>
+		<th class="table_header" colspan="2">Automatic Generator Start Settings<br /><span style="font-size: 0.8em;">(controlled by ME-RC)</span></th>
 	</tr>
 	<tr class="RC">
 		<th class="right">AGS Revision:</th>
@@ -610,7 +610,7 @@
 <!--           AGS   Automatic Generator Start Settings (controlled by ME-ARC)             -->
 
 	<tr class="ARC">
-		<th style="background-color: #9D3F1B;" colspan="2">Automatic Generator Start Settings<br /><span style="font-size: 0.8em;">(controlled by ME-ARC)</span></th>
+		<th class="table_header" colspan="2">Automatic Generator Start Settings<br /><span style="font-size: 0.8em;">(controlled by ME-ARC)</span></th>
 	</tr>
 	<tr class="ARC">
 		<th class="right">AGS Revision:</th>
@@ -635,7 +635,7 @@
 
 <!--         End   AGS               -->
 	<tr class="battMon">
-		<th style="background-color: #9D3F1B;" colspan="2">Battery Monitor</th>
+		<th class="table_header" colspan="2">Battery Monitor</th>
 	</tr>
 	<tr class="battMon">
 		<th class="right">Revision:</th>
@@ -647,13 +647,13 @@
 	</tr>
 	<tr class="battMon"><th class="right">Battery Size:</th><td id="r_bmk_battery_size">Loading...</td></tr>
 	<tr>
-		<th style="background-color: #9D3F1B;" colspan="2">PRO-Verter RMK</th>
+		<th class="table_header" colspan="2">PRO-Verter RMK</th>
 	</tr>
 	<tr>
 		<th class="right">Firmware Date:</th>
 		<td id="firmware_date_pro">Loading...</td>
 	</tr>
-		<th style="background-color: #9D3F1B;" colspan="2">Embedded Protocol Converter</th>
+		<th class="table_header" colspan="2">Embedded Protocol Converter</th>
 	</tr>
 	<tr>
 		<th class="right">Firmware Date:</th>

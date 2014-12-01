@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<meta charset="UTF-8">
-		<title>PRO-Verter RMK: Historical Data</title>
+		<title>Historical Data</title>
 	
 	<link href="res/css/solar.css" rel="stylesheet" type="text/css" />
 	<link rel="icon" type="images/favicon" href="res/images/favicon_s.ico" />
@@ -48,7 +48,7 @@
 						
 	</div>
 	<div style="text-align: center;">
-		<h1 id="headline">PRO-Verter RMK: Historical Data</h1>
+		<h1 id="headline">Historical Data</h1>
 				<!--Note: This server will be down for scheduled maintenance from 7PM to 9PM CST today.-->
 
 		<br />
@@ -129,8 +129,8 @@
 		    xdr.onload = function() {
 		       
 			dataS = $.parseJSON(xdr.responseText);
-			$("#headline").html("PRO-Verter RMK ("+dataS.hostname+"): Historical Data");
-			
+								$("#headline").html("PRO-Verter RMK ("+dataS.hostname+"): Historical Data");
+							
 			
 		    };
 		    xdr.send();
@@ -146,8 +146,8 @@
 			.done(function( dataS ) {
 
 				dataS = $.parseJSON(dataS);
-				$("#headline").html("PRO-Verter RMK ("+dataS.hostname+"): Historical Data");
-				
+												$("#headline").html("PRO-Verter RMK ("+dataS.hostname+"): Historical Data");
+								
 			});
 
 		}
@@ -328,10 +328,28 @@
 		
 		var dispMonths = $(document).getUrlParam("months[]");
 
+
+
 		//dispMonths = ["201410","201409","201408","201407"];
 
 		/* sort the files because they may not be in order */
 		fileAr.sort();
+
+		/* if no months are selected, select all */	
+		if (null == dispMonths ){
+			dispMonths=[];
+			for ( var k = 0 ; k < fileAr.length ; k++ ) {
+				if ( dispMonths.length > 11 )
+					break;
+				var val = fileAr[k].substring(0,6);
+				console.log($.inArray(val, dispMonths));
+				if ( -1 == $.inArray(val, dispMonths) )
+					dispMonths.push(val);
+			}
+
+		} 
+
+		console.log(dispMonths);
 
 		//fileAr.sort(function(a, b){return b-a});
 		var table = "";
@@ -341,7 +359,7 @@
 		var colSpan = (chanSumAr.length*3)+3;
 		/* iterate through all file names */
 
-
+	
 		for ( var i = fileAr.length-1 ; i >= 0  ; i--) {
 
 			var boolAdd;
