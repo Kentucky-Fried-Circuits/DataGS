@@ -229,6 +229,7 @@ public class RecordMagWeb {
 		
 		/* as of 2012-02 this can be signed ... needed for MSH inverters */
 		i_dc_amps=((buff[24]<<8) + buff[25]);
+		
 		if ( (buff[24]>>7)==1 ) i_dc_amps -= 65536;
 
 		/*
@@ -272,19 +273,39 @@ public class RecordMagWeb {
 		
 		i_amps_in=buff[36];
 		
-		System.out.println("pre sign i_amps_in: "+i_amps_in);
+		System.out.println("# pre sign i_amps_in: "+i_amps_in);
 		
 		if ( (buff[36]>>7)==1 ) i_amps_in -= 128;
 		
-		System.out.println("post sign i_amps_in: "+i_amps_in);
+		System.out.println("# post sign i_amps_in: "+i_amps_in);
 		
 		i_amps_out=buff[37];
 		
-		System.out.println("pre sign i_amps_out: "+i_amps_out);
+		System.out.println("# !! pre sign i_amps_out: "+i_amps_out);
+		
 		
 		if ( (buff[37]>>7)==1 ) i_amps_out -= 128;
 		
-		System.out.println("post sign i_amps_out: "+i_amps_out);
+		System.out.println("# !! post sign i_amps_out: "+i_amps_out);
+
+		/* There is a difference in remote revisions on how i_amps_out is handled */
+		
+
+		
+		
+		/* MSH invertes handle i_ac_amps out differently depending on remote revision */
+		if ( isMSH(i_model) ) {
+			/* r_revision */
+			if ( (buff[47]/10.0) < 4 ) { /* revision is less than 4 */
+				
+				if ( (buff[37]>>7)==1 ) i_amps_out = 255 - buff[37];
+				
+				System.out.println("# !! post sign i_amps_out: "+i_amps_out);
+				
+				
+			} 
+		}
+		
 		
 		/* when in charge mode, amps out is really amps in minus amps out */
 		if ( 0x01==i_status || 0x02==i_status || 0x04==i_status || 0x08==i_status )
@@ -516,7 +537,7 @@ public class RecordMagWeb {
 		load_power = i_ac_volts_out * i_amps_out;
 		
 		
-		/* TODO clean 24 hour stats  */
+		/* clean 24 hour stats  */
 		
 		if (age_ags_0xA1 < 255){
 			a_temperature_clean = a_temperature;
@@ -542,7 +563,7 @@ public class RecordMagWeb {
 			b_dc_max_volts_clean = Double.NaN;
 		}
 		
-		if (age_bmk < 255){
+		if (age_inverter < 255){
 			i_dc_volts_clean = i_dc_volts;
 			i_dc_amps_clean = i_dc_amps;
 			i_ac_volts_out_clean = i_ac_volts_out;
@@ -727,5 +748,16 @@ public class RecordMagWeb {
 	
 		return ibuf;
 	}
-
+	
+	/* determines if inverter is an MSH inverter */
+	private boolean isMSH(int val) {
+		
+		switch ( val ) {
+			case 0x2C: return true;
+			case 0x67: return true;
+			case 0x68: return true;
+			default: return false;
+		}
+		
+	}
 }
