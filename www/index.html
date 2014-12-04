@@ -402,9 +402,11 @@
 			/* BMK rows */
 			batteryCharts(dataAr,create)
 			batteryRows(dataAr,create);
-			if ( parseInt(dataAr["age_bmk"].sampleValue) < 100 )
+			if ( parseInt(dataAr["age_bmk"].sampleValue) < 100 ) {
 				updatePlotArrays(dataAr,create);
-
+			} else {
+				$("#loadingMsg").hide();
+			}
 			/* Inverter rows */
 			inverterRows(dataAr,create);
 
