@@ -168,8 +168,6 @@ function magnumInverterStatus(val) {
 	mis[0x40]=['Inverting',''];
 	mis[0x50]=['Inverter Standby',''];
 	mis[0x80]=['Search Mode','Searching for a load. Charger may be on or off.'];
-	mis[0xF3]=['Unknown Status',''];
-	
 
 	return mis[val][0]+"<br>"+mis[val][1];
 	
@@ -189,6 +187,15 @@ function magnumInverterLED(val) {
 	if ( val >= 7 ) return 'Inverting LED Flashing';
 	if ( val >= 2 ) return 'Inverting LED Slowly Flashing';
 	return 'Invalid Inverting LED value: ' + val;
+}
+
+
+function magnumLED(val) {
+	if ( 0==val ) return 'LED off';
+	if ( 1==val || val>14 ) return 'LED On';
+	if ( val >= 7 ) return 'LED off';
+	if ( val >= 2 ) return 'LED off';
+	return 'Invalid LED value: ' + val;
 }
 
 
@@ -225,20 +232,20 @@ function magnumAGSStatus(val) {
 		case  3: return "Manual Run";
 		case  4: return "AC In";
 		case  5: return "In Quiet Time";
-		case  6: return "Start in Test Mode";
-		case  7: return "Start on Temperature";
-		case  8: return "Start on Voltage";
+		case  6: return "Run in Test Mode";
+		case  7: return "Run on Temperature";
+		case  8: return "Auto Run, Gen ON";//Run on Voltage
 		case  9: return "Fault during Start on Test";
 		case 10: return "Fault during Start on Temp";
 		case 11: return "Fault during Start on Voltage";
-		case 12: return "Start Time of Date";
-		case 13: return "Start State of Charge";
-		case 14: return "Start Exercise";
+		case 12: return "Run Time of Date";
+		case 13: return "Run State of Charge";
+		case 14: return "Run Exercise";
 		case 15: return "Fault during Start for Time of Day";
 		case 16: return "Fault during Start for State of Charge";
 		case 17: return "Fault during Start for Exercise";
-		case 18: return "Start on Amp";
-		case 19: return "Start on Top Off";
+		case 18: return "Run on Amp";
+		case 19: return "Run on Top Off";
 		case 20: return "Not Used";
 		case 21: return "Fault during Start on Amp";
 		case 22: return "Fault during Top Off";
@@ -252,16 +259,12 @@ function magnumAGSStatus(val) {
 }
 
 function magnumTemperature(tempC) {
-	if ( null != tempC ){
-		var tempF=9.0/5.0*tempC + 32.0;
+	var tempF=9.0/5.0*tempC + 32.0;
 
-		if ( tempC > 0 ) 
-			return tempC.toFixed(0)+"&deg;C / "+tempF.toFixed(0)+"&deg;F";
+	if ( tempC > 0 ) 
+		return tempC.toFixed(0)+"&deg;C / "+tempF.toFixed(0)+"&deg;F";
 
-		return "<u>&lt;</u>"+tempC.toFixed(0)+"&deg;C / <u>&lt;</u>"+tempF.toFixed(0)+"&deg;F";
-	} else {
-		return "No Data Available";
-	}
+	return "<u>&lt;</u>"+tempC.toFixed(0)+"&deg;C / <u>&lt;</u>"+tempF.toFixed(0)+"&deg;F";
 
 }
 
