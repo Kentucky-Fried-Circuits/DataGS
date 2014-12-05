@@ -298,8 +298,8 @@ public class RecordMagWeb {
 			/* r_revision */
 			if ( (buff[47]/10.0) < 4 ) { /* revision is less than 4 */
 				
+				if ( (buff[36]>>7)==1 ) i_amps_in = 255 - buff[36];
 				if ( (buff[37]>>7)==1 ) i_amps_out = 255 - buff[37];
-				
 			//	System.out.println("# !! post sign i_amps_out: "+i_amps_out);
 				
 			} 
