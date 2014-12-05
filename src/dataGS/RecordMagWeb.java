@@ -273,20 +273,20 @@ public class RecordMagWeb {
 		
 		i_amps_in=buff[36];
 		
-		System.out.println("# pre sign i_amps_in: "+i_amps_in);
+		//System.out.println("# pre sign i_amps_in: "+i_amps_in);
 		
 		if ( (buff[36]>>7)==1 ) i_amps_in -= 128;
 		
-		System.out.println("# post sign i_amps_in: "+i_amps_in);
+		//System.out.println("# post sign i_amps_in: "+i_amps_in);
 		
 		i_amps_out=buff[37];
 		
-		System.out.println("# !! pre sign i_amps_out: "+i_amps_out);
+		//System.out.println("# !! pre sign i_amps_out: "+i_amps_out);
 		
 		
 		if ( (buff[37]>>7)==1 ) i_amps_out -= 128;
 		
-		System.out.println("# !! post sign i_amps_out: "+i_amps_out);
+		//System.out.println("# !! post sign i_amps_out: "+i_amps_out);
 
 		/* There is a difference in remote revisions on how i_amps_out is handled */
 		
@@ -300,7 +300,7 @@ public class RecordMagWeb {
 				
 				if ( (buff[37]>>7)==1 ) i_amps_out = 255 - buff[37];
 				
-				System.out.println("# !! post sign i_amps_out: "+i_amps_out);
+			//	System.out.println("# !! post sign i_amps_out: "+i_amps_out);
 				
 			} 
 		}
@@ -310,7 +310,7 @@ public class RecordMagWeb {
 		if ( 0x01==i_status || 0x02==i_status || 0x04==i_status || 0x08==i_status )
 			i_amps_out=i_amps_in-i_amps_out;
 		
-		System.out.println("# charge mode i_amps_out: "+i_amps_out);
+		//System.out.println("# charge mode i_amps_out: "+i_amps_out);
 		
 		/* add some debugging at line 275 the value of 273 i amps in and i amps out
 		 *  before and after the signs for in an dout to see if we are doing the
