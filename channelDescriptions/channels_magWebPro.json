@@ -1120,45 +1120,49 @@
         },
         {
             "id": "b_dc_power",
-            "title": "",
+            "title": "Battery Watts",
             "description": "DC Power (RMK)",
-            "units": "",
+            "units": "watts",
             "precision": 0,
             "sortOrder": 10,
             "mode": "AVERAGE",
+            "historyByDay": "true",
             "log": "true"
         },
         {
             "id": "i_dc_power",
-            "title": "",
+            "title": "Load Watts",
             "description": "DC Power (Inverter)",
-            "units": "",
+            "units": "watts",
             "precision": 0,
             "sortOrder": 20,
             "mode": "AVERAGE",
             "log": "true",
+            "historyByDay": "true",
             "recent": "true"
         },
         {
             "id": "calc_add_power",
-            "title": "",
+            "title": "Renewable Watts",
             "description": "Calculated Renewable Power",
-            "units": "",
+            "units": "watts",
             "precision": 0,
             "sortOrder": 30,
             "mode": "AVERAGE",
             "dayStats": "true",
             "log": "true",
-            "recent": "true"
+            "historyByDay": "true",
+            "recent": "true"            
         },
         {
             "id": "gen_power",
-            "title": "",
+            "title": "Generator Watts",
             "description": "AC In Power",
-            "units": "",
+            "units": "watts",
             "precision": 0,
             "sortOrder": 40,
             "mode": "AVERAGE",
+            "historyByDay": "true",
             "log": "true"
         },
         {
