@@ -513,7 +513,7 @@
 			addLine("currentTable",'Real Time Battery Volts:',dataAr['b_dc_volts'].avg.toFixed(getChObj("b_dc_volts").precision)+" VDC","b_dc_volts", create);
 			addLine("currentTable",'Real Time Battery Amps:',dataAr['b_dc_amps'].avg.toFixed(getChObj("b_dc_amps").precision)+" amps","b_dc_amps", create);
 			addLine("currentTable",'Real Time Battery Watts:',dataAr['b_dc_watts'].avg.toFixed(getChObj("b_dc_watts").precision)+" watts","b_dc_watts", create);
-			addLine("currentTable",'Real Time Renewable Watts:',dataAr['calc_add_power'].avg.toFixed(getChObj("calc_add_power").precision)+" watts","calc_add_power", create);
+			addLine("currentTable",'Real Time Renewable Watts:<br><span style=\"font-size:.75em;\">(Approximate Value +/- 50W)</span>',dataAr['calc_add_power'].avg.toFixed(getChObj("calc_add_power").precision)+" watts","calc_add_power", create);
 
 			addLine("currentTable","Battery State of Charge:<br><span style=\"font-size:.75em;\">(10 minute averages over past 24 hours)<br>Gray Bars Indicate Thinking</span>","<span id=\"battCharge\">Loading...</span><br>"+
 					"<div style=\"width: 100%;height: 70px;padding: 00px 00px 00px 00px;margin-left:auto;margin-right:auto;\">"+
