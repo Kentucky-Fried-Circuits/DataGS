@@ -415,7 +415,9 @@ p {
 
 
 	}
-
+	td{
+		background-color: #fff;
+	}
 	#memoryData{
 		
 		background-color: #036;
