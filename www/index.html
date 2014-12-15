@@ -4,8 +4,8 @@
 	<meta charset="UTF-8">
 		<title>Current Conditions</title>
 	
-	<link href="res/css/solar.css" rel="stylesheet" type="text/css" />
-	<link rel="icon" type="images/favicon" href="res/images/favicon_s.ico" />
+	<link href="res/css/magnum_style.css" rel="stylesheet" type="text/css" />
+	<link rel="icon" type="images/favicon" href="res/images/favicon.gif" />
 	
 
 
@@ -14,18 +14,10 @@
 <div id="wrapper" style="width: 100%; margin-left: auto; margin-right: auto; background-color:#ffffff;">
 	
 
-<div>
-		<div id = "header" style = "width:100%;">
-			
-				
-			<a href="http://www.solarstik.com/"><img src="res/images/logo_s.png" alt="Solar Stik" style = "text-decoration: none; border: none; outline: none; padding-bottom: 5px; padding-top: 30px; padding-left: 5px;" /></a>
+
+<img src="res/images/logo.png" style="position: fixed; bottom: 20px;">
 	
-			<b style = "padding-left: 20px" >24/7 Support: 800-793-4364 Ext 102</b>
 	
-			
-				
-			
-		</div>
 		<div class="navBarCon">	
 			<ul  style="border: none; width:100%; border-spacing: 0px;list-style-type: none;">
 			
@@ -207,7 +199,8 @@
 	}
 
 	function processHostInfo(dataS, create){
-				$("#headline").html("PRO-Verter RMK ("+dataS.hostname+"): Current Conditions");
+				$("#headline").html(dataS.hostname+": Current Conditions");
+
 				var total = getMemory("/mnt/data","total",dataS.drives);
 		var free = getMemory("/mnt/data","avail",dataS.drives);
 		var used = getMemory("/mnt/data","used",dataS.drives);

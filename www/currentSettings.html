@@ -4,8 +4,8 @@
 	<meta charset="UTF-8">
 		<title>Current Settings</title>
 	
-	<link href="res/css/solar.css" rel="stylesheet" type="text/css" />
-	<link rel="icon" type="images/favicon" href="res/images/favicon_s.ico" />
+	<link href="res/css/magnum_style.css" rel="stylesheet" type="text/css" />
+	<link rel="icon" type="images/favicon" href="res/images/favicon.gif" />
 	
 
 
@@ -14,18 +14,10 @@
 <div id="wrapper" style="width: 100%; margin-left: auto; margin-right: auto; background-color:#ffffff;">
 	
 
-<div>
-		<div id = "header" style = "width:100%;">
-			
-				
-			<a href="http://www.solarstik.com/"><img src="res/images/logo_s.png" alt="Solar Stik" style = "text-decoration: none; border: none; outline: none; padding-bottom: 5px; padding-top: 30px; padding-left: 5px;" /></a>
+
+<img src="res/images/logo.png" style="position: fixed; bottom: 20px;">
 	
-			<b style = "padding-left: 20px" >24/7 Support: 800-793-4364 Ext 102</b>
 	
-			
-				
-			
-		</div>
 		<div class="navBarCon">	
 			<ul  style="border: none; width:100%; border-spacing: 0px;list-style-type: none;">
 			
@@ -121,7 +113,8 @@
 		    xdr.onload = function() {
 		       
 				dataS = $.parseJSON(xdr.responseText);
-								$("#headline").html("PRO-Verter RMK ("+dataS.hostname+"): Current Settings");
+								$("#headline").html(dataS.hostname+": Current Settings");
+
 								$("#firmware_date_pro").html(dataS.firmware_date);
 			
 		    };
@@ -138,7 +131,8 @@
 			.done(function( dataS ) {
 
 				dataS = $.parseJSON(dataS);
-								$("#headline").html("PRO-Verter RMK ("+dataS.hostname+"): Current Settings");
+								$("#headline").html(dataS.hostname+": Current Settings");
+
 								$("#firmware_date_pro").html(dataS.firmware_date);
 			});
 
@@ -511,7 +505,7 @@
 
 	<div class="caution" style="display: none;" >
 		<p>
-				PRO-Verter Not Connected!
+				MagWeb Pro Not Connected!
 				</p>
 	</div>
 	<div id="connection_warn" style="text-align: center; width: 800px; margin-right: auto; margin-left: auto; background-color: orange; color: white; display: none;" onclick="hideWarn()">
@@ -647,7 +641,7 @@
 	</tr>
 	<tr class="battMon"><th class="right">Battery Size:</th><td id="r_bmk_battery_size">Loading...</td></tr>
 	<tr>
-		<th class="table_header" colspan="2">PRO-Verter RMK</th>
+		<th class="table_header" colspan="2">MagWeb Pro</th>
 	</tr>
 	<tr>
 		<th class="right">Firmware Date:</th>
