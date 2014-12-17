@@ -133,7 +133,7 @@
 				fault = "LOW BATTERY, ATTACH TO CHARGING SOURCE IMEDIATELY";
 				break;
 			case 2: 
-				fault = "LOST COMMUNICATION WITH MAGWEB PRO<br><span style=\"font-size:.75em;\">MAGWEB PRO APPEARS TO BE DISCONNECTED</span>";
+				fault = "LOST COMMUNICATION WITH PRO-VERTER<br><span style=\"font-size:.75em;\">PRO-VERTER APPEARS TO BE DISCONNECTED</span>";
 				break;
 			case 3: 
 				fault = "TRIGGERED BY TEST BUTTON<br><span style=\"font-size:.75em;\">CLICK DISMISS TO CLEAR</span>";
@@ -142,7 +142,7 @@
 				fault = "NO RESPONSE FROM SERVER!<br><span style=\"font-size:.75em;\">PLEASE CHECK TO MAKE SURE YOU ARE STILL CONNECTED TO NETWORK!</span>";
 				break;
 			case 5: 
-				fault = "MAGWEB PRO INTERNAL ERROR: DATA NOT UPDATING<br><span style=\"font-size:.75em;\">CONTACT SUPPORT OR POWER CYCLE MAGWEB PRO</span>";
+				fault = "PRO-VERTER INTERNAL ERROR: DATA NOT UPDATING<br><span style=\"font-size:.75em;\">CONTACT SUPPORT OR POWER CYCLE PROVERTER</span>";
 				break;
 			case 6: 
 				fault = "BMK IN FAULT MODE!";
@@ -151,10 +151,10 @@
 				fault = "GENERATOR START FAULT - CHECK FUEL LEVEL";
 				break;
 			case 8: 
-				fault = "CHARGER FAULT - OVER TEMPERATURE - CLEAN MAGWEB PRO VENTS AND/OR REDUCE CHARGE RATE";
+				fault = "CHARGER FAULT - OVER TEMPERATURE - CLEAN PRO-VERTER VENTS AND/OR REDUCE CHARGE RATE";
 				break;
 			case 9: 
-				fault = "MAGWEB PRO NOT CONNECTED TO THE MAGNUM NETWORK<br><span style=\"font-size:.75em;\">OR MAGNUM DEVICES ARE POWERED OFF</span>";
+				fault = "PROVERTER NOT CONNECTED TO THE MAGNUM NETWORK<br><span style=\"font-size:.75em;\">OR MAGNUM DEVICES ARE POWERED OFF</span>";
 				break;
 			default:
 				fault = "UNKNOWN FAULT";
