@@ -4,6 +4,7 @@
 Gather data from TCP/IP (simple ASCII format) or serial port (WorldData format) and process and make available
 
 ## Channel Description File Format
+<a name="chanDescFileFormat"></a>
 The channel description file is in JSON format. It specifies channel names, descriptions, and other attributes for
 a channel.
 
@@ -47,6 +48,8 @@ History files are stored in the log local directory which is set with the -w arg
 
 ### /data/channels.json or /data/channels.dat
 Channel description map as loaded from filesystem. File system location is set with the -c argument.
+
+For example file, see [Channel Description File Format](#chanDescFileFormat).
 
 Returned as `application/json` if URI ends with `.json` or as `text/plain` if the URI ends with `.dat`
 
@@ -112,7 +115,6 @@ Example file :
 				b_state_of_charge: 100
 			}
 		}
-		...
 	]
 }
 ```
@@ -127,15 +129,6 @@ Returned as `application/json` if URI ends with `.json` or as `text/plain` if th
 ### /data/historyFiles.json or /data/historyFiles.dat
 Listing of the log files available in the log local directory.
 
-Returned as `application/json` if URI ends with `.json` or as `text/plain` if the URI ends with `.dat`
-
-### /data/historyByDay.json or /data/historyByDay.dat
-Daily statistics that summarize the values of all of the files in the log local directory. 
-Statistics are generated on all of the columns that have `history` set to true in the channel description map.
-
-Computing the results is done at startup and then continually updated. If the results aren't yet available, 
-will return an HTTP response of `NO CONTENT` (HTTP result code 204).
-
 Example file :
 ```
 {
@@ -144,18 +137,72 @@ Example file :
 			"20141222.csv",
 			"20141221.csv",
 			"20141220.csv",
-			"20141219.csv",
-			...
+			"20141219.csv"
 		]
 	}
 }
 ```
+
+Returned as `application/json` if URI ends with `.json` or as `text/plain` if the URI ends with `.dat`
+
+### /data/historyByDay.json or /data/historyByDay.dat
+Daily statistics that summarize the values of all of the files in the log local directory. 
+Statistics are generated on all of the columns that have `history` set to true in the channel description map.
+
+Example file:
+```
+{
+	summary_stats: [
+		{
+			day: "20141220",
+			n: 8638,
+			gen_power_min: 0,
+			gen_power_max: 0,
+			gen_power_avg: 0,
+			b_state_of_charge_min: 100,
+			b_state_of_charge_max: 100,
+			b_state_of_charge_avg: 100,
+			calc_add_power_min: -9.152,
+			calc_add_power_max: 44.7228,
+			calc_add_power_avg: 0.23513608345553358,
+			i_dc_power_min: 0,
+			i_dc_power_max: 38.08,
+			i_dc_power_avg: 0.05220331352422104,
+			b_dc_power_min: -9.152,
+			b_dc_power_max: 62.71640000000001,
+			b_dc_power_avg: 0.2874055799953692,
+			i_dc_volts_min: 12.69,
+			i_dc_volts_max: 13.670000000000002,
+			i_dc_volts_avg: 13.537876694708153
+		}
+	]
+}
+```
+
+Computing the results is done at startup and then continually updated. If the results aren't yet available, 
+will return an HTTP response of `NO CONTENT` (HTTP result code 204).
+
+
 Returned as `application/json` if URI ends with `.json` or as `text/plain` if the URI ends with `.dat`
 
 ### /data/dayStats.json or /data/dayStats.dat
 
 The summarised data from the last 24 hours.
 Statistics are generated on all of the columns that have `dayStats` set to true in the channel description map.
+
+Example file:
+```
+{
+	dayStats: {
+		i_ac_volts_out: {
+			n: 8640,
+			min: 117.1,
+			max: 121.6,
+			avg: 119.18382330246877
+		}
+	}
+}
+```
 
 Returned as `application/json` if URI ends with `.json` or as `text/plain` if the URI ends with `.dat`
 
