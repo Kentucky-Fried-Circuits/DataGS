@@ -52,8 +52,31 @@ Returned as MIME type `application/json`.
 ### /data/now.json
 Interval statistics or sample of the last batch of data processed. Data is process at interval
 specified by the -i argument.
-
 The two modes, ```"SAMPLE"``` and ```"AVERAGE"```, change how the data for the channel is presented. 
+
+Example file with both modes present:
+```
+{
+	data: [
+		{
+			channel: "r_parallel_threshold",
+			time: 1419258385610,
+			sampleValue: "6.0",
+			mode: "SAMPLE"
+		},
+		{
+			channel: "i_ac_volts_out",
+			time: 1419258385610,
+			n: 10,
+			avg: 118.3,
+			min: 117,
+			max: 119,
+			stddev: 0.8232726023485638,
+			mode: "AVERAGE"
+		}
+	]
+}
+```
 If the channel is using the mode ```"SAMPLE"```, the channel data is obtained through calling ```"sampleValue"```.
 If the channel is using the mode ```"AVERAGE"```, the channel data is split up between five values: 
 
