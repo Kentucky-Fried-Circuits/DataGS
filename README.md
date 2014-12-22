@@ -47,11 +47,23 @@ History files are stored in the log local directory which is set with the -w arg
 
 ### /data/channels.json
 Channel description map as loaded from filesystem. File system location is set with the -c argument.
-Returned as MIME type `application/json`.
+Returned as MIME type `application/json`. 
 
 ### /data/now.json
 Interval statistics or sample of the last batch of data processed. Data is process at interval
 specified by the -i argument.
+
+The two modes, ```"SAMPLE"``` and ```"AVERAGE"```, change how the data for the channel is presented. 
+If the channel is using the mode ```"SAMPLE"```, the channel data is obtained through calling ```"sampleValue"```.
+If the channel is using the mode ```"AVERAGE"```, the channel data is split up between five values: 
+	```"n"``` is the number of data points used to compute these functions.
+	```"avg"``` is the average of the data points recieved within the given interval.
+	```"min"``` is the minimum value of the data points recieved within the given interval.
+	```"max"``` is the maximum value of the data points recieved within the given interval.
+	```"stddev"``` is the standard deviation of the data points recieved within the given interval.
+
+Both modes contain ```"time"``` which is a unix timestamp representation of when that data was generated.
+
 
 ### /data/recent.json or /data/recent.dat
 Time series data covering from now to the number of hours specified by the -H argument.
