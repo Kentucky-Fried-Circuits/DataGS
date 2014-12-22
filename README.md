@@ -97,6 +97,29 @@ Both modes contain ```"time"``` which is a unix timestamp representation of when
 ### /data/recent.json or /data/recent.dat
 Time series data covering from now to the number of hours specified by the -H argument.
 
+Example file :
+```
+{
+	recent: [
+		{
+			time: 1419174506269,
+			data: {
+				b_amph_in_out: 22,
+				calc_add_power: 0,
+				b_dc_watts: 0,
+				b_state_of_charge: 100
+			}
+		}
+		...
+	]
+}
+```
+*CAUTION:* This file will contain every data point recorded for the specified channels from the last X amount of hours meaning this has the potential to use up a lot of memory. For example, Let's say we have an interval ( argument ```i``` ) of 10000 milliseconds ( 10 seconds ) and json-history-hours ( argument ```H``` ) of 24 hours. For every channel that contains ```"recent": "true"``` in this scenario will add 8640 data points to the file.
+
+```"time"``` is a unix timestamp representation of when that data was generated.
+
+```"data"``` is an object containing key-value pairs of channels that contain ```"recent": "true"``` in it's channel description.
+
 Returned as `application/json` if URI ends with `.json` or as `text/plain` if the URI ends with `.dat`
 
 ### /data/historyFiles.json or /data/historyFiles.dat
