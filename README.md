@@ -45,11 +45,12 @@ Logged history file from file system. Return as MIME type `test/csv` if the URI 
 `text/plain` if the URI ends with `.txt`. 
 History files are stored in the log local directory which is set with the -w argument
 
-### /data/channels.json
+### /data/channels.json or /data/channels.dat
 Channel description map as loaded from filesystem. File system location is set with the -c argument.
-Returned as MIME type `application/json`. 
 
-### /data/now.json
+Returned as `application/json` if URI ends with `.json` or as `text/plain` if the URI ends with `.dat`
+
+### /data/now.json or /data/now.dat
 Interval statistics or sample of the last batch of data processed. Data is process at interval
 specified by the -i argument.
 The two modes, ```"SAMPLE"``` and ```"AVERAGE"```, change how the data for the channel is presented. 
@@ -93,6 +94,7 @@ If the channel is using the mode ```"AVERAGE"```, the channel data is split up b
 
 Both modes contain ```"time"``` which is a unix timestamp representation of when that data was generated.
 
+Returned as `application/json` if URI ends with `.json` or as `text/plain` if the URI ends with `.dat`
 
 ### /data/recent.json or /data/recent.dat
 Time series data covering from now to the number of hours specified by the -H argument.
@@ -114,7 +116,7 @@ Example file :
 	]
 }
 ```
-*CAUTION:* This file will contain every data point recorded for the specified channels from the last X amount of hours meaning this has the potential to use up a lot of memory. For example, Let's say we have an interval ( argument ```i``` ) of 10000 milliseconds ( 10 seconds ) and json-history-hours ( argument ```H``` ) of 24 hours. For every channel that contains ```"recent": "true"``` in this scenario will add 8640 data points to the file.
+*CAUTION:* This file will contain every data point recorded for the specified channels from the last X amount of hours meaning this has the potential to use up a lot of memory. For example, Let's say we have an interval ( argument ```i``` ) of 10000 milliseconds ( 10 seconds ) and json-history-hours ( argument ```H``` ) of 24 hours. For every channel that contains ```"recent": "true"``` in this scenario will add 8640 data points to the file. Make sure to be mindful of your device's specs when configuring these settings. If you are looking to create a graph spanning a period of time, use this. However, if you just want 24 hour summary data, consider using dayStats instead.
 
 ```"time"``` is a unix timestamp representation of when that data was generated.
 
@@ -134,16 +136,34 @@ Statistics are generated on all of the columns that have `history` set to true i
 Computing the results is done at startup and then continually updated. If the results aren't yet available, 
 will return an HTTP response of `NO CONTENT` (HTTP result code 204).
 
+Example file :
+```
+{
+	history_files: {
+		files: [
+			"20141222.csv",
+			"20141221.csv",
+			"20141220.csv",
+			"20141219.csv",
+			...
+		]
+	}
+}
+```
 Returned as `application/json` if URI ends with `.json` or as `text/plain` if the URI ends with `.dat`
 
 ### /data/dayStats.json or /data/dayStats.dat
 
-Todo: fill in details
+The summarised data from the last 24 hours.
+Statistics are generated on all of the columns that have `dayStats` set to true in the channel description map.
+
+Returned as `application/json` if URI ends with `.json` or as `text/plain` if the URI ends with `.dat`
 
 ### /data/hostinfo.json or /data/hostinfo.dat
 
 Hostname of server as `application/json` if URI ends with `.json` or as `text/plain` if the URI ends with `.dat`
 
+Returned as `application/json` if URI ends with `.json` or as `text/plain` if the URI ends with `.dat`
 
 
 ## Command line arguments
