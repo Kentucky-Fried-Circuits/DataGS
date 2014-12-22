@@ -57,15 +57,15 @@ The two modes, ```"SAMPLE"``` and ```"AVERAGE"```, change how the data for the c
 If the channel is using the mode ```"SAMPLE"```, the channel data is obtained through calling ```"sampleValue"```.
 If the channel is using the mode ```"AVERAGE"```, the channel data is split up between five values: 
 
-	1. ```"n"``` is the number of data points used to compute these functions.
+* ```"n"``` is the number of data points used to compute these functions.
 
-	2. ```"avg"``` is the average of the data points recieved within the given interval.
+* ```"avg"``` is the average of the data points recieved within the given interval.
 
-	3. ```"min"``` is the minimum value of the data points recieved within the given interval.
+* ```"min"``` is the minimum value of the data points recieved within the given interval.
 
-	4. ```"max"``` is the maximum value of the data points recieved within the given interval.
+* ```"max"``` is the maximum value of the data points recieved within the given interval.
 
-	5. ```"stddev"``` is the standard deviation of the data points recieved within the given interval.
+* ```"stddev"``` is the standard deviation of the data points recieved within the given interval.
 
 
 Both modes contain ```"time"``` which is a unix timestamp representation of when that data was generated.
