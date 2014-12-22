@@ -39,7 +39,7 @@ names are possible for data that comes in via WorldDataProcessor via reflection.
 ## Data served via HTTP
 
 ### /data/json.html
-Simple page with links to the different files. Read from file system.
+Simple page with links to the different files. Read from file system. For information on parsing JSON in multiple programming and scripting languages, visit [JSON.org](http://www.json.org/)
 
 ### /data/history/YYYYMMDD.csv or /data/history/YYYYMMDD.txt 
 Logged history file from file system. Return as MIME type `test/csv` if the URI ends with `.csv` or as 
@@ -208,7 +208,43 @@ Returned as `application/json` if URI ends with `.json` or as `text/plain` if th
 
 ### /data/hostinfo.json or /data/hostinfo.dat
 
-Hostname of server as `application/json` if URI ends with `.json` or as `text/plain` if the URI ends with `.dat`
+Hostname, firmware date, and the drives of the server.
+
+* `total` the total amount of storage the drive has in kilobytes.
+* `used` the amount of used storage the drive has in kilobyes.
+* `avail` the amount of available storage the drive has in kilobyes.
+* `readOnly` if true, the drive is read-only. If false, drive is not read-only.
+* `name` the name of the drive.
+* `type` the file system or architecture of the drive.
+* `description` the location of the file with a description.
+
+Example file:
+```
+{
+	hostname: "A3432",
+	firmware_date: "2014-11-19",
+	drives: [
+		{
+			total: 3023728,
+			used: 1872024,
+			avail: 978392,
+			readOnly: false,
+			name: "rootfs",
+			type: "rootfs",
+			description: "/ (rootfs)"
+		},
+		{
+			total: 4418624,
+			used: 57032,
+			avail: 4345208,
+			readOnly: false,
+			name: "/dev/mmcblk0p3",
+			type: "ext4",
+			description: "/data (/dev/mmcblk0p3)"
+		}
+	]
+}
+```
 
 Returned as `application/json` if URI ends with `.json` or as `text/plain` if the URI ends with `.dat`
 
