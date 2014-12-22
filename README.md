@@ -84,14 +84,10 @@ Example file with both modes present:
 If the channel is using the mode ```"SAMPLE"```, the channel data is obtained through calling ```"sampleValue"```.
 If the channel is using the mode ```"AVERAGE"```, the channel data is split up between five values: 
 
-* ```"n"``` is the number of data points used to compute these functions.
-
+* ```"n"``` is the number of data points used to compute these values.
 * ```"avg"``` is the average of the data points recieved within the given interval.
-
 * ```"min"``` is the minimum value of the data points recieved within the given interval.
-
 * ```"max"``` is the maximum value of the data points recieved within the given interval.
-
 * ```"stddev"``` is the standard deviation of the data points recieved within the given interval.
 
 
@@ -179,6 +175,12 @@ Example file:
 }
 ```
 
+* ```"day"``` YYYYMMDD representation of the date
+* ```"n"``` is the number of data points used to compute these values.
+* ```"avg"``` is the average of the data points recieved on that day.
+* ```"min"``` is the minimum value of the data points recieved on that day.
+* ```"max"``` is the maximum value of the data points recieved on that day.
+
 Computing the results is done at startup and then continually updated. If the results aren't yet available, 
 will return an HTTP response of `NO CONTENT` (HTTP result code 204).
 
@@ -204,19 +206,17 @@ Example file:
 }
 ```
 
+* ```"n"``` is the number of data points used to compute these values.
+* ```"avg"``` is the average of the data points recieved within 24 hours.
+* ```"min"``` is the minimum value of the data points recieved within 24 hours.
+* ```"max"``` is the maximum value of the data points recieved within 24 hours.
+
+
 Returned as `application/json` if URI ends with `.json` or as `text/plain` if the URI ends with `.dat`
 
 ### /data/hostinfo.json or /data/hostinfo.dat
 
 Hostname, firmware date, and the drives of the server.
-
-* `total` the total amount of storage the drive has in kilobytes.
-* `used` the amount of used storage the drive has in kilobyes.
-* `avail` the amount of available storage the drive has in kilobyes.
-* `readOnly` if true, the drive is read-only. If false, drive is not read-only.
-* `name` the name of the drive.
-* `type` the file system or architecture of the drive.
-* `description` the location of the file with a description.
 
 Example file:
 ```
@@ -245,6 +245,14 @@ Example file:
 	]
 }
 ```
+
+* `total` the total amount of storage the drive has in kilobytes.
+* `used` the amount of used storage the drive has in kilobyes.
+* `avail` the amount of available storage the drive has in kilobyes.
+* `readOnly` if true, the drive is read-only. If false, drive is not read-only.
+* `name` the name of the drive.
+* `type` the file system or architecture of the drive.
+* `description` the location of the file with a description.
 
 Returned as `application/json` if URI ends with `.json` or as `text/plain` if the URI ends with `.dat`
 
