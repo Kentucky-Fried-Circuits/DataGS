@@ -81,7 +81,8 @@ Example file with both modes present:
 	]
 }
 ```
-If the channel is using the mode ```"SAMPLE"```, the channel data is obtained through calling ```"sampleValue"```.
+
+If the channel is using the mode ```"SAMPLE"```, the channel data is obtained through ```"sampleValue"```.
 If the channel is using the mode ```"AVERAGE"```, the channel data is split up between five values: 
 
 * ```"n"``` is the number of data points used to compute these values.
@@ -116,9 +117,8 @@ Example file :
 ```
 *CAUTION:* This file will contain every data point recorded for the specified channels from the last X amount of hours meaning this has the potential to use up a lot of memory. For example, Let's say we have an interval ( argument ```i``` ) of 10000 milliseconds ( 10 seconds ) and json-history-hours ( argument ```H``` ) of 24 hours. For every channel that contains ```"recent": "true"``` in this scenario will add 8640 data points to the file. Make sure to be mindful of your device's specs when configuring these settings. If you are looking to create a graph spanning a period of time, use this. However, if you just want 24 hour summary data, consider using dayStats instead.
 
-```"time"``` is a unix timestamp representation of when that data was generated.
-
-```"data"``` is an object containing key-value pairs of channels that contain ```"recent": "true"``` in it's channel description.
+* ```"time"``` is a unix timestamp representation of when that data was generated.
+* ```"data"``` is an object containing key-value pairs of channels that contain ```"recent": "true"``` in it's channel description.
 
 Returned as `application/json` if URI ends with `.json` or as `text/plain` if the URI ends with `.dat`
 
