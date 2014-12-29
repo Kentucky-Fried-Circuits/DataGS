@@ -170,15 +170,11 @@ public class DataGS implements ChannelData, JSONData {
 
 			/* last (ie current) data JSON */
 			Iterator<Entry<String, SynchronizedSummaryData>> it = data.entrySet().iterator();
-			//TODO remove
-			int countx = 0;
 
 			while (it.hasNext()) {
 				Map.Entry<String, SynchronizedSummaryData> pairs = (Map.Entry<String, SynchronizedSummaryData>)it.next();
 				String channel = pairs.getKey();
-				//TODO null pointer exception happens
-				System.out.println(countx+"= "+channel);
-				countx++;
+				
 
 				if ( channelDesc.containsKey( channel ) ) {
 					dataNow.put(channel,new DataPoint(channel,now,pairs.getValue()));
