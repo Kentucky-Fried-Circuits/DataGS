@@ -170,8 +170,8 @@ public class HistoryPointExport {
 
 				/* print the key if the description isn't available */
 				
-				if ( chanDesc.containsKey(pairs.getKey()) ) {
-					if ( ! chanDesc.containsKey(pairs.getKey()) || 0 == chanDesc.get( pairs.getKey() ).description.length() ) {
+				if ( chanDesc.containsKey(pairs.getKey()) && null != chanDesc.get( pairs.getKey() ).description ) {
+					if ( 0 == chanDesc.get( pairs.getKey() ).description.length() ) {
 						header = StringEscapeUtils.escapeCsv(pairs.getKey());
 						token = StringEscapeUtils.escapeCsv(pairs.getKey());
 						System.out.println("no desc: "+pairs.getKey());
