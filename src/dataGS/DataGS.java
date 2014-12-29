@@ -174,7 +174,7 @@ public class DataGS implements ChannelData, JSONData {
 			while (it.hasNext()) {
 				Map.Entry<String, SynchronizedSummaryData> pairs = (Map.Entry<String, SynchronizedSummaryData>)it.next();
 				String channel = pairs.getKey();
-				System.out.println("channel="+channel);
+				//System.out.println("channel="+channel);
 
 				if ( channelDesc.containsKey( channel ) ) {
 					dataNow.put(channel,new DataPoint(channel,now,pairs.getValue()));
@@ -1008,7 +1008,7 @@ public class DataGS implements ChannelData, JSONData {
 
 	/* Main method */
 	public static void main(String[] args) throws IOException {
-		System.err.println("# Major version: 2014-11-21 (precision)");
+		System.err.println("# Major version: 2014-12-29 (Ian's Laptop)");
 		System.err.println("# java.library.path: " + System.getProperty( "java.library.path" ));
 
 		DataGS d=new DataGS();
