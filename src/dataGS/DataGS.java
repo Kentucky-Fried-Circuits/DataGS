@@ -179,7 +179,7 @@ public class DataGS implements ChannelData, JSONData {
 				//TODO null pointer exception happens
 				System.out.println(countx+"= "+channel);
 				countx++;
-				if ( null != pairs.getValue() ) {
+				if ( channelDesc.containsKey( channel ) ) {
 					dataNow.put(channel,new DataPoint(channel,now,pairs.getValue()));
 				}
 				
