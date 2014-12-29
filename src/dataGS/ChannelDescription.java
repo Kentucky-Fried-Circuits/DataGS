@@ -36,7 +36,11 @@ sortOrder: order in which to initially display. Not guaranteed to be unique. Dea
 		this.id=id;
 		this.mode=mode;
 		this.title=title;
-		this.description=description;
+		if(null != description){
+			this.description=description;
+		} else {
+			this.description = "";
+		}
 		this.units=units;
 		this.precision=precision;
 		this.sortOrder=sortOrder;
