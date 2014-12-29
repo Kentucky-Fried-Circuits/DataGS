@@ -172,68 +172,69 @@ public class DataGS implements ChannelData, JSONData {
 			Iterator<Entry<String, SynchronizedSummaryData>> it = data.entrySet().iterator();
 			//TODO remove
 			int countx = 0;
-			
+
 			while (it.hasNext()) {
 				Map.Entry<String, SynchronizedSummaryData> pairs = (Map.Entry<String, SynchronizedSummaryData>)it.next();
 				String channel = pairs.getKey();
 				//TODO null pointer exception happens
 				System.out.println(countx+"= "+channel);
 				countx++;
+
 				if ( channelDesc.containsKey( channel ) ) {
 					dataNow.put(channel,new DataPoint(channel,now,pairs.getValue()));
-				}
-				
 
-				if ( null != dataRecent ) {
-					dataRecent.addChannel(channel, pairs.getValue().getValueSampleOrAverage());
-				}
 
-				/* add data to dayStats */
 
-				if ( dayStats.containsKey( channel ) ) {
-
-					Double s = pairs.getValue().getMean();
-					Double d;
-					try {
-						d=new Double(s);
-						dayStats.get( channel ).addValue( d );
-					} catch ( NumberFormatException e ) {
-						System.err.println("# error ingesting s=" + s + " as a double. Giving up");
-						return;
+					if ( null != dataRecent ) {
+						dataRecent.addChannel(channel, pairs.getValue().getValueSampleOrAverage());
 					}
 
-				}
+					/* add data to dayStats */
 
-				if ( historyStatsByDayReady ) {
-					String todayDateKey = sdfYYYYMMDD.format( date );
+					if ( dayStats.containsKey( channel ) ) {
 
-					if ( ! historyStatsByDay.containsKey( todayDateKey ) ) {
-						/* we don't have today in history ... initialize today */
-						historyStatsByDay.put( todayDateKey,  createNewSummaryData());
-
-					}
-
-					today = historyStatsByDay.get( sdfYYYYMMDD.format( date ) );
-
-
-					if ( today.containsKey( channel ) ) {
-						if ( today.get(channel).mode == Modes.AVERAGE ) {
-							Double s = pairs.getValue().getMean();
-							Double d;
-							try {
-								d=new Double(s);
-								today.get(channel).addValue(d);
-							} catch ( NumberFormatException e ) {
-								System.err.println("# error ingesting s=" + s + " as a double. Giving up");
-								return;
-							}
-						} else if ( today.get(channel).mode == Modes.SAMPLE ) {
-							Double s = pairs.getValue().sampleValue;
-							today.get(channel).addValue(s);	
+						Double s = pairs.getValue().getMean();
+						Double d;
+						try {
+							d=new Double(s);
+							dayStats.get( channel ).addValue( d );
+						} catch ( NumberFormatException e ) {
+							System.err.println("# error ingesting s=" + s + " as a double. Giving up");
+							return;
 						}
+
 					}
 
+					if ( historyStatsByDayReady ) {
+						String todayDateKey = sdfYYYYMMDD.format( date );
 
+						if ( ! historyStatsByDay.containsKey( todayDateKey ) ) {
+							/* we don't have today in history ... initialize today */
+							historyStatsByDay.put( todayDateKey,  createNewSummaryData());
+
+						}
+
+						today = historyStatsByDay.get( sdfYYYYMMDD.format( date ) );
+
+
+						if ( today.containsKey( channel ) ) {
+							if ( today.get(channel).mode == Modes.AVERAGE ) {
+								Double s = pairs.getValue().getMean();
+								Double d;
+								try {
+									d=new Double(s);
+									today.get(channel).addValue(d);
+								} catch ( NumberFormatException e ) {
+									System.err.println("# error ingesting s=" + s + " as a double. Giving up");
+									return;
+								}
+							} else if ( today.get(channel).mode == Modes.SAMPLE ) {
+								Double s = pairs.getValue().sampleValue;
+								today.get(channel).addValue(s);	
+							}
+						}
+
+					}
 
 				}
 			}
@@ -395,7 +396,7 @@ public class DataGS implements ChannelData, JSONData {
 						j++;
 					}
 				}
-				
+
 				//System.err.println("-------------------> headerTokens");
 				for ( int i=0 ; i<headerTokens.length ; i++ ) {
 					System.err.println("# headerTokens[" + i + "] is " + headerTokens[i] );
@@ -425,7 +426,7 @@ public class DataGS implements ChannelData, JSONData {
 				try {
 					/* get rid of anything besides numbers and decimal point */
 					String v=csvRecord.get(fieldsToParse[i]);
-					
+
 					/* skip parsing if we have null or empty string */
 					if ( null == v || 0 == v.length() || !NumberUtils.isNumber(v) )
 						continue;
