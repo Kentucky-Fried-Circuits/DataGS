@@ -169,13 +169,22 @@ public class HistoryPointExport {
 					}
 
 				/* print the key if the description isn't available */
-				if ( ! chanDesc.containsKey(pairs.getKey()) || 0 == chanDesc.get( pairs.getKey() ).description.length() ) {
+				
+				if ( chanDesc.containsKey(pairs.getKey()) ) {
+					if ( ! chanDesc.containsKey(pairs.getKey()) || 0 == chanDesc.get( pairs.getKey() ).description.length() ) {
+						header = StringEscapeUtils.escapeCsv(pairs.getKey());
+						token = StringEscapeUtils.escapeCsv(pairs.getKey());
+						System.out.println("no desc: "+header);
+					} else {
+						header = StringEscapeUtils.escapeCsv( chanDesc.get( pairs.getKey() ).description);
+						token = StringEscapeUtils.escapeCsv(pairs.getKey());
+						System.out.println("good: "+header);
+					}
+				} else {
+
 					header = StringEscapeUtils.escapeCsv(pairs.getKey());
 					token = StringEscapeUtils.escapeCsv(pairs.getKey());
-				} else {
-					header = StringEscapeUtils.escapeCsv( chanDesc.get( pairs.getKey() ).description);
-					token = StringEscapeUtils.escapeCsv(pairs.getKey());
-
+					System.out.println("doesn't: "+header);
 				}
 				/* a new array must be made everytime otherwise the treemap just holds a bunch of references to the same array */
 				String[] lines={"","",""};
