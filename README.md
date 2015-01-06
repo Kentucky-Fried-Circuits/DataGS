@@ -3,6 +3,33 @@
 ## Summary
 Gather data from TCP/IP (simple ASCII format) or serial port (WorldData format) and process and make available
 
+## Contents
+[Channel Description File Format](#chanDescFileFormat)
+[Data served via HTTP](#dataServed)
+* [/data/json.html](#jsonhtml)
+* [/data/history/YYYYMMDD.csv or /data/history/YYYYMMDD.txt](#yyyyjson)
+* [/data/channels.json or /data/channels.dat](#channeljson)
+* [/data/now.json or /data/now.dat](#nowjson)
+* [/data/recent.json or /data/recent.dat](#recentjson)
+* [/data/historyFiles.json or /data/historyFiles.dat](#histfilejson)
+* [/data/historyByDay.json or /data/historyByDay.dat](#histdayjson)
+* [/data/dayStats.json or /data/dayStats.dat](#daystatjson)
+* [/data/hostinfo.json or /data/hostinfo.dat](#hostjson)
+
+###not linked yet
+[Command line arguments](#)
+[MySQL related arguments](#)
+[SQLite3 related arguments](#)
+[DataGSCollector related arguments](#)
+[Serial port data source arguments](#)
+[Data output (JSON) arguments](#)
+[Local Logging arguments](#)
+[Starting the software](#)
+[Examples](#)
+[Enable remote profile via JMXREMOTE](#)
+[Specifying available serial ports under non-Windows operating systems](#)
+[Setting the classpath](#)
+
 <a name="chanDescFileFormat"></a>
 ## Channel Description File Format
 The channel description file is in JSON format. It specifies channel names, descriptions, and other attributes for
@@ -53,17 +80,20 @@ Note that channel id's will be single character letters for data received via TC
 names are possible for data that comes in via WorldDataProcessor via reflection.
 
 
-
+<a name="dataServed"></a>
 ## Data served via HTTP
 
+<a name="jsonhtml"></a>
 ### /data/json.html
 Simple page with links to the different files. Read from file system. For information on parsing JSON in multiple programming and scripting languages, visit [JSON.org](http://www.json.org/)
 
+<a name="yyyyjson"></a>
 ### /data/history/YYYYMMDD.csv or /data/history/YYYYMMDD.txt 
 Logged history file from file system. Return as MIME type `test/csv` if the URI ends with `.csv` or as 
 `text/plain` if the URI ends with `.txt`. 
 History files are stored in the log local directory which is set with the -w argument
 
+<a name="channeljson"></a>
 ### /data/channels.json or /data/channels.dat
 Channel description map as loaded from filesystem. File system location is set with the -c argument.
 
