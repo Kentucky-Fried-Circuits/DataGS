@@ -35,6 +35,7 @@ Example file with one element:
 * ```"units"``` is the metric in which the channel's data is measured e.i. MPH, kWh, or %
 * ```"precision"``` is the number of digits the data is displayed with. Positive numbers indicate how many decimal points to round to and negative numbers indicates what digit to round to e.i.
 | number | precision | result |
+|---|---|---|
 | 12.2345 | 0 | 12 |
 | 12.2345 | 2 | 12.23 |
 | 12.2345 | -1 | 10 |
