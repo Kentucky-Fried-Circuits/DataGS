@@ -29,7 +29,23 @@ Example file with one element:
 }
 ```
 
-mode can be ```"SAMPLE"``` or ```"AVERAGE"```.
+* ```"id"``` is the channel id or name.
+* ```"title"``` is used as the column name in the historical data table
+* ```"description"``` is used as the column name in the log file
+* ```"units"``` is the metric in which the channel's data is measured e.i. MPH, kWh, or %
+* ```"precision"``` is the number of digits the data is displayed with. Positive numbers indicate how many decimal points to round to and negative numbers indicates what digit to round to e.i.
+| number | precision | result |
+| 12.2345 | 0 | 12 |
+| 12.2345 | 2 | 12.23 |
+| 12.2345 | -1 | 10 |
+
+* ```"sortOrder"``` is the order in which the data appears in the log file. The channel with the lowest number is first, then the next lowest number is second, etc...
+* ```"dayStats"```indicates if the channel's data will be included in the dayStats.json file.
+* ```"log"``` indicates if this channel will have its data saved in log files.
+* ```"historyByDay"``` indicates if the channel's data will be included in the historyByDay.json file.
+* ```"recent"``` indicates if the channel's data will be included in the recent.json file.
+* ```"mode"``` can be  ```"SAMPLE"``` or ```"AVERAGE"``` and indicates how the channel's data will be presented in the now.json file.
+
 
 Note that channel id's will be single character letters for data received via TCP/IP / ASCII. Longer channel
 names are possible for data that comes in via WorldDataProcessor via reflection.
