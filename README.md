@@ -3,8 +3,8 @@
 ## Summary
 Gather data from TCP/IP (simple ASCII format) or serial port (WorldData format) and process and make available
 
-## Channel Description File Format
 <a name="chanDescFileFormat"></a>
+## Channel Description File Format
 The channel description file is in JSON format. It specifies channel names, descriptions, and other attributes for
 a channel.
 
@@ -42,11 +42,11 @@ Example file with one element:
 | 12.2345 | -1 | 10 |
 
 * ```"sortOrder"``` is the order in which the data appears in the log file. The channel with the lowest number is first, then the next lowest number is second, etc...
-* ```"dayStats"```indicates if the channel's data will be included in the dayStats.json file.
+* ```"dayStats"```indicates if the channel's data will be included in the [dayStats.json](#daystatjson) file.
 * ```"log"``` indicates if this channel will have its data saved in log files.
-* ```"historyByDay"``` indicates if the channel's data will be included in the historyByDay.json file.
-* ```"recent"``` indicates if the channel's data will be included in the recent.json file.
-* ```"mode"``` can be  ```"SAMPLE"``` or ```"AVERAGE"``` and indicates how the channel's data will be presented in the now.json file.
+* ```"historyByDay"``` indicates if the channel's data will be included in the [historyByDay.json](#histdayjson) file.
+* ```"recent"``` indicates if the channel's data will be included in the [recent.json](#recentjson) file.
+* ```"mode"``` can be  ```"SAMPLE"``` or ```"AVERAGE"``` and indicates how the channel's data will be presented in the [now.json](#nowjson) file.
 
 
 Note that channel id's will be single character letters for data received via TCP/IP / ASCII. Longer channel
@@ -71,6 +71,7 @@ For example file, see [Channel Description File Format](#chanDescFileFormat).
 
 Returned as `application/json` if URI ends with `.json` or as `text/plain` if the URI ends with `.dat`
 
+<a name="nowjson"></a>
 ### /data/now.json or /data/now.dat
 Interval statistics or sample of the last batch of data processed. Data is process at interval
 specified by the -i argument.
@@ -114,6 +115,7 @@ Both modes contain ```"time"``` which is a unix timestamp representation of when
 
 Returned as `application/json` if URI ends with `.json` or as `text/plain` if the URI ends with `.dat`
 
+<a name="recentjson"></a>
 ### /data/recent.json or /data/recent.dat
 Time series data covering from now to the number of hours specified by the -H argument.
 
@@ -140,6 +142,7 @@ Example file :
 
 Returned as `application/json` if URI ends with `.json` or as `text/plain` if the URI ends with `.dat`
 
+<a name="histfilejson"></a>
 ### /data/historyFiles.json or /data/historyFiles.dat
 Listing of the log files available in the log local directory.
 
@@ -159,6 +162,7 @@ Example file :
 
 Returned as `application/json` if URI ends with `.json` or as `text/plain` if the URI ends with `.dat`
 
+<a name="histdayjson"></a>
 ### /data/historyByDay.json or /data/historyByDay.dat
 Daily statistics that summarize the values of all of the files in the log local directory. 
 Statistics are generated on all of the columns that have `history` set to true in the channel description map.
@@ -205,8 +209,8 @@ will return an HTTP response of `NO CONTENT` (HTTP result code 204).
 
 Returned as `application/json` if URI ends with `.json` or as `text/plain` if the URI ends with `.dat`
 
+<a name="daystatjson"></a>
 ### /data/dayStats.json or /data/dayStats.dat
-
 The summarised data from the last 24 hours.
 Statistics are generated on all of the columns that have `dayStats` set to true in the channel description map.
 
@@ -232,8 +236,8 @@ Example file:
 
 Returned as `application/json` if URI ends with `.json` or as `text/plain` if the URI ends with `.dat`
 
+<a name="hostjson"></a>
 ### /data/hostinfo.json or /data/hostinfo.dat
-
 Hostname, firmware date, and the drives of the server.
 
 Example file:
