@@ -31,7 +31,7 @@
    * [Specifying available serial ports under non-Windows operating systems](#serialnonwindows)
    * [Setting the classpath](#classpath)
 
-6. ###[MagWeb Pro Website](#website)
+6. ###[Website](#website)
    * [Current Conditions](#conditions)
    * [Current Settings](#settings)
    * [Historical Data](#historical)
@@ -424,9 +424,8 @@ Java needs to have the current directory, the bin directory, and the name of all
 argument. The program itself is then started with `packageName.className`. Or `dataGS.DataGS`.
 
 <a name="website"></a>
-## MagWeb Pro Website
-
-The website included in the /www/ directory was created to display information recieved from a magnum inverter. The website includes pages for Current Conditions, Current Settings, and Historical Data. These webpages use ajax to retrieve data from the json pages created by DataGS.
+## Website
+DataGS has a built in web server. The website included in the /www/ directory was created to display information recieved from a magnum inverter. The website includes pages for Current Conditions, Current Settings, and Historical Data. These webpages use ajax to retrieve data from the json pages created by DataGS.
 
 <a name="conditions"></a>
 ### Current Conditions
@@ -434,7 +433,7 @@ The Current Conditions page displays current data as well as summarized data fro
 
 <a name="settings"></a>
 ### Current Settings
-The Current Settings page displays the current settings of devices connected to the Magnum network, such as: inverter settings, remote settings, Automatic Generator Start settings, battery monitor settings, MagWeb Pro firmware date, and the MagWeb firmware date.
+The Current Settings page displays the current settings of devices connected to the Magnum network, such as: inverter settings, remote settings, Automatic Generator Start settings, battery monitor settings.
 
 <a name="historical"></a>
 ### Historical Data
