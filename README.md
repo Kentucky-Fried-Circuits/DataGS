@@ -4,7 +4,7 @@
 
 1. ###[Summary]()
 
-2. ###[Channel Description File Format](chanDescFileFormat)
+2. ###[Channel Description File Format](#chanDescFileFormat)
 
 3. ###[Data served via HTTP](#dataServed)
    * [/data/json.html](#jsonhtml)
