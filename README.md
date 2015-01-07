@@ -2,9 +2,9 @@
 
 ## Contents
 
-1. ###[Summary](##Summary)
+1. ###[Summary](#sum)
 
-2. ###[Channel Description File Format](#Channel-Description-File-Format)
+2. ###[Channel Description File Format](#chanDescFileFormat)
 
 3. ###[Data served via HTTP](#dataServed)
    * [/data/json.html](#jsonhtml)
@@ -40,7 +40,7 @@
 ## Summary
 Gather data from TCP/IP (simple ASCII format) or serial port (WorldData format) and process and make available
 
-
+<a name="chanDescFileFormat"></a>
 ## Channel Description File Format
 The channel description file is in JSON format. It specifies channel names, descriptions, and other attributes for
 a channel.
