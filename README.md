@@ -145,10 +145,10 @@ If the channel is using the mode ```"SAMPLE"```, the channel data is obtained th
 If the channel is using the mode ```"AVERAGE"```, the channel data is split up between five values: 
 
 * ```"n"``` is the number of data points used to compute these values.
-* ```"avg"``` is the average of the data points recieved within the given interval.
-* ```"min"``` is the minimum value of the data points recieved within the given interval.
-* ```"max"``` is the maximum value of the data points recieved within the given interval.
-* ```"stddev"``` is the standard deviation of the data points recieved within the given interval.
+* ```"avg"``` is the average of the data points received within the given interval.
+* ```"min"``` is the minimum value of the data points received within the given interval.
+* ```"max"``` is the maximum value of the data points received within the given interval.
+* ```"stddev"``` is the standard deviation of the data points received within the given interval.
 
 Please note that ```"sampleValue"``` will always be represented in string format where as the data from ```"AVERAGE"``` is numeric.
 
@@ -240,9 +240,9 @@ Example file:
 
 * ```"day"``` YYYYMMDD representation of the date
 * ```"n"``` is the number of data points used to compute these values.
-* ```"avg"``` is the average of the data points recieved on that day.
-* ```"min"``` is the minimum value of the data points recieved on that day.
-* ```"max"``` is the maximum value of the data points recieved on that day.
+* ```"avg"``` is the average of the data points received on that day.
+* ```"min"``` is the minimum value of the data points received on that day.
+* ```"max"``` is the maximum value of the data points received on that day.
 
 Computing the results is done at startup and then continually updated. If the results aren't yet available, 
 will return an HTTP response of `NO CONTENT` (HTTP result code 204).
@@ -252,7 +252,7 @@ Returned as `application/json` if URI ends with `.json` or as `text/plain` if th
 
 <a name="daystatjson"></a>
 ### /data/dayStats.json or /data/dayStats.dat
-The summarised data from the last 24 hours.
+The summarized data from the last 24 hours.
 Statistics are generated on all of the channels that have `dayStats` set to true in the channel description map.
 
 Example file:
@@ -270,9 +270,9 @@ Example file:
 ```
 
 * ```"n"``` is the number of data points used to compute these values.
-* ```"avg"``` is the average of the data points recieved within 24 hours.
-* ```"min"``` is the minimum value of the data points recieved within 24 hours.
-* ```"max"``` is the maximum value of the data points recieved within 24 hours.
+* ```"avg"``` is the average of the data points received within 24 hours.
+* ```"min"``` is the minimum value of the data points received within 24 hours.
+* ```"max"``` is the maximum value of the data points received within 24 hours.
 
 
 Returned as `application/json` if URI ends with `.json` or as `text/plain` if the URI ends with `.dat`
@@ -310,8 +310,8 @@ Example file:
 ```
 
 * `total` is the total amount of storage the drive has in kilobytes.
-* `used` is the amount of used storage the drive has in kilobyes.
-* `avail` is the amount of available storage the drive has in kilobyes.
+* `used` is the amount of used storage the drive has in kilobytes.
+* `avail` is the amount of available storage the drive has in kilobytes.
 * `readOnly` if true, the drive is read-only. If false, drive is not read-only.
 * `name` is the name of the drive.
 * `type` is the file system or architecture of the drive.
@@ -411,7 +411,7 @@ For example:
 -DSERIAL_PORT_LIST=/dev/ttyUSB0
 ```
 
-Multiple ports can be seperated with a colon. Example:
+Multiple ports can be separated with a colon. Example:
 
 ```
 -DSERIAL_PORT_LIST=/dev/ttyUSB0:/dev/ttyUSB1
@@ -425,7 +425,7 @@ argument. The program itself is then started with `packageName.className`. Or `d
 
 <a name="website"></a>
 ## Website
-DataGS has a built in web server. The website included in the /www/ directory was created to display information recieved from a magnum inverter. The website includes pages for Current Conditions, Current Settings, and Historical Data. These webpages use ajax to retrieve data from the json pages created by DataGS.
+DataGS has a built in web server. The website included in the /www/ directory was created to display information received from a magnum inverter. The website includes pages for Current Conditions, Current Settings, and Historical Data. These webpages use ajax to retrieve data from the json pages created by DataGS.
 
 <a name="conditions"></a>
 ### Current Conditions
