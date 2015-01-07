@@ -41,7 +41,7 @@ The channel description file is in JSON format. It specifies channel names, desc
 a channel.
 
 Example file with one element:
-```
+```javascript
 {
 	"data": [
         {
@@ -113,7 +113,7 @@ specified by the -i argument.
 The two modes, ```"SAMPLE"``` and ```"AVERAGE"```, change how the data for the channel is presented. 
 
 Example file with both modes present:
-```
+```javascript
 {
 	data: [
 		{
@@ -155,7 +155,7 @@ Returned as `application/json` if URI ends with `.json` or as `text/plain` if th
 Time series data covering from now to the number of hours specified by the -H argument.
 
 Example file :
-```
+```javascript
 {
 	recent: [
 		{
@@ -182,7 +182,7 @@ Returned as `application/json` if URI ends with `.json` or as `text/plain` if th
 Listing of the log files available in the log local directory.
 
 Example file :
-```
+```javascript
 {
 	history_files: {
 		files: [
@@ -203,7 +203,7 @@ Daily statistics that summarize the values of all of the files in the log local 
 Statistics are generated on all of the columns that have `history` set to true in the channel description map.
 
 Example file:
-```
+```javascript
 {
 	summary_stats: [
 		{
@@ -250,7 +250,7 @@ The summarised data from the last 24 hours.
 Statistics are generated on all of the columns that have `dayStats` set to true in the channel description map.
 
 Example file:
-```
+```javascript
 {
 	dayStats: {
 		i_ac_volts_out: {
@@ -276,7 +276,7 @@ Returned as `application/json` if URI ends with `.json` or as `text/plain` if th
 Hostname, firmware date, and the drives of the server.
 
 Example file:
-```
+```javascript
 {
 	hostname: "A3432",
 	firmware_date: "2014-11-19",
