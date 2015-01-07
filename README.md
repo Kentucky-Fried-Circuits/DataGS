@@ -106,7 +106,7 @@ Simple page with links to the different files. Read from file system. For inform
 <a name="nowjson"></a>
 ### /data/now.json or /data/now.dat
 Interval statistics or sample of the last batch of data processed. Data is process at interval
-specified by the [`-i`](#collectorarg) argument.
+specified by the [`-i`](#collectorarg) argument. This file is the primary way of getting current data.
 The two modes, ```"SAMPLE"``` and ```"AVERAGE"```, change how the data for the channel is presented. 
 
 Example file with both modes present:
@@ -163,7 +163,7 @@ CSV files can be opened in most spread sheet applications such as Microsoft Exce
 
 Logged history file from file system. Return as MIME type `test/csv` if the URI ends with `.csv` or as 
 `text/plain` if the URI ends with `.txt`. 
-History files are stored in the log local directory which is set with the [`-w`](#collectorarg) argument
+History files are stored in the log local directory which is set with the [`-w`](#logarg) argument
 
 <a name="channeljson"></a>
 ### /data/channels.json or /data/channels.dat
@@ -269,7 +269,7 @@ Returned as `application/json` if URI ends with `.json` or as `text/plain` if th
 
 <a name="daystatjson"></a>
 ### /data/dayStats.json or /data/dayStats.dat
-The summarized data covering from now to the number of hours specified by the [`-H`](#collectorarg) argument.
+The summarized data covering from now to the number of hours specified by the [`-H`](#outputarg) argument.
 Statistics are generated on all of the channels that have `dayStats` set to true in the channel description map.
 
 Example file:
@@ -371,7 +371,7 @@ Returned as `application/json` if URI ends with `.json` or as `text/plain` if th
 |---|---|---|---|
 | b | http-document-root | true | webserver document root directory |
 | j | http-port | true | webserver port, 0 to disable |
-| h | json-history-hours | true | hours of history data to make available, 0 to disable |
+| H | json-history-hours | true | hours of history data to make available, 0 to disable |
 
 
 <a name="logarg"></a>
