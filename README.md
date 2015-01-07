@@ -64,8 +64,8 @@ Example file with one element:
 * ```"id"``` is the channel id or name.
 * ```"title"``` is used as the column name in the historical data table
 * ```"description"``` is used as the column name in the log file
-* ```"units"``` is the metric in which the channel's data is measured e.i. MPH, kWh, or %
-* ```"precision"``` is the number of digits the data is displayed with. Positive numbers indicate how many decimal points to round to and negative numbers indicates what digit to round to e.i.
+* ```"units"``` is the metric in which the channel's data is measured. For example: MPH, kWh, or %
+* ```"precision"``` is the number of digits the data is displayed with. Positive numbers indicate how many decimal points to round to and negative numbers indicates what digit to round to. For example:
 
 | number | precision | result |
 |---|---|---|
