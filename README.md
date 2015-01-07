@@ -18,8 +18,8 @@
    * [/data/hostinfo.json or /data/hostinfo.dat](#hostjson)
 
 4. ###[Command line arguments](#cmdarg)
-   * [MySQL related arguments](#mysqlarg)
-   * [SQLite3 related arguments](#sqlitearg)
+ <!--  * [MySQL related arguments](#mysqlarg)
+   * [SQLite3 related arguments](#sqlitearg) -->
    * [DataGSCollector related arguments](#collectorarg)
    * [Serial port data source arguments](#serialarg)
    * [Data output (JSON) arguments](#outputarg)
@@ -321,7 +321,7 @@ Returned as `application/json` if URI ends with `.json` or as `text/plain` if th
 
 <a name="cmdarg"></a>
 ## Command line arguments
-
+<!--
 <a name="mysqlarg"></a>
 ### MySQL related arguments
 ```
@@ -337,7 +337,7 @@ options.addOption("u", "user", true, "MySQL username");
 options.addOption("s", "SQLite-URL",true,"SQLite URL (e.g. DataGS.db");
 options.addOption("S", "SQLite-proto-URL",true,"SQLite prototype URL (e.g. DataGSProto.db");
 ```
-
+-->
 <a name="collectorarg"></a>
 ### DataGSCollector related arguments
 ```
