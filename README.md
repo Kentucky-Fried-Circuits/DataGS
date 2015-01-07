@@ -4,7 +4,7 @@
 
 1. ###[Summary](##Summary)
 
-2. ###[Channel Description File Format](#Channel Description File Format)
+2. ###[Channel Description File Format](#Channel-Description-File-Format)
 
 3. ###[Data served via HTTP](#dataServed)
    * [/data/json.html](#jsonhtml)
@@ -37,7 +37,7 @@
    * [Historical Data](#historical)
 
 <a name="sum"></a>
-##Summary
+## Summary
 Gather data from TCP/IP (simple ASCII format) or serial port (WorldData format) and process and make available
 
 
