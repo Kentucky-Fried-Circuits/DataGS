@@ -1,9 +1,8 @@
 # DataGS
 
-## Summary
-Gather data from TCP/IP (simple ASCII format) or serial port (WorldData format) and process and make available
-
 ## Contents
+
+###[Summary](#sum)
 
 ###[Channel Description File Format](#chanDescFileFormat)
 
@@ -25,12 +24,16 @@ Gather data from TCP/IP (simple ASCII format) or serial port (WorldData format) 
 * [Serial port data source arguments](#serialarg)
 * [Data output (JSON) arguments](#outputarg)
 * [Local Logging arguments](#logarg)
-
+ 
 ###[Starting the software](#startsoft)
 * [Examples](#startex)
 * [Enable remote profile via JMXREMOTE](#jmx)
 * [Specifying available serial ports under non-Windows operating systems](#serialnonwindows)
 * [Setting the classpath](#classpath)
+
+<a name="sum"></a>
+## Summary
+Gather data from TCP/IP (simple ASCII format) or serial port (WorldData format) and process and make available
 
 <a name="chanDescFileFormat"></a>
 ## Channel Description File Format
