@@ -71,16 +71,16 @@ Example file with one element:
 			* ex: MPH, kWh, or %
 * ```"precision"``` is the number of digits the data is displayed with. Positive numbers indicate how many decimal points to round to and negative numbers indicates what digit to round to.  Data type: ```Integer```
 	
-	ex:
-	| number | precision | result |
-	|---|---|---|
-	| 12.2345 | 0 | 12 |
-	| 12.5345 | 0 | 13 |
-	| 12.2345 | 2 | 12.23 |
-	| 12.2355 | 2 | 12.24 |
-	| 12.2345 | -1 | 10 |
-	| 15.2345 | -1 | 20 |
-	| 5.2345 | -3 | 0 |
+ex:
+| number | precision | result |
+|---|---|---|
+| 12.2345 | 0 | 12 |
+| 12.5345 | 0 | 13 |
+| 12.2345 | 2 | 12.23 |
+| 12.2355 | 2 | 12.24 |
+| 12.2345 | -1 | 10 |
+| 15.2345 | -1 | 20 |
+| 5.2345 | -3 | 0 |
 	
 
 * ```"sortOrder"``` is the order in which the data appears in the log file. The channel with the lowest number is first, then the next lowest number is second, etc... Data type: ```Integer```
