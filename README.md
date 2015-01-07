@@ -377,7 +377,6 @@ options.addOption("w", "loglocal-directory", true, "directory for logging csv fi
 ```
 #!/bin/bash
 cd /home/aprs/DataGS
-# for remote profiling and debugging
 java 
 	-DSERIAL_PORT_LIST=/dev/ttyAMA0 
 	-cp .:jars:bin:jars/commons-cli-1.2.jar:jars/commons-lang3-3.3.2.jar:jars/commons-math3-3.3.jar:jars/gson-2.3.jar:jars/mysql-connector-java-5.1.7-bin.jar:jars/commons-collections4-4.0.jar:jars/jspComm.jar:jars/Serialio.jar:jars/json-lib-2.4-jdk15.jar:jars/commons-io-2.4.jar:jars/commons-csv-1.0.jar 
