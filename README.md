@@ -152,7 +152,7 @@ If the channel is using the mode ```"AVERAGE"```, the channel data is split up b
 
 Please note that ```"sampleValue"``` will always be represented in string format where as the data from ```"AVERAGE"``` is numeric.
 
-Both modes contain ```"time"``` which is a unix timestamp representation of when that data was generated.
+Both modes contain ```"time"``` which is a UNIX timestamp representation of when that data was generated.
 
 Returned as `application/json` if URI ends with `.json` or as `text/plain` if the URI ends with `.dat`
 
@@ -178,7 +178,7 @@ Example file :
 ```
 *CAUTION:* This file will contain every data point recorded for the specified channels from the last X amount of hours meaning this has the potential to use up a lot of memory. For example, Let's say we have an interval ( argument ```i``` ) of 10000 milliseconds ( 10 seconds ) and json-history-hours ( argument ```H``` ) of 24 hours. For every channel that contains ```"recent": "true"``` in this scenario will add 8640 data points to the file. Make sure to be mindful of your device's specs when configuring these settings. If you are looking to create a graph spanning a period of time, use this. However, if you just want 24 hour summary data, consider using dayStats instead.
 
-* ```"time"``` is a unix timestamp representation of when that data was generated.
+* ```"time"``` is a UNIX timestamp representation of when that data was generated.
 * ```"data"``` is an object containing key-value pairs of channels that contain ```"recent": "true"``` in it's channel description.
 
 Returned as `application/json` if URI ends with `.json` or as `text/plain` if the URI ends with `.dat`
@@ -425,7 +425,7 @@ argument. The program itself is then started with `packageName.className`. Or `d
 
 <a name="website"></a>
 ## Website
-DataGS has a built in web server. The website included in the /www/ directory was created to display information received from a magnum inverter. The website includes pages for Current Conditions, Current Settings, and Historical Data. These webpages use ajax to retrieve data from the json pages created by DataGS.
+DataGS has a built in web server. The website included in the /www/ directory was created to display information received from a magnum inverter. The website includes pages for Current Conditions, Current Settings, and Historical Data. These web pages use Ajax to retrieve data from the json pages created by DataGS.
 
 <a name="conditions"></a>
 ### Current Conditions
