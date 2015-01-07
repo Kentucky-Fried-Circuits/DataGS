@@ -145,6 +145,7 @@ If the channel is using the mode ```"AVERAGE"```, the channel data is split up b
 * ```"max"``` is the maximum value of the data points recieved within the given interval.
 * ```"stddev"``` is the standard deviation of the data points recieved within the given interval.
 
+Please note that ```"sampleValue"``` will always be represented in string format where as the data from ```"AVERAGE"``` is numeric.
 
 Both modes contain ```"time"``` which is a unix timestamp representation of when that data was generated.
 
@@ -200,7 +201,7 @@ Returned as `application/json` if URI ends with `.json` or as `text/plain` if th
 <a name="histdayjson"></a>
 ### /data/historyByDay.json or /data/historyByDay.dat
 Daily statistics that summarize the values of all of the files in the log local directory. 
-Statistics are generated on all of the columns that have `history` set to true in the channel description map.
+Statistics are generated on all of the channels that have `history` set to true in the channel description map.
 
 Example file:
 ```javascript
@@ -247,7 +248,7 @@ Returned as `application/json` if URI ends with `.json` or as `text/plain` if th
 <a name="daystatjson"></a>
 ### /data/dayStats.json or /data/dayStats.dat
 The summarised data from the last 24 hours.
-Statistics are generated on all of the columns that have `dayStats` set to true in the channel description map.
+Statistics are generated on all of the channels that have `dayStats` set to true in the channel description map.
 
 Example file:
 ```javascript
@@ -303,13 +304,13 @@ Example file:
 }
 ```
 
-* `total` the total amount of storage the drive has in kilobytes.
-* `used` the amount of used storage the drive has in kilobyes.
-* `avail` the amount of available storage the drive has in kilobyes.
+* `total` is the total amount of storage the drive has in kilobytes.
+* `used` is the amount of used storage the drive has in kilobyes.
+* `avail` is the amount of available storage the drive has in kilobyes.
 * `readOnly` if true, the drive is read-only. If false, drive is not read-only.
-* `name` the name of the drive.
-* `type` the file system or architecture of the drive.
-* `description` the location of the file with a description.
+* `name` is the name of the drive.
+* `type` is the file system or architecture of the drive.
+* `description` is the location of the file with a description.
 
 Returned as `application/json` if URI ends with `.json` or as `text/plain` if the URI ends with `.dat`
 
