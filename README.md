@@ -31,6 +31,11 @@
    * [Specifying available serial ports under non-Windows operating systems](#serialnonwindows)
    * [Setting the classpath](#classpath)
 
+6. ###[MagWeb Pro Website](#website)
+   * [Current Conditions](#conditions)
+   * [Current Settings](#settings)
+   * [Historical Data](#historical)
+
 <a name="sum"></a>
 ## Summary
 Gather data from TCP/IP (simple ASCII format) or serial port (WorldData format) and process and make available
@@ -417,3 +422,23 @@ Multiple ports can be seperated with a colon. Example:
 
 Java needs to have the current directory, the bin directory, and the name of all the requires JAR files in the `-cp` 
 argument. The program itself is then started with `packageName.className`. Or `dataGS.DataGS`.
+
+<a name="website"></a>
+## MagWeb Pro Website
+
+The website included in the /www/ directory was created to display information recieved from a magnum inverter. The website includes pages for Current Conditions, Current Settings, and Historical Data. These webpages use ajax to retrieve data from the json pages created by DataGS.
+
+<a name="conditions"></a>
+### Current Conditions
+The Current Conditions page displays current data as well as summarized data from the last 24 hours. The data displayed includes data from the battery monitor (example: ME-BMK), Magnum inverter, and Auto Generator Start. Also included on the Current Conditions page is an alarm feature that warns the user of any faults that may occur with the inverter by playing an alarm sound and displaying an error message on the screen.
+
+<a name="settings"></a>
+### Current Settings
+The Current Settings page displays the current settings of devices connected to the Magnum network, such as: inverter settings, remote settings, Automatic Generator Start settings, battery monitor settings, MagWeb Pro firmware date, and the MagWeb firmware date.
+
+<a name="historical"></a>
+### Historical Data
+The Historical Data page allows the user to view data by month. The user may select up to 6 months to view on the same page. The charts display the average, min, and max values over each month for the battery state of charge, renewable watts, battery watts, load watts, and generator watts. Underneath the charts is the same data represented in a table as well as links to the raw data in both text and csv format.
+
+
+
