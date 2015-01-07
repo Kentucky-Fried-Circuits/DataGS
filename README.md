@@ -5,7 +5,8 @@ Gather data from TCP/IP (simple ASCII format) or serial port (WorldData format) 
 
 ## Contents
 [Channel Description File Format](#chanDescFileFormat)
-[Data served via HTTP](#dataServed)
+
+###[Data served via HTTP](#dataServed)
 * [/data/json.html](#jsonhtml)
 * [/data/history/YYYYMMDD.csv or /data/history/YYYYMMDD.txt](#yyyyjson)
 * [/data/channels.json or /data/channels.dat](#channeljson)
@@ -16,19 +17,19 @@ Gather data from TCP/IP (simple ASCII format) or serial port (WorldData format) 
 * [/data/dayStats.json or /data/dayStats.dat](#daystatjson)
 * [/data/hostinfo.json or /data/hostinfo.dat](#hostjson)
 
-###not linked yet
-[Command line arguments](#)
-[MySQL related arguments](#)
-[SQLite3 related arguments](#)
-[DataGSCollector related arguments](#)
-[Serial port data source arguments](#)
-[Data output (JSON) arguments](#)
-[Local Logging arguments](#)
-[Starting the software](#)
-[Examples](#)
-[Enable remote profile via JMXREMOTE](#)
-[Specifying available serial ports under non-Windows operating systems](#)
-[Setting the classpath](#)
+###[Command line arguments](#cmdarg)
+* [MySQL related arguments](#mysqlarg)
+* [SQLite3 related arguments](#sqlitearg)
+* [DataGSCollector related arguments](#collectorarg)
+* [Serial port data source arguments](#serialarg)
+* [Data output (JSON) arguments](#outputarg)
+* [Local Logging arguments](#logarg)
+
+###[Starting the software](#startsoft)
+* [Examples](#startex)
+* [Enable remote profile via JMXREMOTE](#jmx)
+* [Specifying available serial ports under non-Windows operating systems](#serialnonwindows)
+* [Setting the classpath](#classpath)
 
 <a name="chanDescFileFormat"></a>
 ## Channel Description File Format
@@ -308,9 +309,10 @@ Example file:
 
 Returned as `application/json` if URI ends with `.json` or as `text/plain` if the URI ends with `.dat`
 
-
+<a name="cmdarg"></a>
 ## Command line arguments
 
+<a name="mysqlarg"></a>
 ### MySQL related arguments
 ```
 options.addOption("d", "database", true, "MySQL database");
@@ -319,12 +321,14 @@ options.addOption("p", "password", true, "MySQL password");
 options.addOption("u", "user", true, "MySQL username");
 ```
 
+<a name="sqlitearg"></a>
 ### SQLite3 related arguments
 ```
 options.addOption("s", "SQLite-URL",true,"SQLite URL (e.g. DataGS.db");
 options.addOption("S", "SQLite-proto-URL",true,"SQLite prototype URL (e.g. DataGSProto.db");
 ```
 
+<a name="collectorarg"></a>
 ### DataGSCollector related arguments
 ```
 options.addOption("i", "interval", true, "Interval to summarize over (milliseconds)");
@@ -334,12 +338,14 @@ options.addOption("c", "channel-map", true, "Location of channel map JSON file")
 options.addOption("a", "process-all-data",false,"Process all data, even if it isn't in channel map");
 ```
 
+<a name="serialarg"></a>
 ### Serial port data source arguments 
 ```
 options.addOption("r", "serialPortWorldData",true,"Serial Port to listen for worldData packets");
 options.addOption("R", "serialPortWorldDataSpeed",true,"Serial port speed");
 ```
 
+<a name="outputarg"></a>
 ### Data output (JSON) arguments
 ```
 options.addOption("b", "http-document-root", true, "webserver document root directory");
@@ -347,13 +353,16 @@ options.addOption("j", "http-port", true, "webserver port, 0 to disable");
 options.addOption("H", "json-history-hours", true, "hours of history data to make available, 0 to disable");
 ```
 
+<a name="logarg"></a>
 ### Local Logging arguments 
 ```
 options.addOption("w", "loglocal-directory", true, "directory for logging csv files");
 ```
 
+<a name="startsoft"></a>
 ## Starting the software
 
+<a name="startex"></a>
 ### Examples
 ```
 #!/bin/bash
@@ -366,6 +375,7 @@ java
 	-r /dev/ttyAMA0 -R 57600 -a -w /data/logLocal
 ```
 
+<a name="jmx"></a>
 ### Enable remote profile via JMXREMOTE
 ``` 
 -Djava.rmi.server.hostname=192.168.10.201
@@ -379,6 +389,7 @@ Replace `192.168.10.201` with the IP of your public interface. Replace `9010` wi
 
 Use software such as VisualVM (from Oracle) for monitoring
 
+<a name="serialnonwindows"></a>
 ### Specifying available serial ports under non-Windows operating systems
 
 The serialio.com library we use for accessing serial ports doesn't have support for auto-detecting serial ports
@@ -396,6 +407,7 @@ Multiple ports can be seperated with a colon. Example:
 -DSERIAL_PORT_LIST=/dev/ttyUSB0:/dev/ttyUSB1
 ```
 
+<a name="classpath"></a>
 ### Setting the classpath
 
 Java needs to have the current directory, the bin directory, and the name of all the requires JAR files in the `-cp` 
