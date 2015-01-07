@@ -4,7 +4,8 @@
 Gather data from TCP/IP (simple ASCII format) or serial port (WorldData format) and process and make available
 
 ## Contents
-[Channel Description File Format](#chanDescFileFormat)
+
+###[Channel Description File Format](#chanDescFileFormat)
 
 ###[Data served via HTTP](#dataServed)
 * [/data/json.html](#jsonhtml)
