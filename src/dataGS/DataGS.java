@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -41,6 +42,9 @@ import dataGS.ChannelDescription.Modes;
 public class DataGS implements ChannelData, JSONData {
 	private final boolean debug=false;
 
+	protected WorldDataSerialReader ser;
+	protected boolean listening = false;
+	
 	/* database log */
 	private Log log;
 
@@ -101,6 +105,7 @@ public class DataGS implements ChannelData, JSONData {
 	public static final int JSON_DAY_STATS      = 4;
 	public static final int JSON_HOST_INFO      = 5;
 
+	
 
 	/*
 	 * this method is called by our HTTP server to get dynamic data from us
@@ -141,6 +146,7 @@ public class DataGS implements ChannelData, JSONData {
 
 	/* track our connection threads for TCP incoming connections */
 	private void threadMaintenanceTimer() {
+		//System.out.println("threadMainenanceTimer checking");
 		for ( int i=0 ; i<connectionThreads.size(); i++ ) {
 			DataGSServerThread conn=connectionThreads.elementAt(i);
 
@@ -150,19 +156,30 @@ public class DataGS implements ChannelData, JSONData {
 			}
 		}
 	}
+	
+	/* TODO remove this */
+	int crash_me_in=3;
+
 
 	/* take are accumulating samples and publish them */
-	private void dataMaintenanceTimer() {
+	private void dataMaintenanceTimer() throws IOException {
 		long now = System.currentTimeMillis();
 
 		//		System.err.println("######### dataMaintenanceTimer() #########");
-
-
-
+		
 		synchronized (data) {
 			dataNow.clear();
 			dataRecent.startPoint(now);
-
+			
+			/* TODO remove this */
+			if ( crash_me_in == 0 ){
+				System.out.println("see ya!!");
+				crash_me_in = Integer.parseInt( "crash" );
+			} else {
+				
+				crash_me_in--;
+				System.out.println(crash_me_in);
+			}
 			/* get today's syncSumData from summaryStatsFromHistory if ready */
 			Map<String, SynchronizedSummaryData> today;
 			date = new Date();
@@ -777,21 +794,31 @@ public class DataGS implements ChannelData, JSONData {
 		/* timer to periodically clear thread listing */
 		threadMaintenanceTimer = new javax.swing.Timer(5000, new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				threadMaintenanceTimer();
+				try{
+					threadMaintenanceTimer();
+				} catch ( Exception ee ) {
+					ee.printStackTrace();
+					listening = false;
+					ser.close();
+				}
 			}
 		});
 		threadMaintenanceTimer.start();
 
+		
 
 		/* serial port for WorldData packets */
 		if ( "" != serialPortWorldData ) {
 			System.err.println("# Listening for WorldData packets on " + serialPortWorldData);
 			System.err.flush();
 
-			WorldDataSerialReader ser = new WorldDataSerialReader(serialPortWorldData, serialPortWorldDataSpeed);
+			ser = new WorldDataSerialReader(serialPortWorldData, serialPortWorldDataSpeed);
+			ser.setName( "WorldDataSerialReader-"+ serialPortWorldData);
 			WorldDataProcessor worldProcessor = new WorldDataProcessor();
 			worldProcessor.addChannelDataListener(this);
 			ser.addPacketListener(worldProcessor);
+			
+
 		}
 
 
@@ -812,13 +839,13 @@ public class DataGS implements ChannelData, JSONData {
 
 
 		/* timer to periodically handle the data */
-		dataTimer = new javax.swing.Timer(intervalSummary, new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				dataMaintenanceTimer();
-			}
-		});
-		dataTimer.start();
-
+		int delay = 1000; //milliseconds
+		  ActionListener taskPerformer = new ActionListener() {
+		      public void actionPerformed(ActionEvent evt) {
+		          System.out.println("hiccup");
+		      }
+		  };
+		  new Timer(delay, taskPerformer).start();
 
 
 
@@ -844,13 +871,15 @@ public class DataGS implements ChannelData, JSONData {
 
 		/* socket for DataGS packets */
 		ServerSocket serverSocket = null;
-		boolean listening = false;
+		
 
 		if ( 0 != portNumber ) {
 			System.err.println("# Listening on port " + portNumber + " with " + socketTimeout + " second socket timeout");
 			System.err.flush();
 			try {
 				serverSocket = new ServerSocket(portNumber);
+				/* adding a timeout */
+				serverSocket.setSoTimeout( 1000 );
 				listening=true;
 			} catch (IOException e) {
 				System.err.println("# Could not listen on port: " + portNumber);
@@ -866,27 +895,47 @@ public class DataGS implements ChannelData, JSONData {
 			System.err.flush();
 		}
 
+
+		//threadMaintenanceTimer.stop();
+		//dataTimer.stop();
+		//ser.close();
+		
 		/* spin through and accept new connections as quickly as we can ... in DataGS format. */
 		while ( listening ) {
-			Socket socket=serverSocket.accept();
-			/* setup our sockets to send RST as soon as close() is called ... this is the default action */
-			socket.setSoLinger (true, 0);
-
-
-			DataGSServerThread conn = new DataGSServerThread(
-					socket,
-					log,
-					dateFormat,
-					socketTimeout
-					);
-
-			connectionThreads.add(conn);
-			conn.addChannelDataListener(this);
-			conn.start();
-
-			System.err.println("# connectionThreads.size()=" + connectionThreads.size());
+			if (!ser.connected){
+				break;
+			}
+			try{
+				Socket socket=serverSocket.accept();
+				
+				/* setup our sockets to send RST as soon as close() is called ... this is the default action */
+				socket.setSoLinger (true, 0);
+		
+		
+				DataGSServerThread conn = new DataGSServerThread(
+						socket,
+						log,
+						dateFormat,
+						socketTimeout
+						);
+				conn.setName("newConnectionThread");
+				connectionThreads.add(conn);
+				conn.addChannelDataListener(this);
+				conn.start();
+				System.err.println("# connectionThreads.size()=" + connectionThreads.size());
+			} catch (SocketTimeoutException e) {
+			}
 		}
-
+		
+		/* close all connections to gracefully shutdown */ 
+		for ( int i=0 ; i<connectionThreads.size(); i++ ) {
+			DataGSServerThread conn=connectionThreads.elementAt(i);
+			conn.socket.close();
+			/* delete dead threads */
+			if ( ! conn.isAlive() ) {
+				connectionThreads.remove(conn);
+			}
+		}
 
 		if ( null != serverSocket ) {
 			System.err.print ("# DataGS shuting down server socket ... ");

@@ -76,6 +76,7 @@ public class WorldDataSerialReader extends Thread implements SerialPortEventList
 
 
 	/* triggered by a SerialPortEvent ... which is new data being available */
+
 	public void serialEvent(SerialPortEvent event) {
 		if ( SerialPortEvent.DATA_AVAILABLE == event.getEventType() ) {
 			try { 
@@ -87,18 +88,19 @@ public class WorldDataSerialReader extends Thread implements SerialPortEventList
 						e.printStackTrace();
 						return;
 					}
-					/* actually read the character */
+					/* actually read the character */	
 					addChar(c);
 				}
-			} catch ( IOException e ) {
+			} catch ( Exception e ) {
 				e.printStackTrace();
+				this.close();
 			}
 		}
 
 	}
 
 
-	public WorldDataSerialReader(String spName, int spSpeed) {
+	public WorldDataSerialReader(String spName, int spSpeed) throws IOException {
 		buff = new Vector<Integer>();
 		packetListeners = new Vector<WorldDataListener>();
 		lastCharacter=0;
