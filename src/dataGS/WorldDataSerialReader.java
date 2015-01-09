@@ -29,7 +29,7 @@ public class WorldDataSerialReader extends Thread implements SerialPortEventList
 		long now=System.currentTimeMillis();
 		long age=now - lastCharacter;
 
-
+		
 
 		if ( buff.size() > 0 && age > 250 ) {
 			System.err.println("# WorldDataSerialReader clearing buffer (length=" + buff.size() + " age=" + age + ")");
@@ -37,7 +37,8 @@ public class WorldDataSerialReader extends Thread implements SerialPortEventList
 		}
 		lastCharacter=now;
 
-
+		
+		
 		buff.add(c);
 		// System.err.println("# WorldDataSerialReader.addChar was called with character=" + c + " buff.size()=" + buff.size() + " buff.elementAt(buff.size()-1)=" + buff.elementAt(buff.size()-1));
 
@@ -106,7 +107,7 @@ public class WorldDataSerialReader extends Thread implements SerialPortEventList
 		lastCharacter=0;
 
 		link = new LinkSerial(spName,spSpeed);
-
+		
 		if ( null == link || false == link.Connect()) {
 			System.err.println("# Error establishing serial link to device");
 			connected=false;

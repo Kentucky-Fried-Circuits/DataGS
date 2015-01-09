@@ -27,7 +27,7 @@ public class DataGSServerThread extends Thread {
 
 	public DateFormat dateFormat;
 
-
+	
 
 
 	protected Vector<ChannelData> channelDataListeners;
@@ -43,7 +43,7 @@ public class DataGSServerThread extends Thread {
 
 			DateFormat df,
 			int socketTimeout) {
-
+		
 		/* set our thread name */
 		super(socket.getInetAddress().getHostAddress() + ":" + socket.getLocalPort());
 		this.socket = socket;

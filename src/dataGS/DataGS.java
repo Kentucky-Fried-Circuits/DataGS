@@ -157,29 +157,17 @@ public class DataGS implements ChannelData, JSONData {
 		}
 	}
 	
-	/* TODO remove this */
-	int crash_me_in=3;
-
-
 	/* take are accumulating samples and publish them */
-	private void dataMaintenanceTimer() throws IOException {
+	private void dataMaintenanceTimer()  {
 		long now = System.currentTimeMillis();
-
+		
 		//		System.err.println("######### dataMaintenanceTimer() #########");
 		
 		synchronized (data) {
 			dataNow.clear();
 			dataRecent.startPoint(now);
 			
-			/* TODO remove this */
-			if ( crash_me_in == 0 ){
-				System.out.println("see ya!!");
-				crash_me_in = Integer.parseInt( "crash" );
-			} else {
-				
-				crash_me_in--;
-				System.out.println(crash_me_in);
-			}
+	
 			/* get today's syncSumData from summaryStatsFromHistory if ready */
 			Map<String, SynchronizedSummaryData> today;
 			date = new Date();
@@ -803,6 +791,7 @@ public class DataGS implements ChannelData, JSONData {
 				}
 			}
 		});
+		
 		threadMaintenanceTimer.start();
 
 		
@@ -839,13 +828,19 @@ public class DataGS implements ChannelData, JSONData {
 
 
 		/* timer to periodically handle the data */
-		int delay = 1000; //milliseconds
-		  ActionListener taskPerformer = new ActionListener() {
-		      public void actionPerformed(ActionEvent evt) {
-		          System.out.println("hiccup");
-		      }
-		  };
-		  new Timer(delay, taskPerformer).start();
+		dataTimer = new javax.swing.Timer(intervalSummary, new ActionListener()  {
+			public void actionPerformed(ActionEvent e) {
+					try{
+						dataMaintenanceTimer();	
+					} catch ( Exception ee ) {
+						ee.printStackTrace();
+						listening = false;
+						ser.close();
+					}
+			
+			}
+		});
+		dataTimer.start();
 
 
 
@@ -1060,6 +1055,14 @@ public class DataGS implements ChannelData, JSONData {
 		System.err.println("# Major version: 2014-12-29 (Ian's Laptop)");
 		System.err.println("# java.library.path: " + System.getProperty( "java.library.path" ));
 
+		 Thread.setDefaultUncaughtExceptionHandler(
+	                new Thread.UncaughtExceptionHandler() {
+	                    @Override public void uncaughtException(Thread t, Throwable e) {
+	                        System.err.println(t.getName()+": "+e);
+	                        System.exit( -1 );
+	                    }
+	                });
+		
 		DataGS d=new DataGS();
 		d.run(args);
 	}
