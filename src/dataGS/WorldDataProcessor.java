@@ -54,7 +54,7 @@ public class WorldDataProcessor implements WorldDataListener {
 
 	public void WorldDataPacketReceived(int[] rawBuffer) {
 		System.err.print("# WorldDataProcessor received packet @ " + System.currentTimeMillis() + " " );
-
+		
 		switch ( rawBuffer[5] ) {
 		case 25:
 			System.err.println("(MagWeb complete packet) ");

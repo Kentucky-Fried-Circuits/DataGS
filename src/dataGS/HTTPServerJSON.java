@@ -35,6 +35,7 @@ public class HTTPServerJSON extends NanoHTTPD {
 		channelMapFile = c;
 		this.logLocalDirectory = logLocalDirectory;
 		documentRoot=w;
+		
 	}
 
 
