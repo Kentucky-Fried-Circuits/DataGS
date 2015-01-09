@@ -7,7 +7,7 @@ import java.nio.file.FileSystems;
 
 public class HostInfo {	
 	public static String toJSON() {
-		String firmwareDate = "2014-11-19";
+		String firmwareDate = "2015-01-09";
 		StringBuilder sb = new StringBuilder();
 		
 		String hostname="unknown";

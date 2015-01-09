@@ -1052,16 +1052,16 @@ public class DataGS implements ChannelData, JSONData {
 
 	/* Main method */
 	public static void main(String[] args) throws IOException {
-		System.err.println("# Major version: 2014-12-29 (Ian's Laptop)");
+		System.err.println("# Major version: 2015-01-09 (Ian's Laptop)");
 		System.err.println("# java.library.path: " + System.getProperty( "java.library.path" ));
 
-		 Thread.setDefaultUncaughtExceptionHandler(
-	                new Thread.UncaughtExceptionHandler() {
-	                    @Override public void uncaughtException(Thread t, Throwable e) {
-	                        System.err.println(t.getName()+": "+e);
-	                        System.exit( -1 );
-	                    }
-	                });
+		Thread.setDefaultUncaughtExceptionHandler(
+				new Thread.UncaughtExceptionHandler() {
+					@Override public void uncaughtException(Thread t, Throwable e) {
+						System.err.println(t.getName()+": "+e);
+						System.exit( -1 );
+					}
+				});
 		
 		DataGS d=new DataGS();
 		d.run(args);
