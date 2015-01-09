@@ -6,8 +6,8 @@ import java.nio.file.FileStore;
 import java.nio.file.FileSystems;
 
 public class HostInfo {	
-	public static String toJSON() {
-		String firmwareDate = "2015-01-09";
+	public static String toJSON(String firmware_date) {
+		String firmwareDate = firmware_date;
 		StringBuilder sb = new StringBuilder();
 		
 		String hostname="unknown";

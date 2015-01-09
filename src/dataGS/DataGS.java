@@ -42,6 +42,8 @@ import dataGS.ChannelDescription.Modes;
 public class DataGS implements ChannelData, JSONData {
 	private final boolean debug=false;
 
+	private final static String FIRMWARE_DATE = "2015-01-09";
+	
 	protected WorldDataSerialReader ser;
 	protected boolean listening = false;
 	
@@ -135,7 +137,7 @@ public class DataGS implements ChannelData, JSONData {
 				return dataRecent.toDayStatsJSON();				
 			}			
 		} else if ( JSON_HOST_INFO == resource ) {
-			return HostInfo.toJSON();
+			return HostInfo.toJSON(FIRMWARE_DATE);
 		}
 
 
@@ -1052,7 +1054,7 @@ public class DataGS implements ChannelData, JSONData {
 
 	/* Main method */
 	public static void main(String[] args) throws IOException {
-		System.err.println("# Major version: 2015-01-09 (Ian's Laptop)");
+		System.err.println("# Major version: " + FIRMWARE_DATE + " (Ian's Laptop)");
 		System.err.println("# java.library.path: " + System.getProperty( "java.library.path" ));
 
 		Thread.setDefaultUncaughtExceptionHandler(
