@@ -254,6 +254,7 @@
             "sortOrder": 210,
             "dayStats": "true",
             "mode": "AVERAGE",
+            "historyByDay": "true",
             "log": "true"
         },
         {
@@ -1126,7 +1127,7 @@
             "precision": 0,
             "sortOrder": 10,
             "mode": "AVERAGE",
-            "historyByDay": "true",
+            "historyByDay": "false",
             "log": "true"
         },
         {
@@ -1138,7 +1139,7 @@
             "sortOrder": 20,
             "mode": "AVERAGE",
             "log": "true",
-            "historyByDay": "true",
+            "historyByDay": "false",
             "recent": "true"
         },
         {
@@ -1149,9 +1150,9 @@
             "precision": 0,
             "sortOrder": 30,
             "mode": "AVERAGE",
-            "dayStats": "true",
+            "dayStats": "false",
             "log": "true",
-            "historyByDay": "true",
+            "historyByDay": "false",
             "recent": "true"            
         },
         {
@@ -1162,7 +1163,7 @@
             "precision": 0,
             "sortOrder": 40,
             "mode": "AVERAGE",
-            "historyByDay": "true",
+            "historyByDay": "false",
             "log": "true"
         },
         {

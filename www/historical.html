@@ -1,0 +1,369 @@
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta charset="UTF-8">
+		<title>Historical Data</title>
+	
+	<link href="res/css/magnum_style.css" rel="stylesheet" type="text/css" />
+	<link rel="icon" type="images/favicon" href="res/images/favicon.gif" />
+	
+
+
+</head>
+<body style="background-color: #ffffff; margin-top: 0px;">
+<div id="wrapper" style="width: 100%; margin-left: auto; margin-right: auto; background-color:#ffffff;">
+	
+
+		<div class="navBarCon">	
+			<ul  style="border: none; width:100%; border-spacing: 0px;list-style-type: none;">
+			
+				
+					<li>
+						<a  href="/">Current Conditions</a>
+					</li>
+					<li>
+						<a  href="currentSettings.html">Current Settings</a>
+					</li>
+					<li>
+						<a  href="historical.html">Historical Data</a>
+					</li>
+				
+				</ul>
+		</div>
+				
+
+						
+	</div>
+	<div style="text-align: center;">
+		<h1 id="headline">Historical Data</h1>
+				<!--Note: This server will be down for scheduled maintenance from 7PM to 9PM CST today.-->
+
+		<br />
+	</div>
+
+	<script>if (!window.console){ console = {log: function() {}};}//IE doesn't like calls to console if debugger is not open</script>
+	<script type="text/javascript" >function checkAll(field,val) { for (i = 0; i < field.length; i++) field[i].checked = val ; } </script>
+
+	<script type="text/javascript" src="res/js/jquery-1.11.1.min.js"></script>
+	<script type="text/javascript" src="res/js/excanvas.min.js"></script>
+
+
+	<script type="text/javascript" src="res/js/jquery.flot.js"></script>
+	<script type="text/javascript" src="res/js/jquery.flot.threshold.js"></script>
+	<script type="text/javascript" src="res/js/date.js"></script>
+	<script type="text/javascript" src="res/js/magnum.js"></script>
+	<script type="text/javascript" src="res/js/jsonUrls.js"></script>
+	<script>
+
+	var tenMinAvg=[];
+	var now=0;
+	var domain = "magnum-dev.aprsworld.com";
+/*	var root = "http://192.168.10.216:8080/";
+
+	var urlHist = root+"history.json";
+	var urlNow = root+"now.json";
+	var urlFiles = root+"historyFiles.json";
+	var urlSummary = root+"summaryStats.json";
+	var urlChannel = root+"channels.json";
+	var urlLive = root+"live.json";
+*/
+	var isIE = msieversion();
+
+	$(document).ready(function(){
+			
+	
+
+			
+		/* The bar doesn't like to work on ipods */
+		if ( navigator.platform == 'iPhone' || navigator.platform == 'iPod' ) { 
+			$("#bar").hide();
+		
+		};
+		/* window refocus listener  */
+		$(window).focus(function() {
+			//loadData();
+		});
+
+		/* ajax error listener */
+		$( document ).ajaxError(function(event){
+			//$("#connection_warn").show();
+			//$("#connection_warn").append(event);
+	
+			$(".caution").show();
+
+			//$("#cover").hide();
+			//clearInterval(loadTimerVar);
+		});
+		loadHeadline();		
+		getFiles();
+		
+
+	});
+
+
+	/* headline */
+	function loadHeadline(){
+
+		// If internet explorer, use Microsoft XDR
+		if ( isIE ) {
+		    var xdr = new XDomainRequest();
+		    xdr.open("get", urlHostname+"?t="+new Date().getTime());
+		    xdr.onload = function() {
+		       
+			dataS = $.parseJSON(xdr.responseText);
+											$("#headline").html(dataS.hostname+": Historical Data");
+
+							
+			
+		    };
+		    xdr.onerror = function() {
+			//console.log("err");
+			setTimeout(loadHeadline,10000);
+			$(".caution").show();
+
+		    }
+		    xdr.send();
+		} else {
+			/* if not IE we use ajax */
+		  	$.ajaxSetup({ cache: false });
+			$.ajax({
+				type: "GET",
+				url: urlHostname,
+				dataType: "html",
+				crossDomain : true
+			})
+			.done(function( dataS ) {
+
+				dataS = $.parseJSON(dataS);
+											$("#headline").html(dataS.hostname+": Historical Data");
+
+								
+			});
+
+		}
+
+	}
+
+	/* Currently this has no point. It is just holding every object with it's timestamp as the key. */
+	var dataAr = [];
+	/* used to convert the timestamp into something human readable */
+	var date;
+	/* oldestTime is used to create the tableTitle */
+	var oldestTime;
+	var mostRecentTime;
+	var chargeAr=[];
+	var calMonths = ["Not A Month","January","Feburary","March","April","May","June","July","August","September","October","November","December"];
+	
+	function getFiles() {
+		    // If internet explorer, use Microsoft XDR
+		if ( isIE ){
+		    var xdr = new XDomainRequest();
+		    xdr.open("get", urlFiles + "?t="+new Date().getTime());
+		    xdr.onload = function() {
+		       
+			data = $.parseJSON(xdr.responseText);
+			processResponse(data);
+		    };
+		    xdr.onerror = function() {
+			setTimeout(getFiles,10000);
+			$(".caution").show();
+
+		    }
+		    xdr.send();
+		} else {
+			/* if not IE we use ajax */
+		  	$.ajaxSetup({ cache: false });
+			$.ajax({
+				type: "GET",
+				url: urlFiles,
+				dataType: "html",
+				crossDomain : true
+			})
+			.done(function( data ) {
+				data = $.parseJSON(data);
+				processResponse(data);
+			});
+
+		}
+
+	}
+
+	
+	/* only pass data as an object, not as a plain text response */
+	function processResponse(data){
+		var fileAr = data.history_files.files;
+			//console.log(fileAr);
+			var lastYear = "";
+			var lastMonth = "";
+			var years = [];
+			var months = [];
+			/* iterate through all file names */
+			fileAr.sort();
+			fileAr.reverse();
+			for ( var i = 0 ; i < fileAr.length ; i++) {
+				/* check the year */
+				if (!isNaN(fileAr[i].substr(0,4))) {				
+					if (lastYear != fileAr[i].substr(0,4)){
+						/* set to current year */
+						lastYear = fileAr[i].substr(0,4);
+						/* add to the year array */
+						years.push( fileAr[i].substr(0,4) );
+					}
+					/* check the month */
+					//console.log(fileAr[i].substr(4,2));
+					if (lastMonth != fileAr[i].substr(4,2)){
+						//console.log("next month");
+						/* set to current month */
+						lastMonth = fileAr[i].substr(4,2);
+						/* add to the month array */
+						if ( null == months[lastYear] ) 						
+							months[lastYear]=[];					
+						months[lastYear].push( fileAr[i].substr(4,2) );
+					}
+				}
+				
+				
+			}
+			//console.log(months);
+			/* iterate through years array and add headers */
+			var table = "<tr>";
+			for ( var j = 0 ; j < years.length ; j++ ) {
+				table+="<th><span style=\"font-size: 1.5em;\"><input class=\"inputCheck\" type=\"checkbox\" onclick=\"checkYear("+years[j]+")\">"+years[j]+"</span></th>";
+			}
+			table +="</tr>"
+			$("#files").append(table);
+			/* iterate through years again with months to add checkboxes */
+			table = "<tr>";
+			for ( var j = 0 ; j < years.length ; j++ ) {
+				table +="<td style=\"vertical-align: top; padding: 5px 5px 5px 5px;\">";				
+				for ( var i = 0 ; i < months[years[j]].length ; i++ ) {
+					table+="<span style=\"font-size: 1.5em; padding: 5px 5px 5px 5px;\"><input class=\"inputCheck\" type=\"checkbox\" name=\"months[]\" value=\""+years[j]+""+months[years[j]][i]+"\">"+calMonths[parseInt(months[years[j]][i],10)]+"</span><br>";				
+				}
+				table +="</td>";
+			}
+			$("#files").append(table);
+			$("#files").append("<tr><th colspan="+years.length+"><input onclick=\"checkSubmit()\" type=\"button\" value=\"View Historical Data\" ></th></tr>");
+
+	}
+	
+	function setCookie(cname, cvalue, exdays) {
+		var d = new Date();
+		d.setTime(d.getTime() + (exdays*24*60*60*1000));
+		var expires = "expires="+d.toUTCString();
+		document.cookie = cname + "=" + cvalue + "; " + expires;
+	}
+
+	/*function setMonths(){
+		
+		var checkedValues = $('input:checkbox:checked').map(function() {
+		    return this.value;
+		}).get();
+		//console.log(checkedValues);
+		setCookie("months", checkedValues, 30);
+
+	}*/
+
+	function checkYear(year){
+		var months=document.getElementsByName('months[]');
+		var val=true;
+		var found=false;
+		var j=0;
+		/* iterate throught the array of checkboxes until we find the year we are looking for */
+		while ( !found ) {
+			if ( months[j].value.indexOf(year) != -1 ) {
+				found=true;
+				/* check if it is checked or not */
+				if ( months[j].checked ) {
+					val=true;
+				}else{
+					val=false;
+				}
+			}
+			j++;
+		}
+		/* go through the array again and check or uncheck each box containing the year in it's value */
+		for ( var i = 0 ; i < months.length ; i++ ) {
+			if ( months[i].value.indexOf(year) != -1 ) {
+				months[i].checked = !val;
+			}
+			
+		}
+	}
+
+	function hideWarn(){
+		$("#connection_warn").hide();
+	}
+
+
+	/* This script kindly provided by Microsoft */
+	function msieversion(){
+		var ua = window.navigator.userAgent
+		var msie = ua.indexOf ( "MSIE " )
+
+		if ( msie > 0 )      // If Internet Explorer, return version number
+			return parseInt (ua.substring (msie+5, ua.indexOf (".", msie )))
+		else                 // If another browser, return 0
+			return 0
+
+	}
+	
+	function checkSubmit(){
+		var count = 0;
+		var months=document.getElementsByName('months[]');
+		for (var j = 0 ; j < months.length ; j++) {
+			if ( months[j].checked ) count++;
+		}
+		if ( count <= 12 ) {
+			$("#monthF").submit();
+			//console.log(count);
+			
+		} else {
+			alert("Please do not exceed 12 months");
+		}
+	}
+
+	</script>
+
+	<div class="caution" style="display: none;" >
+		<p>
+				MagWeb Pro Not Connected!
+				</p>
+	</div>
+
+
+	<div id="connection_warn" style="text-align: center; width: 800px; margin-right: auto; margin-left: auto; background-color: orange; color: white; display: none;" onclick="hideWarn()">
+			<h1>No Response From Server. Please check to make sure you are still connected to the internet</h1>
+	</div>
+	
+	<!--<table id="historyTable" style="width:60%;margin-right: auto; margin-left: auto;">
+		<tr><th colspan=4 id="tableTitle">Loading...</th></tr>
+		<tr><th>time</th><th>volts</th><th>amps</th><th>charge</th></tr>
+	</table>  
+this goes in the submit input if GET doesn't cut it
+onclick="setMonths()"
+-->
+	<form style="text-align: center;" method="GET" action="historicalMonth.html" name="monthForm" id="monthF" >
+		<!--<input  type="button" name="CheckAll" value="Un-Select All" onClick="checkAll(document.monthForm.elements['months[]'],false)" >-->
+		<table style="margin-left:auto; margin-right: auto;" id="files">
+			
+		</table>
+		<div style="text-align: center; margin-left:auto; margin-right: auto;">
+			
+		</div>
+	</form>
+	
+<br>
+<br>
+	<div style="text-align:center; padding-bottom: 50px;">
+
+		<h5 style="color: #666;">
+		&copy; 2015. All rights reserved.<br /><br />
+		<em>Powered by an <a target="_blank" href="http://www.aprsworld.com/">APRS World</a> solution.</em>
+		</h5>
+
+	</div>
+
+
+</body>
+</html>
