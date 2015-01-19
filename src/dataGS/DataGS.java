@@ -42,7 +42,7 @@ import dataGS.ChannelDescription.Modes;
 public class DataGS implements ChannelData, JSONData {
 	private final boolean debug=false;
 
-	private final static String FIRMWARE_DATE = "2015-01-09";
+	private final static String FIRMWARE_DATE = "2015-01-19";
 	
 	protected WorldDataSerialReader ser;
 	protected boolean listening = false;
@@ -893,15 +893,11 @@ public class DataGS implements ChannelData, JSONData {
 		}
 
 
-		//threadMaintenanceTimer.stop();
-		//dataTimer.stop();
-		//ser.close();
+	
 		
 		/* spin through and accept new connections as quickly as we can ... in DataGS format. */
 		while ( listening ) {
-			if (!ser.connected){
-				break;
-			}
+		
 			try{
 				Socket socket=serverSocket.accept();
 				
