@@ -1,0 +1,2 @@
+#!/bin/bash
+java -DSERIAL_PORT_LIST=/dev/ttyS0:/dev/ttyUSB0 -jar DataGS.jar -j 8080 -r /dev/ttyS0 -R 57600 -l 4010 -i 10000 -c channels_magWebPro.json -w logLocal -a

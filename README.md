@@ -33,6 +33,7 @@
    * [Enable remote profile via JMXREMOTE](#jmx)
    * [Specifying available serial ports under non-Windows operating systems](#serialnonwindows)
    * [Setting the classpath](#classpath)
+   * [Jar file](#jarfile)
 
 <a name="sum"></a>
 ## Summary
@@ -453,6 +454,16 @@ Multiple ports can be separated with a colon. Example:
 Java needs to have the current directory, the bin directory, and the name of all the requires JAR files in the `-cp` 
 argument. The program itself is then started with `packageName.className`. Or `dataGS.DataGS`.
 
+<a name="jarfile"></a>
+### Jar file (Work in progress)
+(NOTE: The current set up is a work in progress )
+In the utilities directory you can find a directory called DataGSJar. Within that directory you will find three files and two directories. This directory is set up as a basic example set up for starting the software using a jar file.
 
+* `DataGS.jar` - The DataGS jar file. 
+* `startDataGS_jar` - the bash script to run the jar file 
+* `channels_magWebPro.json` - the [channels.json](#chanDescFileFormat) file read in by DataGS.jar, given it is unchanged from `startDataGS_jar`
+* `www` - local copy of the [website](#website)
+* `logLocal` - The directory DataGS.jar will save log files to, given it is unchanged from `startDataGS_jar`
 
+You should be able to simply run `./start` from the terminal.
 

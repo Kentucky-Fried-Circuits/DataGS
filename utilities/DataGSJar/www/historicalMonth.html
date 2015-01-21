@@ -1,0 +1,1030 @@
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta charset="UTF-8">
+		<title>Historical Data</title>
+	
+	<link href="res/css/magnum_style.css" rel="stylesheet" type="text/css" />
+	<link rel="icon" type="images/favicon" href="res/images/favicon.gif" />
+
+</head>
+<body style="background-color: #ffffff; margin-top: 0px;margin-left: 0px;margin-right: 0px;">
+<div id="wrapper" style="width: 100%; margin-left: auto; margin-right: auto; background-color:#ffffff;">
+	
+
+		<div class="navBarCon">	
+			<ul  style="border: none; width:100%; border-spacing: 0px;list-style-type: none;">
+			
+				
+					<li>
+						<a  href="/">Current Conditions</a>
+					</li>
+					<li>
+						<a  href="currentSettings.html">Current Settings</a>
+					</li>
+					<li style="width:34%">
+						<a  href="historical.html">Historical Data</a>
+					</li>
+				
+				
+				</ul>
+		</div>
+				
+
+						
+	</div>
+	<div style="text-align: center;">
+		<h1 id="headline">Historical Data</h1>
+				<!--Note: This server will be down for scheduled maintenance from 7PM to 9PM CST today.-->
+
+		<br />
+	</div>
+
+	
+
+	<script>if (!window.console){ console = {log: function() {}};}//IE doesn't like calls to console if debugger is not open</script>
+	<script type="text/javascript" src="res/js/jquery-1.11.1.min.js"></script>
+	<script type="text/javascript" src="res/js/excanvas.min.js"></script>
+
+
+	<script type="text/javascript" src="res/js/jquery.flot.js"></script>
+	<script type="text/javascript" src="res/js/jquery.flot.threshold.js"></script>
+
+	<script type="text/javascript" src="res/js/JUMFlot.min.js"></script>
+	<script type="text/javascript" src="res/js/jquery.flot.bandwidth.js"></script>
+	<script type="text/javascript" src="res/js/jquery.flot.crosshair.js"></script>
+
+	<script type="text/javascript" src="res/js/date.js"></script>
+	<script type="text/javascript" src="res/js/magnum.js"></script>
+	<script type="text/javascript" src="res/js/jquery.getUrlParam.js"></script>
+	<script type="text/javascript" src="res/js/jsonUrls.js"></script>
+	<script>
+
+	var tenMinAvg=[];
+	var now=0;
+	/*
+	var root = "http://192.168.10.216:8080/";
+
+	var urlHist = root+"history.json";
+	var urlNow = root+"now.json";
+	var urlFiles = root+"historyFiles.json";
+	var urlSummary = root+"summaryStats.json";
+	var urlChannels = root+"channels.json";
+	*/
+	var isIE = msieversion();
+	var loadTimer;
+	var calMonths = [0,"January","Feburary","March","April","May","June","July","August","September","October","November","December"];
+
+	$(document).ready(function(){
+		/* The bar doesn't like to work on ipods */
+		if ( navigator.platform == 'iPhone' || navigator.platform == 'iPod' ) { 
+			$("#bar").hide();
+		
+		};
+		
+
+		
+
+		/* window refocus listener  */
+		$(window).focus(function() {
+			//loadData();
+		});
+
+		/* ajax error listener */
+		$( document ).ajaxError(function(event){
+			$("#connection_warn").show();
+			$("#connection_warn").append(event);
+			
+
+			//$("#cover").hide();
+			//clearInterval(loadTimerVar);
+		});
+		loadHeadline();
+		loadChannels();
+		
+
+	});
+
+	/* headline */
+	function loadHeadline(){
+
+		// If internet explorer, use Microsoft XDR
+		if ( isIE ) {
+		    var xdr = new XDomainRequest();
+		    xdr.open("get", urlHostname+"?t="+new Date().getTime());
+		    xdr.onload = function() {
+		       
+			dataS = $.parseJSON(xdr.responseText);
+								$("#headline").html(dataS.hostname+": Historical Data");
+
+							
+			
+		    };
+		    xdr.send();
+		} else {
+			/* if not IE we use ajax */
+		  	$.ajaxSetup({ cache: false });
+			$.ajax({
+				type: "GET",
+				url: urlHostname,
+				dataType: "html",
+				crossDomain : true
+			})
+			.done(function( dataS ) {
+
+				dataS = $.parseJSON(dataS);
+												$("#headline").html(dataS.hostname+": Historical Data");
+
+								
+			});
+
+		}
+
+	}
+
+	/* This script kindly provided by Microsoft */
+	function msieversion(){
+		var ua = window.navigator.userAgent
+		var msie = ua.indexOf ( "MSIE " )
+
+		if ( msie > 0 )      // If Internet Explorer, return version number
+			return parseInt (ua.substring (msie+5, ua.indexOf (".", msie )))
+		else                 // If another browser, return 0
+			return 0
+
+	}
+
+	/* Currently this has no point. It is just holding every object with it's timestamp as the key. */
+	var dataAr = [];
+	/* used to convert the timestamp into something human readable */
+	var date;
+	/* oldestTime is used to create the tableTitle */
+	var oldestTime;
+	var mostRecentTime;
+	var chargeAr=[];
+	var summaryAr;
+	var flot=[];
+
+	var flot1=[];
+	var flot2=[];
+	var flot3=[];
+	var flot4=[];
+
+	var channels;
+
+	function loadChannels(){
+	        // If internet explorer, use Microsoft XDR
+		if ( isIE ){
+		    var xdr = new XDomainRequest();
+		    xdr.open("get", urlChannel+"?t="+new Date().getTime());
+		    xdr.onload = function() {
+			dataS = $.parseJSON(xdr.responseText);
+			channels=dataS.data;
+			loadSummary()
+			
+		    };
+		    xdr.send();
+		} else {
+			/* if not IE we use ajax */
+		  	$.ajaxSetup({ cache: false });
+			$.ajax({
+				type: "GET",
+				url: urlChannel,
+				dataType: "html",
+				crossDomain : true
+			})
+			.done(function( dataS ) {
+				dataS = $.parseJSON(dataS);
+				channels=dataS.data;
+				loadSummary(); 
+				
+			});
+
+		}
+
+	}
+
+	/* This returns the object that holds the channel data */
+	function getChObj(channel){
+		for (var i = 0 ; i < channels.length ; i++ ) {
+			if ( channels[i].id == channel ) return channels[i];
+		}
+		return null;
+	}
+	
+	/* Returns array of channels to summarize */
+	function getSumChannels(){
+		var sumChanAr = [];
+		for (var i = 0 ; i < channels.length ; i++ ) {
+			if ( channels[i].historyByDay != null && channels[i].historyByDay == "true") {
+				sumChanAr.push(channels[i].id);
+			}
+		}
+		return sumChanAr;
+	}
+
+	function loadSummary(){
+		if ( isIE ){
+		    var xdr = new XDomainRequest();
+		    xdr.open("get", urlSummary+"?t="+new Date().getTime());
+		    xdr.onload = function() {
+		       
+
+			if ( "" == xdr.responseText ) {
+				$("#files").html("");
+				$("#lH1").html("Summary not available at this time. Try again in a couple minutes.");
+				$("#loading").show();
+				setTimeout(loadSummary,1000*10);
+			} else {
+				
+				dataS = $.parseJSON(xdr.responseText);
+				processSum(dataS);
+			}
+
+			
+		    };
+		    xdr.send();
+		} else {
+			/* if not IE we use ajax */
+		  	$.ajaxSetup({ cache: false });
+			$.ajax({
+				type: "GET",
+				url: urlSummary,
+				dataType: "html",
+				crossDomain : true
+			})
+			.done(function( dataS ) {
+				if ( undefined == dataS ) {
+					$("#files").html("");
+					$("#lH1").html("Summary not available at this time. Try again in a couple minutes.");
+					$("#loading").show();
+					setTimeout(loadSummary,1000*10);
+				} else {
+					dataS = $.parseJSON(dataS);
+					processSum(dataS);
+				}
+
+				
+			});
+
+		}
+
+
+	}
+		
+	function processSum(data) {
+		
+		summaryAr=data.summary_stats;
+	
+		getFiles();
+
+	}
+
+	function getFiles() {
+		if ( isIE ){
+		    var xdr = new XDomainRequest();
+		    xdr.open("get", urlFiles+"?t="+new Date().getTime());
+		    xdr.onload = function() {
+		       
+			dataS = $.parseJSON(xdr.responseText);
+			processFiles(dataS);
+			
+		    };
+		    xdr.send();
+		} else {
+			/* if not IE we use ajax */
+		  	$.ajaxSetup({ cache: false });
+			$.ajax({
+				type: "GET",
+				url: urlFiles,
+				dataType: "html",
+				crossDomain : true
+			})
+			.done(function( dataS ) {
+				dataS = $.parseJSON(dataS);
+				processFiles(dataS);
+
+				
+			});
+
+		}
+	   
+	}
+
+	function processFiles(data) {
+		
+	
+		var fileAr = data.history_files.files;
+		var lastYear = "";
+		var lastMonth = "";
+		var years = [];
+		var months = [];
+		
+		var dispMonths = $(document).getUrlParam("months[]");
+
+
+
+		//dispMonths = ["201410","201409","201408","201407"];
+
+		/* sort the files because they may not be in order */
+		fileAr.sort();
+
+		/* if no months are selected, select all */	
+		if (null == dispMonths ){
+			dispMonths=[];
+			for ( var k = 0 ; k < fileAr.length ; k++ ) {
+				if ( dispMonths.length > 11 )
+					break;
+				var val = fileAr[k].substring(0,6);
+				console.log($.inArray(val, dispMonths));
+				if ( -1 == $.inArray(val, dispMonths) )
+					dispMonths.push(val);
+			}
+
+		} 
+
+		console.log(dispMonths);
+
+		//fileAr.sort(function(a, b){return b-a});
+		var table = "";
+		var txtLink = "";
+		var csvLink = "";
+		var chanSumAr = getSumChannels();
+		var colSpan = (chanSumAr.length*3)+3;
+		/* iterate through all file names */
+
+	
+		for ( var i = fileAr.length-1 ; i >= 0  ; i--) {
+
+			var boolAdd;
+			/*  */
+			if ( isIE ) {
+				if ( dispMonths instanceof Array ) {
+					boolAdd = (-1 != jQuery.inArray( fileAr[i].substr(0,6), dispMonths ));
+				} else {
+					boolAdd = (-1 != dispMonths.indexOf( fileAr[i].substr(0,6)));
+				}
+			} else {
+				boolAdd = (-1 != dispMonths.indexOf( fileAr[i].substr(0,6)));
+			}
+			
+			if ( boolAdd ) {
+				/* check the year */
+				if (!isNaN(fileAr[i].substr(0,4))) {				
+					if (lastYear != fileAr[i].substr(0,4)){
+						/* set to current year */
+						lastYear = fileAr[i].substr(0,4);
+						/* add to the year array */
+						years.push( fileAr[i].substr(0,4) );
+
+						/* month has to be reset if year is changed incase the same month of different years is selected. */
+						lastMonth = 0;
+						//$("#files").append("<tr><th colspan=2>"+fileAr[i].substr(0,4)+"</th></tr>");
+					}
+					/* check the month */
+					if (lastMonth != fileAr[i].substr(4,2)){
+						/* set to current month */
+						lastMonth = fileAr[i].substr(4,2);
+						/* add to the month array */
+						if ( null == months[lastYear] ) 						
+							months[lastYear]=[];	
+						months[lastYear].push( fileAr[i].substr(4,2) );
+					
+						$("#files").append("<tr><th colspan="+colSpan+">"+calMonths[parseInt(fileAr[i].substr(4,2),10)]+" - "+fileAr[i].substr(0,4)+"</th></div></tr>");
+
+						$("#files").append("<tr><td colspan="+colSpan+"><h4>Battery State Of Charge</h4><div class=\"histChart\" id=\"chart"+fileAr[i].substr(0,6)+"\" ></div><div style=\"padding-left:15%;padding-right:15%;\" >"+getLegend("Battery State Of Charge","Battery Temperature")+"</div></td></tr>");
+
+						//$("#files").append("<tr><td colspan="+colSpan+"><h4>Renewable Watts</h4><div class=\"histChart\" id=\"chart"+fileAr[i].substr(0,6)+"power\"></div><div style=\"padding-left:15%;padding-right:15%;\">"+getLegend("Renewable Watts")+"</div></td></tr>");
+
+						//$("#files").append("<tr><td colspan="+colSpan+"><h4>Battery Watts</h4><div class=\"histChart\" id=\"chart"+fileAr[i].substr(0,6)+"power1\" ></div><div style=\"padding-left:15%;padding-right:15%;\">"+getLegend("Battery Watts")+"</div></td></tr>");
+
+						//$("#files").append("<tr><td colspan="+colSpan+"><h4>Load Watts</h4><div class=\"histChart\" id=\"chart"+fileAr[i].substr(0,6)+"power2\" ></div><div style=\"padding-left:15%;padding-right:15%;\">"+getLegend("Load Watts")+"</div></td></tr>");
+
+						//$("#files").append("<tr><td colspan="+colSpan+"><h4>Generator Watts</h4><div class=\"histChart\" id=\"chart"+fileAr[i].substr(0,6)+"power3\" ></div><div style=\"padding-left:15%;padding-right:15%;\">"+getLegend("Generator Watts")+"</div></td></tr>");
+						var chan = "";
+
+						for ( var j = 0 ; j < chanSumAr.length ; j++ ) {
+							var obj = getChObj(chanSumAr[j]);
+							chan+="<th colspan=3>"+obj.title+" ("+obj.units+")</th>";
+				
+						}
+
+						$("#files").append(
+							"<tr>"+
+								"<th rowspan=2>Date</th>"+
+								"<th rowspan=2>nData</th>"+
+								chan +
+								"<th rowspan=2>Export</th>"+
+							"</tr>"
+						);
+
+						chan = "";
+						for ( var j = 0 ; j < chanSumAr.length ; j++ ) {
+							chan+="<th>Min</th><th>Max</th><th>Avg</th>";
+				
+						}
+
+						$("#files").append(
+							"<tr>"+
+								chan+
+							"</tr>"
+						);
+
+						//$("#files").append("<tr><th>"+fileAr[i].substr(4,2)+"</th></tr>");
+					}
+					/* add file */
+				
+					$("#files").append(getRow(fileAr[i]));
+				}
+			} 
+		
+		}
+		//console.log(months);
+		/* iterate through years array and add headers */
+		/*var table = "";
+		for ( var j = 0 ; j < years.length ; j++ ) {
+			table+="<tr><th>"+years[j]+"</th></tr>";
+				
+			for ( var i = 0 ; i < months[years[j]].length ; i++ ) {
+				table+="<tr><td><input type=\"checkbox\">"+years[j]+"-"+months[years[j]][i]+"</td></tr>";				
+			}
+		
+	
+		}
+	
+		$("#files").append(table);
+		/* iterate through years again with months to add checkboxes */
+/*
+		table = "<tr>";
+	
+		$("#files").append(table);*/
+		plotCharts();
+		$("#loading").hide();
+	
+	}
+	
+	function getLegend(label, label2){
+
+		return '<table style="font-size:smaller;color:#545454"><tbody><tr><td class="legendColorBox"><div style="border:1px solid #ccc;padding:1px"><div style="width:4px;height:0;border:5px solid blue;overflow:hidden"></div></div></td><td class="legendLabel">Daily Average '+label+'</td><td class="legendColorBox"><div style="border:1px solid #ccc;padding:1px"><div style="width:4px;height:0;border:5px solid red;overflow:hidden"></div></div></td><td class="legendLabel">Daily Range '+label+'</td></tr><tr><td class="legendColorBox"><div style="border:1px solid #ccc;padding:1px"><div style="width:4px;height:0;border:5px solid orange;overflow:hidden"></div></div></td><td class="legendLabel">Daily Average '+label2+'</td><td class="legendColorBox"><div style="border:1px solid #ccc;padding:1px"><div style="width:4px;height:0;border:5px solid red;overflow:hidden"></div></div></td><td class="legendLabel">Daily Range '+label2+'</td></tr></tbody></table>'
+
+	}
+
+	function getRow(filename){
+		//console.log(filename);
+		var chanSumAr = getSumChannels();
+		var line = "<tr><td style=\"text-align: center;\">";
+		txtLink = root+"history/"+filename.substr(0,8)+".txt";
+		csvLink = root+"history/"+filename.substr(0,8)+".csv";
+		date = filename.substr(0,4)+"-"+filename.substr(4,2)+"-"+filename.substr(6,2);
+		line+=date+"</td>";
+		var lineAr;
+		for ( var i = 0 ; i < summaryAr.length ; i++ ) {
+			if ( -1 != filename.indexOf(summaryAr[i].day) ){
+				lineAr=	summaryAr[i];
+				break;
+			}
+		}
+		//console.log(lineAr);
+		/* n */
+		line+="<td>"+Math.round(lineAr.n)+"</td>"
+		/* channels */
+		
+		for ( var j = 0 ; j < chanSumAr.length ; j++ ) {
+			var lineMin;
+			var lineMax;
+			var lineAvg;
+			var prec = getChObj(chanSumAr[j]).precision;
+			if ( null == prec ) prec = 0;
+			lineAr.prec = prec;
+			for (key in lineAr){
+				if ( -1 != key.indexOf(chanSumAr[j]) && -1 != key.indexOf("min") ) lineMin = parseFloat(lineAr[key]).toFixed(prec);
+				if ( -1 != key.indexOf(chanSumAr[j]) && -1 != key.indexOf("max") ) lineMax = parseFloat(lineAr[key]).toFixed(prec);
+				if ( -1 != key.indexOf(chanSumAr[j]) && -1 != key.indexOf("avg") ) lineAvg = parseFloat(lineAr[key]).toFixed(prec);
+			}
+			if ( chanSumAr[j] == "b_state_of_charge" && lineMax == 255 ) {
+				line+="<td colspan=\"3\"><i>Was Thinking...</i></td>"
+			} else {			
+				line+="<td>"+lineMin+"</td><td>"+lineMax+"</td><td>"+lineAvg+"</td>";
+			}
+		}
+		/* b_state_of_charge */
+		//line+="<td>"+lineAr.b_state_of_charge_min+"</td><td>"+lineAr.b_state_of_charge_max+"</td><td>"+Math.round(lineAr.b_state_of_charge_avg)+"</td>";
+
+		/* i_dc_volts */
+		//line+="<td>"+lineAr.i_dc_volts_min+"</td><td>"+lineAr.i_dc_volts_min+"</td><td>"+lineAr.i_dc_volts_min+"</td>";
+
+		/* i_temp_battery */
+		//line+="<td>"+lineAr.i_temp_battery_min+"</td><td>"+lineAr.i_temp_battery_min+"</td><td>"+lineAr.i_temp_battery_min+"</td>";
+
+		line+="<td style=\"text-align: center;\">Raw Data: (<a href=\""+txtLink+"\" target=\"_blank\" >TXT</a>) (<a href=\""+csvLink+"\" target=\"_blank\" >CSV</a>)</td></tr>";
+
+		yearMonth = (lineAr.day+"").substr(0,6);
+		day = (lineAr.day+"").substr(6,2);
+
+			/* 
+			flot[yearMonth][0] soc avg
+			flot[yearMonth][1] soc bands
+			flot[yearMonth][2] temp avg
+			flot[yearMonth][3] temp bands
+			
+			flot1[yearMonth][0]]calc_add_power avg
+			flot1[yearMonth][1]]calc_add_power bands
+
+			var socArray = [[30,73.7],[29,86.2],...];
+			var socBands = [[30,70,78],[29,78,94],...];
+			var tempArray = [[30,15.0],[29,15.0],...];
+			var tempBands = [[30,15,15],[29,15,15],...];
+			 */
+		/*  */
+		if ( null == flot[yearMonth] ) {
+
+			flot[yearMonth]=[[],[],[],[]];
+			flot[yearMonth][0].unshift([day, parseFloat(lineAr.b_state_of_charge_avg).toFixed(lineAr.prec)]);
+			flot[yearMonth][1].unshift([day, parseFloat(lineAr.b_state_of_charge_min).toFixed(lineAr.prec),parseFloat(lineAr.b_state_of_charge_max).toFixed(lineAr.prec)]);
+			flot[yearMonth][2].unshift([day, parseFloat(lineAr.i_temp_battery_avg).toFixed(lineAr.prec)]);
+			flot[yearMonth][3].unshift([day, parseFloat(lineAr.i_temp_battery_min).toFixed(lineAr.prec),parseFloat(lineAr.i_temp_battery_max).toFixed(lineAr.prec)]);
+			
+
+			/*flot1[yearMonth]=[[],[]];
+			flot1[yearMonth][0].unshift([ day, parseFloat(lineAr.calc_add_power_avg).toFixed(lineAr.prec) ]);
+			flot1[yearMonth][1].unshift([ day, parseFloat(lineAr.calc_add_power_min).toFixed(lineAr.prec), parseFloat(lineAr.calc_add_power_max).toFixed(lineAr.prec) ]);
+			
+			flot2[yearMonth]=[[],[]];
+			flot2[yearMonth][0].unshift([ day, parseFloat(lineAr.b_dc_power_avg).toFixed(lineAr.prec) ]);
+			flot2[yearMonth][1].unshift([ day, parseFloat(lineAr.b_dc_power_min).toFixed(lineAr.prec), parseFloat(lineAr.b_dc_power_max).toFixed(lineAr.prec) ]);
+
+			flot3[yearMonth]=[[],[]];
+			flot3[yearMonth][0].unshift([ day, parseFloat(lineAr.i_dc_power_avg).toFixed(lineAr.prec) ]);
+			flot3[yearMonth][1].unshift([ day, parseFloat(lineAr.i_dc_power_min).toFixed(lineAr.prec), parseFloat(lineAr.i_dc_power_max).toFixed(lineAr.prec) ]);
+
+			flot4[yearMonth]=[[],[]];
+			flot4[yearMonth][0].unshift([ day, parseFloat(lineAr.gen_power_avg).toFixed(lineAr.prec) ]);
+			flot4[yearMonth][1].unshift([ day, parseFloat(lineAr.gen_power_min).toFixed(lineAr.prec), parseFloat(lineAr.gen_power_max).toFixed(lineAr.prec) ]);*/
+	
+		} else {
+			flot[yearMonth][0].unshift([ day, parseFloat(lineAr.b_state_of_charge_avg).toFixed(lineAr.prec) ]);
+			flot[yearMonth][1].unshift([ day, parseFloat(lineAr.b_state_of_charge_min).toFixed(lineAr.prec), parseFloat(lineAr.b_state_of_charge_max).toFixed(lineAr.prec) ]);
+			flot[yearMonth][2].unshift([ day, parseFloat(lineAr.i_temp_battery_avg).toFixed(lineAr.prec) ]);
+			flot[yearMonth][3].unshift([ day, parseFloat(lineAr.i_temp_battery_min).toFixed(lineAr.prec), parseFloat(lineAr.i_temp_battery_max).toFixed(lineAr.prec) ]);
+
+		
+			/*flot1[yearMonth][0].unshift([ day, parseFloat(lineAr.calc_add_power_avg).toFixed(lineAr.prec) ]);
+			flot1[yearMonth][1].unshift([ day, parseFloat(lineAr.calc_add_power_min).toFixed(lineAr.prec), parseFloat(lineAr.calc_add_power_max).toFixed(lineAr.prec) ]);
+
+			flot2[yearMonth][0].unshift([ day, parseFloat(lineAr.b_dc_power_avg).toFixed(lineAr.prec) ]);
+			flot2[yearMonth][1].unshift([ day, parseFloat(lineAr.b_dc_power_min).toFixed(lineAr.prec), parseFloat(lineAr.b_dc_power_max).toFixed(lineAr.prec) ]);
+
+			flot3[yearMonth][0].unshift([ day, parseFloat(lineAr.i_dc_power_avg).toFixed(lineAr.prec) ]);
+			flot3[yearMonth][1].unshift([ day, parseFloat(lineAr.i_dc_power_min).toFixed(lineAr.prec), parseFloat(lineAr.i_dc_power_max).toFixed(lineAr.prec) ]);
+
+			flot4[yearMonth][0].unshift([ day, parseFloat(lineAr.gen_power_avg).toFixed(lineAr.prec) ]);
+			flot4[yearMonth][1].unshift([ day, parseFloat(lineAr.gen_power_min).toFixed(lineAr.prec), parseFloat(lineAr.gen_power_max).toFixed(lineAr.prec) ]);*/
+		}
+		return line;
+	}
+
+	function getCookie(cname) {
+		var name = cname + "=";
+		var ca = document.cookie.split(';');
+		for(var i=0; i<ca.length; i++) {
+			var c = ca[i];
+			while (c.charAt(0)==' ') c = c.substring(1);
+			if (c.indexOf(name) != -1) return c.substring(name.length,c.length);
+		}
+		return "";
+	}
+
+	function hideWarn(){
+		$("#connection_warn").hide();
+	}
+	var data0 = [];
+	var data1 = [];
+	var data2 = [];
+	var data3 = [];
+	var data4 = [];
+
+	var plot0 = [];
+
+	function plotCharts(){
+		/* tool tip */
+		$("<div id='tooltip'></div>").css({
+			position: "absolute",
+			display: "none",
+			border: "1px solid #fdd",
+			padding: "2px",
+			"background-color": "#fee",
+			opacity: 0.80
+		}).appendTo("body");
+		/* get each key in array of flot. Each key is actually the yearMonth ex. 201410 */
+		for (key in flot) {
+			if (flot.hasOwnProperty(key)  &&        // These are explained
+				/^0$|^[1-9]\d*$/.test(key) &&    // and then hidden
+				key <= 4294967294                // away below
+			) {
+				//console.log("Plot: "+key);
+
+				data0[key] = [{
+
+					data: flot[key][0],
+					label: "Average SOC",
+					lines: {
+						show: true,
+						lineWidth: 3
+					}, 
+					color: "blue"
+				},{
+
+					data: flot[key][1],
+					label: "SOC Min/Max",
+					bandwidth: {
+						show: true,
+						lineWidth: 0
+					},
+					color: "red"
+				},{
+
+					data: flot[key][3],
+					label: "Average Battery Temp.",
+					lines: {
+						show: true,
+						lineWidth: 3
+					}, 
+					color: "orange"
+				},{
+
+					data: flot[key][4],
+					label: "Battery Temp. Min/Max",
+					bandwidth: {
+						show: true,
+						lineWidth: 0
+					},
+					color: "red"
+				}];
+
+				var optionsEdit = {
+					series: {
+						shadowSize: 0,
+						bandwidth: {
+							active: true,
+							lineWidth: 0
+						},
+						lines: {
+							show: true
+						}
+					},
+					crosshair: {
+						mode: "x"
+					},
+					grid: {
+						hoverable: true,
+						autoHighlight: false
+					}, 
+					xaxes: [{
+						min: flot[key][0][0][0],
+						max: flot[key][0][flot[key][0].length-1][0],//30,
+						ticks: flot[key][0].length-1
+					}],
+					yaxis: {
+						min: 0,
+						max: 100
+					}, 
+					legend: {
+						show: true,
+						position: "se",
+						noColumns : 4,
+						backgroundOpacity: 0.1,
+						container: $('#legend'+key)
+						//margin: [0, -70]
+					}
+				};
+
+				
+				/*data1[key] = [{
+
+					data: flot1[key][0],
+					label: "Renewable Watts",
+					lines: {
+						show: true,
+						lineWidth: 3
+					}, 
+					color: "blue"
+				},{
+
+					data: flot1[key][1],
+					label: "Renewable Watts Min/Max",
+					bandwidth: {
+						show: true,
+						lineWidth: 0
+					},
+					color: "red"
+				}];
+
+				data2[key] = [{
+
+					data: flot2[key][0],
+					label: "Battery Watts",
+					lines: {
+						show: true,
+						lineWidth: 3
+					}, 
+					color: "blue"
+				},{
+
+					data: flot2[key][1],
+					label: "Battery Watts Min/Max",
+					bandwidth: {
+						show: true,
+						lineWidth: 0
+					},
+					color: "red"
+				}];
+
+				data3[key] = [{
+
+					data: flot3[key][0],
+					label: "Load Watts",
+					lines: {
+						show: true,
+						lineWidth: 3
+					}, 
+					color: "blue"
+				},{
+
+					data: flot3[key][1],
+					label: "Load Watts Min/Max",
+					bandwidth: {
+						show: true,
+						lineWidth: 0
+					},
+					color: "red"
+				}];
+
+				data4[key] = [{
+
+					data: flot4[key][0],
+					label: "Generator Watts",
+					lines: {
+						show: true,
+						lineWidth: 3
+					}, 
+					color: "blue"
+				},{
+
+					data: flot4[key][1],
+					label: "Generator Watts Min/Max",
+					bandwidth: {
+						show: true,
+						lineWidth: 0
+					},
+					color: "red"
+				}];*/
+
+
+				if ( flot[key][0].length>0 ) {
+					plot0[key] = $.plot("#chart"+key, data0[key],optionsEdit);
+				/*	plot0[key+"power"] = $.plot("#chart"+key+"power", data1[key], getOptions(1, key));
+					plot0[key+"power1"] = $.plot("#chart"+key+"power1", data2[key], getOptions(2, key));
+					plot0[key+"power2"] = $.plot("#chart"+key+"power2", data3[key], getOptions(3, key));
+					plot0[key+"power3"] = $.plot("#chart"+key+"power3", data4[key], getOptions(4, key));*/
+
+					$("#chart"+key).bind("plothover", createPlotHoverHandler(plot0[key]));
+					/*$("#chart"+key+"power").bind("plothover", createPlotHoverHandler(plot0[key+"power"]));
+					$("#chart"+key+"power1").bind("plothover", createPlotHoverHandler(plot0[key+"power1"]));
+					$("#chart"+key+"power2").bind("plothover", createPlotHoverHandler(plot0[key+"power2"]));
+					$("#chart"+key+"power3").bind("plothover", createPlotHoverHandler(plot0[key+"power3"]));*/
+
+				}else{
+
+					$("#chart"+key).html("<h1>Not Enough Data </h1>");
+
+				}
+	
+
+
+
+			}
+		}
+
+
+		
+	}
+	// Returns a function that can be used as the plothover event handler
+	function createPlotHoverHandler(plot) {
+		// This is the actual handler, it has access to the plot closure variable
+		return function(e, pos, item)  {
+
+			var str = "(" + pos.x.toFixed(2) + ", " + pos.y.toFixed(2) + ")";
+
+			$("#hoverdata").text(str);
+			key = plot.getPlaceholder().selector.substr(6);
+			if (item) {
+				var x = item.datapoint[0].toFixed(0), y = item.datapoint[1].toFixed(2);
+
+				/* temperature or SOC: 3 is temperature and 1 is SOC */
+				var tOrS = 3;
+				var units = " watts";
+
+				if ( "Average SOC" == item.series.label ) {
+					tOrS = 1;
+					units = "%";
+				}
+				//console.log(x);
+				var day = 0;
+				var found = false;
+				var ar = [];
+				if (key.indexOf("power")==-1) {
+
+					var b = getFound(x, flot[key][1] );
+					found=b[0];
+					day=b[1];
+					ar = flot[key.substring(0,6)];
+
+				} else if (key.indexOf("power1")!=-1) {
+
+					var b = getFound(x, flot2[key.substring(0,6)][1] );
+					found=b[0];
+					day=b[1];
+					ar = flot2[key.substring(0,6)];
+
+				} else if (key.indexOf("power2")!=-1) {
+
+					var b = getFound(x, flot3[key.substring(0,6)][1] );
+					found=b[0];
+					day=b[1];
+					ar = flot3[key.substring(0,6)];
+				} else if (key.indexOf("power3")!=-1) {
+
+					var b = getFound(x, flot4[key.substring(0,6)][1] );
+					found=b[0];
+					day=b[1];
+					ar = flot4[key.substring(0,6)];
+				} else if (key.indexOf("power")!=-1) {
+
+					var b = getFound(x, flot1[key.substring(0,6)][1] );
+					found=b[0];
+					day=b[1];
+					ar = flot1[key.substring(0,6)];
+				}
+
+				if ( found ) {
+					$("#tooltip").html(item.series.label + " on " + key.substr(0,4) + "-" + key.substr(4,2) + "-" + ("0"+x).slice(-2) + "<br>"+
+							"Min = " + ar [tOrS]   [day] [1] + units + "<br>" +
+							"Max = " + ar [tOrS]   [day] [2] + units + "<br>" +
+							"Avg = " + ar [tOrS-1] [day] [1] + units
+						)
+						.css({top: item.pageY+5, left: item.pageX+5})
+						.fadeIn(200);
+				} else {
+				}
+				
+			} else {
+				$("#tooltip").hide();
+			}
+		}
+	}
+
+	function getFound(x, ar){
+		var f = false;
+		for ( var i = 0 ; i < ar.length ; i++ ) {
+			if ( parseInt(x) == parseInt( ar[i][0]) ) {
+				//console.log( i );
+				f = true;
+				day = i;
+	
+			}
+		}
+		return [f,day];
+	}
+
+	function getOptions(number, key){ 
+		
+		var cMin = parseFloat( getMin(number, key) );
+
+		var cMax = parseFloat( getMax(number, key) );	
+		
+		cMin = cMin - Math.abs( cMin * .1 );
+		
+		cMax = cMax + Math.abs( cMax * .1 );
+
+		return {
+			series: {
+				shadowSize: 0,
+				bandwidth: {
+					active: true,
+					lineWidth: 0
+				},
+				lines: {
+					show: true
+				}
+			},
+			crosshair: {
+				mode: "x"
+			},
+			grid: {
+				hoverable: true,
+				autoHighlight: false
+			}, 
+			xaxes: [{
+				min: flot[key][0][0][0],
+				max: flot[key][0][flot[key][0].length-1][0],//30,
+				ticks: flot[key][0].length-1
+			}],
+			yaxis: {
+				min: cMin,
+				max: cMax
+			},
+			legend: {
+				show: false,
+				position: "se",
+				noColumns : 4,
+				backgroundOpacity: 0.1,
+				container: $('#legend'+key)
+				//margin: [0, -70]
+			}
+		}
+
+	}
+
+	function getMax(val, key){
+		//flot1[yearMonth][1]] watts bands
+		var ar = [];
+		switch(val){
+			case 1: ar = flot1; break;
+			case 2: ar = flot2; break;
+			case 3: ar = flot3; break;
+			case 4: ar = flot4; break;
+		}
+		var maxV = -Number.MAX_VALUE;
+
+
+		for ( var j = 0 ; j < ar[key][1].length ; j++ ) {
+			//console.log("month="+i+" ");
+			//console.log(ar[i][1][j][2]);
+			if ( parseFloat(maxV) < parseFloat(ar[key][1][j][2]) && !isNaN(ar[key][1][j][2]) ) {
+				maxV = ar[key][1][j][2];
+			}
+		}
+		
+		//console.log("Max="+maxV);
+		return maxV;		
+	}
+
+	function getMin(val){
+		var ar = [];
+		switch(val){
+			case 1: ar = flot1; break;
+			case 2: ar = flot2; break;
+			case 3: ar = flot3; break;
+			case 4: ar = flot4; break;
+		}
+		var minV = Number.MAX_VALUE;
+
+
+		for ( var j = 0 ; j < ar[key][1].length ; j++ ) {
+			//console.log("min="+minV);
+			//console.log("check "+ar[key][1][j][1]);
+			if ( parseFloat(minV) > parseFloat(ar[key][1][j][1]) && !isNaN(ar[key][1][j][1]) ) {
+				minV = ar[key][1][j][1];
+			}
+		}
+		
+		//console.log("Min="+minV);
+		return minV;	
+	}
+	</script>
+
+	
+
+	<div id="loading" style="text-align: center;">
+		<h1 id="lH1">Loading...</h1>
+	</div>
+
+
+	<div class="caution" style="display: none;" >
+		<p>
+		This station is marked as supplying live data, however the data appears to be old. Please check the age of the data carefully before using it!
+		</p>
+	</div>
+
+	<div id="connection_warn" style="text-align: center; width: 800px; margin-right: auto; margin-left: auto; background-color: orange; color: white; display: none;" onclick="hideWarn()">
+			<h1>No Response From Server. Please check to make sure you are still connected to the internet</h1>
+	</div>
+	
+	
+	<h4 style="text-align: center;"><a href="table.html" target="_blank">Fault and Status Code Reference</a></h4>
+	<table style="margin-left:auto; margin-right: auto;" id="files"></table>
+<br>
+<br>
+	<div style="text-align:center; padding-bottom: 50px;">
+
+		<h5 style="color: #666;">
+		&copy; 2015. All rights reserved.<br /><br />
+		<em>Powered by an <a target="_blank" href="http://www.aprsworld.com/">APRS World</a> solution.</em>
+		</h5>
+
+	</div>
+
+
+</body>
+</html>
