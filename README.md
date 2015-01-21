@@ -157,9 +157,11 @@ Example file:
 2014-12-19 10:05:45,472,0,0,0,0,0,13.56,0.0,179.60,21.0,100,13.6,0,118,0.00,0.00,60.0,2.0,0.0,29.00,24.00,18.00,12.0,12.0,1.0,70.20
 2014-12-19 10:05:55,473,0,0,0,0,0,13.57,0.0,179.30,21.0,100,13.6,0,118,0.00,0.00,60.1,2.0,0.0,29.00,24.00,18.00,12.0,12.0,1.0,70.20
 ```
-This file uses the comma separated values (CSV) format. A column is created for every channel that has `log` set to true. The first line of the file uses the channel's `id` as the column header. The second line uses the channel's `title` as the column header. The third row and beyond are the values corresponding to their respective column headers.  Please note that `Data Date (UTC)"` and`"Milliseconds"` are the same on both the first and second line. This is because their values are generated when the log file is written to and are not values received from an outside source. 
+This file uses the comma separated values (CSV) format.  A column is created for every channel that has `log` set to true. The first line of the file uses the channel's `id` as the column header. The second line uses the channel's `title` as the column header. The third row and beyond are the values corresponding to their respective column headers.  Please note that `Data Date (UTC)"` and`"Milliseconds"` are the same on both the first and second line. This is because their values are generated when the log file is written to and are not values received from an outside source. 
 
 CSV files can be opened in most spread sheet applications such as Microsoft Excel and LibreOffice Calc. For more information on the CSV format, visit http://en.wikipedia.org/wiki/Comma-separated_values
+
+Please note that there is no universal standard to the CSV format that applies quotes and strings.
 
 Logged history file from file system. Return as MIME type `test/csv` if the URI ends with `.csv` or as 
 `text/plain` if the URI ends with `.txt`. 
