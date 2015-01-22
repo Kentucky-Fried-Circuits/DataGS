@@ -1050,7 +1050,7 @@ public class DataGS implements ChannelData, JSONData {
 
 	/* Main method */
 	public static void main(String[] args) throws IOException {
-		System.err.println("# Major version: " + FIRMWARE_DATE + " (Ian's Laptop)");
+		System.err.println("# Major version: " + FIRMWARE_DATE + " (ian-Precision-M4600)");
 		System.err.println("# java.library.path: " + System.getProperty( "java.library.path" ));
 
 		Thread.setDefaultUncaughtExceptionHandler(

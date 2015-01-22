@@ -474,7 +474,7 @@ You should be able to simply run `./start` from the terminal.
 <a name="compsoft"></a>
 ## Compiling the software
 
-In the root directory of DataGS there is a bash script called `changeDate.sh`. When added to the build scripts in eclipse, this script will change the `FIRMWARE_DATE` variable in the Java source code automatically when you compile the program. If you are using eclipse, follow these directions:
+In the root directory of DataGS there is a bash script called `changeDate.sh`. When added to the build scripts in eclipse, this script will change the `FIRMWARE_DATE` variable in the Java source code and change the computer string it was last modified on automatically when you compile the program. If you are using eclipse, follow these directions:
 
 1. Right-click on `DataGS` in the project browser and hover over `Build Path` in the drop-down menu. Select `Configure Build Path` at the bottom of `Build Path` menu. From there, select `Builders` on the left side of the screen. 
 
