@@ -1,0 +1,39 @@
+#!/bin/bash
+
+#####################################################################################
+#
+# Please note:
+# 	The `ant` command runs the build.xml script in the current directory it is in
+#	that is why it is used to both compile the java and create the jar. Hopefully
+#	this will clear up any confusion about how this script works 
+#
+#####################################################################################
+
+
+#change directory to the dataGS package in the src directory
+#cd ../../src/dataGS/
+
+#find the line number in which the firmware date is set and save it to STR
+#STR=$(grep -n 'private final static String FIRMWARE_DATE' DataGS.java | cut -d : -f 1);
+
+
+#Get the current date and save to DATE
+#DATE=`date +%Y-%m-%d`
+
+#STR+="s/.*/private final static String FIRMWARE_DATE = \"$DATE\";/"
+#echo "$STR"
+#replace the line number STR with a new line that has today's DATE
+#sed -i "${STR}s/.*/\tprivate final static String FIRMWARE_DATE = \"$DATE\";/" DataGS.java
+
+#return to DataGS root directory
+#cd ../..
+
+#recompile the program with the new date using the build.xml file in the root directory
+#ant
+
+#return to DataGSJar directory
+#cd utilities/DataGSJar
+
+#create the jar file using the build.xml file in the DataGSJar directory
+ant
+

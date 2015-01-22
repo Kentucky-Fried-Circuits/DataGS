@@ -35,6 +35,8 @@
    * [Setting the classpath](#classpath)
    * [Jar file](#jarfile)
 
+7. ###[Compiling the software](#compsoft)
+
 <a name="sum"></a>
 ## Summary
 Gather data from TCP/IP (simple ASCII format) or serial port (WorldData format) and process and make available
@@ -457,13 +459,39 @@ argument. The program itself is then started with `packageName.className`. Or `d
 <a name="jarfile"></a>
 ### Jar file (Work in progress)
 (NOTE: The current set up is a work in progress )
-In the utilities directory you can find a directory called DataGSJar. Within that directory you will find three files and two directories. This directory is set up as a basic example set up for starting the software using a jar file.
+In the utilities directory you can find a directory called DataGSJar. Within that directory you will find a basic example set up for starting the software using a jar file.
 
 * `DataGS.jar` - The DataGS jar file. 
 * `startDataGS_jar` - the bash script to run the jar file 
 * `channels_magWebPro.json` - the [channels.json](#chanDescFileFormat) file read in by DataGS.jar, given it is unchanged from `startDataGS_jar`
 * `www` - local copy of the [website](#website)
 * `logLocal` - The directory DataGS.jar will save log files to, given it is unchanged from `startDataGS_jar`
+* `makeJar` - This bash script create the jar file.
+* `build.xml` - contains the `ant` script that creates the jar file.
 
 You should be able to simply run `./start` from the terminal.
+
+<a name="compsoft"></a>
+## Compiling the software
+
+In the root directory of DataGS there is a bash script called `changeDate.sh`. When added to the build scripts in eclipse, this script will change the `FIRMWARE_DATE` variable in the Java source code automatically when you compile the program. If you are using eclipse, follow these directions:
+
+1. Right-click on `DataGS` in the project browser and hover over `Build Path` in the drop-down menu. Select `Configure Build Path` at the bottom of `Build Path` menu. From there, select `Builders` on the left side of the screen. 
+
+2. Now click the `New...` button on the right side of the screen. Select `Program` for the configuration type and click `OK`. This should bring up the `Edit Configuration` window. You can give this program what ever name you want. I chose `changeDate` for mine. 
+
+3. Under `Location`, select `Browse File System...` and find `changeDate.sh` from the root directory of DataGS. 
+
+4. For the `Working Directory` select `Browse Workspace...` and choose `DataGS`. Click `OK` at the bottom of the window. 
+
+5. Click on the program you just added (recall I called it `changeDate`) once to highlight it. With the program highlighted, click `Up` on the right side of the window until it is at the top (assuming you only had `Java Builder` before, you may only have to click `Up` once). 
+
+6. Click `OK` at the bottom of the screen and you should be good to go. 
+
+Please Note: 
+
+* This script will not make any changes if the date is already set to today
+* When this script does change the date, it recompiles the program. You should see the ant script's messages in the console briefly before DataGS starts.
+* You will also have to refresh the `DataGS.java` file in Eclipse when the date is changed. This is as simple as right-clicking `DataGS.java` in the project browser and selecting `Refresh`. If the file is already open, you can simply click the editting window and eclipse will prompt you to refresh.
+
 
