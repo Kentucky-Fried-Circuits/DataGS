@@ -141,69 +141,69 @@ public class HistoryPointExport {
 		String value;
 		String token;
 		String header;
+		synchronized(data){
+			Iterator<Entry<String, SynchronizedSummaryData>> it = data.entrySet().iterator();
+			if ( ! data.isEmpty() ) {
+				while (it.hasNext()) {
+					Map.Entry<String, SynchronizedSummaryData> pairs = (Map.Entry<String, SynchronizedSummaryData>)it.next();
 
-		Iterator<Entry<String, SynchronizedSummaryData>> it = data.entrySet().iterator();
-		if ( ! data.isEmpty() ) {
-			while (it.hasNext()) {
-				Map.Entry<String, SynchronizedSummaryData> pairs = (Map.Entry<String, SynchronizedSummaryData>)it.next();
 
-
-				if ( !chanDesc.containsKey( pairs.getKey() ) || false==chanDesc.get(pairs.getKey()).log ) {
-					continue;
-				}
-
-				/* if we have have this key in the channel description map, we use the precision from there. Otherwise we
-				 * just go with default precision.
-				 */
-				if ( pairs.getValue().mode==ChannelDescription.Modes.SAMPLE ) {
-					/* just dump the current value */
-					value = StringEscapeUtils.escapeCsv(pairs.getValue().sampleValue + "");
-
-				} else 
-					if ( chanDesc.containsKey(pairs.getKey() )) {
-						value = StringEscapeUtils.escapeCsv(numberPrecision(pairs.getValue().getMean(), chanDesc.get( pairs.getKey() ).precision ));
-					} else {
-
-						System.err.println("# No channel description found for " + pairs.getKey() + " using default double.");
-						value ="" + pairs.getValue().getMean();
+					if ( !chanDesc.containsKey( pairs.getKey() ) || false==chanDesc.get(pairs.getKey()).log ) {
+						continue;
 					}
 
-				/* print the key if the description isn't available */
-				
-				if ( chanDesc.containsKey(pairs.getKey()) && null != chanDesc.get( pairs.getKey() ).description ) {
-					if ( 0 == chanDesc.get( pairs.getKey() ).description.length() ) {
+					/* if we have have this key in the channel description map, we use the precision from there. Otherwise we
+					 * just go with default precision.
+					 */
+					if ( pairs.getValue().mode==ChannelDescription.Modes.SAMPLE ) {
+						/* just dump the current value */
+						value = StringEscapeUtils.escapeCsv(pairs.getValue().sampleValue + "");
+
+					} else 
+						if ( chanDesc.containsKey(pairs.getKey() )) {
+							value = StringEscapeUtils.escapeCsv(numberPrecision(pairs.getValue().getMean(), chanDesc.get( pairs.getKey() ).precision ));
+						} else {
+
+							System.err.println("# No channel description found for " + pairs.getKey() + " using default double.");
+							value ="" + pairs.getValue().getMean();
+						}
+
+					/* print the key if the description isn't available */
+
+					if ( chanDesc.containsKey(pairs.getKey()) && null != chanDesc.get( pairs.getKey() ).description ) {
+						if ( 0 == chanDesc.get( pairs.getKey() ).description.length() ) {
+							header = StringEscapeUtils.escapeCsv(pairs.getKey());
+							token = StringEscapeUtils.escapeCsv(pairs.getKey());
+						} else {
+							header = StringEscapeUtils.escapeCsv( chanDesc.get( pairs.getKey() ).description);
+							token = StringEscapeUtils.escapeCsv(pairs.getKey());
+						}
+					} else {
+
 						header = StringEscapeUtils.escapeCsv(pairs.getKey());
 						token = StringEscapeUtils.escapeCsv(pairs.getKey());
-					} else {
-						header = StringEscapeUtils.escapeCsv( chanDesc.get( pairs.getKey() ).description);
-						token = StringEscapeUtils.escapeCsv(pairs.getKey());
 					}
-				} else {
 
-					header = StringEscapeUtils.escapeCsv(pairs.getKey());
-					token = StringEscapeUtils.escapeCsv(pairs.getKey());
+					/* a new array must be made everytime otherwise the treemap just holds a bunch of references to the same array */
+
+					String[] lines={"","",""};
+					lines[0] = token;
+					lines[1] = header;
+					lines[2] = value;
+
+					tData.put( chanDesc.get( pairs.getKey() ).sortOrder+"|"+pairs.getKey(),lines);
+
 				}
 
-				/* a new array must be made everytime otherwise the treemap just holds a bunch of references to the same array */
-				
-				String[] lines={"","",""};
-				lines[0] = token;
-				lines[1] = header;
-				lines[2] = value;
-				
-				tData.put( chanDesc.get( pairs.getKey() ).sortOrder+"|"+pairs.getKey(),lines);
 
 			}
-
-
 		}
-
 		Iterator<Entry<String, String[]>>xt = tData.entrySet().iterator();
-		
+
 		Entry<String, String[]> pairt;
-		
+
 		String[] line;
-		
+
 		while(xt.hasNext()){
 			pairt=xt.next();
 			line = pairt.getValue();
