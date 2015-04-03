@@ -1,0 +1,50 @@
+APRS-WORLD-MIB DEFINITIONS ::= BEGIN
+
+--
+-- Top-level infrastructure of the APRS World, LLC project enterprise MIB tree
+--
+
+IMPORTS
+    OBJECT-TYPE, Integer32,
+    MODULE-IDENTITY, enterprises FROM SNMPv2-SMI;
+
+
+aprsWorld MODULE-IDENTITY
+    LAST-UPDATED "201412160000Z"
+    ORGANIZATION "www.aprsworld.com"
+    CONTACT-INFO    
+	 "email:    ian@aprsworld.com"
+    DESCRIPTION
+	"Top-level infrastructure of the Net-SNMP project enterprise MIB tree"
+    REVISION     "201412160000Z"
+    DESCRIPTION
+	"First draft"
+    ::= { enterprises 42934}
+
+
+aprsWorldObjects              OBJECT IDENTIFIER ::= {aprsWorld 1}
+magWebProObjects              OBJECT IDENTIFIER ::= {aprsWorld 2}
+
+aprsWorldExampleString OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(1..32))
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+	"The name of the IETF Working Group this table describes."
+    ::= { aprsWorldObjects 1 }
+
+aprsWorldExampleInteger OBJECT-TYPE
+    SYNTAX      Integer32
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION
+	"This is a simple object which merely houses a writable
+	 integer.  It's only purposes is to hold the value of a single
+	 integer.  Writing to it will simply change the value for
+	 subsequent GET/GETNEXT/GETBULK retrievals.
+
+	 This example object is implemented in the
+	 agent/mibgroup/examples/scalar_int.c file."
+    ::= { aprsWorldObjects 2 }
+
+END

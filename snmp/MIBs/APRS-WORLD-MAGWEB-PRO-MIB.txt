@@ -1,0 +1,179 @@
+APRS-WORLD-MAGWEB-PRO-MIB DEFINITIONS ::= BEGIN
+
+--
+-- Top-level infrastructure of the APRS World, LLC project enterprise MIB tree
+--
+
+IMPORTS
+    aprsWorld, magWebProObjects  FROM APRS-WORLD-MIB
+    OBJECT-TYPE, Integer32,
+   MODULE-IDENTITY, enterprises FROM SNMPv2-SMI;
+
+aprsWorld MODULE-IDENTITY
+    LAST-UPDATED "201412160000Z"
+    ORGANIZATION "www.aprsworld.com"
+    CONTACT-INFO    
+	 "email:    ian@aprsworld.com"
+    DESCRIPTION
+	"Top-level infrastructure of the Net-SNMP project enterprise MIB tree"
+    REVISION     "201412160000Z"
+    DESCRIPTION
+	"First draft"
+    ::= { enterprises 42934}
+
+
+
+iFault OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(1..32))
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+	"Inverter Fault."
+    ::= { magWebProObjects 1 }
+
+iStackMode OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(1..32))
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+	"Inverter Stack Mode."
+    ::= { magWebProObjects 2 }
+
+iTempFet OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(1..32))
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+	"Inverter FET Temperature."
+    ::= { magWebProObjects 3 }
+
+iStatus OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(1..32))
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+	"Inverter ."
+    ::= { magWebProObjects 4 }
+
+iDcAmps OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(1..32))
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+	"Inverter Status."
+    ::= { magWebProObjects 5 }
+
+iAcVoltsOut OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(1..32))
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+	"Inverter AC Out Volts."
+    ::= { magWebProObjects 6 }
+
+iAmpsOut OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(1..32))
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+	"Inverter AC Out Amps."
+    ::= { magWebProObjects 7 }
+
+iRevision OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(1..32))
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+	"Inverter Revision."
+    ::= { magWebProObjects 8 }
+
+iAmpsIn OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(1..32))
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+	"Inverter AC In Amps."
+    ::= { magWebProObjects 9 }
+
+iAmpsOutCharging OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(1..32))
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+	"Inverter AC Out Amps While Charging."
+    ::= { magWebProObjects 10 }
+
+iAcVoltsIn OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(1..32))
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+	"Inverter Inverter AC In Volts."
+    ::= { magWebProObjects 11 }
+
+iTempBattery OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(1..32))
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+	"Inverter Battery Temperature."
+    ::= { magWebProObjects 12 }
+
+iDcPower OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(1..32))
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+	"Inverter DC Power."
+    ::= { magWebProObjects 13 }
+
+iModel OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(1..32))
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+	"Inverter Model Number."
+    ::= { magWebProObjects 14 }
+
+iAcVoltsOutOver80 OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(1..32))
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+	"Inverter AC Out Volts Over 80."
+    ::= { magWebProObjects 16 }
+
+iAcHz OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(1..32))
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+	"Inverter AC Frequency."
+    ::= { magWebProObjects 17 }
+
+iTempTransformer OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(1..32))
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+	"Inverter Transformer Temperature."
+    ::= { magWebProObjects 18 }
+
+iAmpsOutInverting OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(1..32))
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+	"Inverter AC Out Amps While Inverting."
+    ::= { magWebProObjects 20 }
+
+iDcVolts OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(1..32))
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+	"Inverter DC Volts."
+    ::= { magWebProObjects 21 }
+
+
+END
