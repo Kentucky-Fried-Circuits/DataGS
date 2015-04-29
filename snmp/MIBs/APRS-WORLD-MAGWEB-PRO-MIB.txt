@@ -10,13 +10,13 @@ IMPORTS
    MODULE-IDENTITY, enterprises FROM SNMPv2-SMI;
 
 aprsWorld MODULE-IDENTITY
-    LAST-UPDATED "201412160000Z"
+    LAST-UPDATED "201504290000Z"
     ORGANIZATION "www.aprsworld.com"
     CONTACT-INFO    
-	 "email:    ian@aprsworld.com"
+	 "email:    info@aprsworld.com"
     DESCRIPTION
 	"Top-level infrastructure of the Net-SNMP project enterprise MIB tree"
-    REVISION     "201412160000Z"
+    REVISION     "201504290000Z"
     DESCRIPTION
 	"First draft"
     ::= { enterprises 42934}
