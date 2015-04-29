@@ -3,11 +3,10 @@
 use NetSNMP::agent (':all');
 use NetSNMP::ASN qw(ASN_OCTET_STR ASN_INTEGER);
 use JSON qw( decode_json );
-use LWP::Simple;
 
 #get json text with wget
 
-my $json = `(wget http://localhost:8080/data/now.json -q -O -)`; #get('http://localhost:8080/data/now.json');
+my $json = `(wget http://localhost:8080/data/now.json -q -O -)`;
 my $decoded = decode_json($json);
 my @data = @{ $decoded->{'data'} };
 
@@ -27,7 +26,7 @@ my $json_value = $default_value;
 #        $oidHash{$oidChannel};
 #}
 
-sub hello_handler {
+sub mwp_handler {
   my ($handler, $registration_info, $request_info, $requests) = @_;
   my $request;
 
@@ -221,8 +220,7 @@ sub getJsonVar
 }
 
 my $agent = new NetSNMP::agent();
-$agent->register("hello_world", ".1.3.6.1.4.1.42934",
-                 \&hello_handler);
+$agent->register("mwp_world", ".1.3.6.1.4.1.42934",
+                 \&mwp_handler);
 
-print "hello world loaded\n";
-
+print "agentx_magWebPro.pl loaded\n";
