@@ -1,0 +1,24 @@
+# /etc/default/snmpd
+# This file controls the activity of snmpd and snmptrapd
+
+# Don't load any MIBs by default.
+# You might comment this lines once you have the MIBs downloaded.
+export MIBS=
+
+# snmpd control (yes means start daemon).
+SNMPDRUN=yes
+
+# snmpd options (use syslog, close stdin/out/err).
+# APRS World specific: only load system_mib and put the PID file in /tmp
+SNMPDOPTS='-Lsd -Lf /dev/null -u snmp -g snmp -Isystem_mib -smux -p /tmp/snmpd.pid'
+
+# snmptrapd control (yes means start daemon).  As of net-snmp version
+# 5.0, master agentx support must be enabled in snmpd before snmptrapd
+# can be run.  See snmpd.conf(5) for how to do this.
+TRAPDRUN=no
+
+# snmptrapd options (use syslog).
+TRAPDOPTS='-Lsd -p /var/run/snmptrapd.pid'
+
+# create symlink on Debian legacy location to official RFC path
+SNMPDCOMPAT=yes
