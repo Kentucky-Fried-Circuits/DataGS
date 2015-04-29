@@ -1,3 +1,14 @@
+#Enabling SNMP view of MagWebPro data
+1. packages needed
+	snmpd libsnmp-perl (snmp if we want to snmpwalk locally)
+2. open UDP port 161
+3. put snmpd.conf in /etc/snmp/snmbd.conf
+
+#If SNMP server only
+1. disable logging in startDataGS
+2. firewall port 80 & 8080
+
+
 #Setting up net-snmp for the pi
 
 1. Install snmpd and net-snmp with the perl extention
