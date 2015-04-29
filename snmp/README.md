@@ -1,6 +1,6 @@
 #Enabling SNMP view of MagWebPro data
 1. packages needed
-	snmpd libsnmp-perl (snmp if we want to snmpwalk locally)
+	snmpd libsnmp-perl libjson-perl (snmp if we want to snmpwalk locally)
 2. open UDP port 161
 3. put snmpd.conf in /etc/snmp/snmbd.conf
 
