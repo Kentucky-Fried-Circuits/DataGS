@@ -9,6 +9,23 @@
 2. firewall port 80 & 8080
 
 
+#Testing
+If you get error message when doing snmpwalk, then you might not have the non-APRS World MIB files.
+
+So the standard Ubuntu SNMP install doesn't include a bunch of the standard SNMP MIB files for licensing reasons or something like that. To download a package of them:
+
+sudo apt-get install snmp-mibs-downloader
+
+sudo download-mibs
+
+Then edit:
+
+/etc/snmp/snmp.conf
+
+Comment out (put a # before) the line that says:
+
+mibs : 
+
 #Setting up net-snmp for the pi
 
 1. Install snmpd and net-snmp with the perl extention
