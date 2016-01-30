@@ -6,6 +6,7 @@ import java.util.Vector;
 
 public class WorldDataProcessor implements WorldDataListener {
 	RecordMagWeb magWeb;
+	RecordPS2Tap ps2tap;
 
 	protected Vector<ChannelData> channelDataListeners;
 
@@ -57,6 +58,18 @@ public class WorldDataProcessor implements WorldDataListener {
 		System.err.print("# WorldDataProcessor received packet @ " + System.currentTimeMillis() + " " );
 		
 		switch ( rawBuffer[5] ) {
+		case 14:
+			System.err.println("(PS2Tap Binary packet) ");
+			if ( null == ps2tap ) {
+				ps2tap = new RecordPS2Tap();
+			}
+			ps2tap.parseRecord(rawBuffer);
+			if ( ps2tap.isValid() ) {
+				/* use reflection to send all public variables off to DataGS */
+				reflectToDataGS( (Object) ps2tap);
+				
+			}
+			break;
 		case 25:
 			System.err.println("(MagWeb complete packet) ");
 			if ( null == magWeb ) {
