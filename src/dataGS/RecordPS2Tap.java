@@ -2,7 +2,7 @@ package dataGS;
 import java.util.Date;
 
 public class RecordPS2Tap {
-	public String serialNumber;
+	private String serialNumber;
 	public int sequenceNumber;
 	public int packetLength;
 
@@ -13,8 +13,8 @@ public class RecordPS2Tap {
 	public int soft_grid,aio_dsp_rev;
 	public int wireless_last_operation, wireless_last_register, wireless_last_result;
 
-	public int lCRC, rCRC;
-	public Date rxDate;
+	private int lCRC, rCRC;
+	private Date rxDate;
 
 	public RecordPS2Tap() {
 		lCRC=-1;

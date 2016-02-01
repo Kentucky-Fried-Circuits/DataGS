@@ -83,7 +83,7 @@ public class WorldDataProcessor implements WorldDataListener {
 			}
 			break;
 		default:
-			System.err.println("(Un-implemented / incorrect WorldData format)");
+			System.err.println("(Un-implemented / incorrect WorldData format rawBuffer[5]=" + Integer.toString(rawBuffer[5]) + ")");
 		}
 
 		System.err.flush();
