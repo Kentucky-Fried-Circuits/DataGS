@@ -14,7 +14,7 @@ public class RecordPS2Tap {
 	public int wireless_last_operation, wireless_last_register, wireless_last_result;
 
 	private int lCRC, rCRC;
-	private Date rxDate;
+	//private Date rxDate;
 
 	public RecordPS2Tap() {
 		lCRC=-1;
@@ -44,8 +44,8 @@ public class RecordPS2Tap {
 		return reg_crc;
 	}
 
-	public void parseRecord(int[] buff) {
-		rxDate = new Date();
+	public void parseRecord(int[] buff) throws Exception {
+//		rxDate = new Date();
 
 		StringBuilder sb = new StringBuilder();
 

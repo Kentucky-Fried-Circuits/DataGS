@@ -1,7 +1,6 @@
 package dataGS;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.Vector;
 
 public class WorldDataProcessor implements WorldDataListener {
@@ -57,6 +56,7 @@ public class WorldDataProcessor implements WorldDataListener {
 	public void WorldDataPacketReceived(int[] rawBuffer) {
 		System.err.print("# WorldDataProcessor received packet @ " + System.currentTimeMillis() + " " );
 		
+		try { 
 		switch ( rawBuffer[5] ) {
 		case 14:
 			System.err.println("(PS2Tap Binary packet) ");
@@ -84,6 +84,9 @@ public class WorldDataProcessor implements WorldDataListener {
 			break;
 		default:
 			System.err.println("(Un-implemented / incorrect WorldData format rawBuffer[5]=" + Integer.toString(rawBuffer[5]) + ")");
+		}
+		} catch ( Exception e ) {
+			System.err.println("# caught exception in WorldDataProcessor: " + e);
 		}
 
 		System.err.flush();
