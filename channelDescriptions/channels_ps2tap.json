@@ -12,7 +12,7 @@
         },
         {
             "id": "last_fault",
-            "title": "System State",
+            "title": "Last Fault",
             "description": "",
             "units": "",
             "precision": 0,
@@ -20,8 +20,8 @@
             "mode": "SAMPLE"
         },
         {
-            "id": "system_state",
-            "title": "System State",
+            "id": "user_state",
+            "title": "User State",
             "description": "",
             "units": "",
             "precision": 0,
@@ -29,8 +29,8 @@
             "mode": "SAMPLE"
         },
         {
-            "id": "system_state",
-            "title": "System State",
+            "id": "autorun_enabled",
+            "title": "Autorun Enabled",
             "description": "",
             "units": "",
             "precision": 0,
@@ -38,8 +38,8 @@
             "mode": "SAMPLE"
         },
         {
-            "id": "system_state",
-            "title": "System State",
+            "id": "autostart_count",
+            "title": "Autostart Count",
             "description": "",
             "units": "",
             "precision": 0,
@@ -56,6 +56,29 @@
             "mode": "SAMPLE"
         },
         {
+            "id": "energy_produced",
+            "title": "Energy Producted",
+            "description": "Energey sent to grid",
+            "units": "kWh",
+            "precision": 0,
+            "sortOrder": 0,
+            "mode": "SAMPLE",
+            "historyByDay": "true",
+            "log": "true"
+
+        },
+        {
+            "id": "soft_grid",
+            "title": "Soft Gridding",
+            "description": "Power output limited",
+            "units": "",
+            "precision": 0,
+            "sortOrder": 0,
+            "mode": "SAMPLE",
+            "historyByDay": "true",
+            "log": "true"
+        },
+        {
             "id": "ac_frequency",
             "title": "AC Frequency",
             "description": "Grid Frequency",
@@ -65,6 +88,37 @@
             "mode": "SAMPLE"
         },
         {
+            "id": "bus_voltage",
+            "title": "DC Bus Voltage",
+            "description": "DC Bus Voltage",
+            "units": "VDC",
+            "precision": 2,
+            "sortOrder": 50,
+            "mode": "AVERAGE",
+            "log": "true"
+        },
+        {
+            "id": "ac_voltage",
+            "title": "AC Grid Voltage",
+            "description": "AC Grid Voltage",
+            "units": "VAC",
+            "precision": 2,
+            "sortOrder": 50,
+            "mode": "AVERAGE",
+            "historyByDay": "true",
+            "log": "true"
+        },
+        {
+            "id": "dc_current",
+            "title": "DC Bus Current",
+            "description": "DC Bus Current",
+            "units": "amps DC",
+            "precision": 2,
+            "sortOrder": 50,
+            "mode": "AVERAGE",
+            "log": "true"
+        },
+        {
             "id": "output_power",
             "title": "Output Power",
             "description": "Inverter Output Power",
@@ -72,6 +126,7 @@
             "precision": 0,
             "sortOrder": 50,
             "mode": "AVERAGE",
+            "historyByDay": "true",
             "log": "true"
         }
     ]
