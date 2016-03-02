@@ -1,0 +1,45 @@
+<html>
+<head>
+<title>Configure</title>
+<script src="res/js/jquery.js"></script>
+</head>
+<body>
+<h1>Configure</h1>
+<form id="form1">
+Sample Val1: <input type="text" name="Val1" /><br />
+Sample Val2: <input type="text" name="Val2" /><br />
+<input type="button" id="update" value="Update!" />
+</form>
+<script>
+$.ajax("/configuration.json", {
+	cache:	false,
+	dataType: 'json'
+	//method:  'POST',
+	//data:    "{}"
+}).done(function (data, status, XHR) {
+	for (p in data) {
+		$("input[name=" + p + "]").val(data[p]);
+	}
+}).fail(function (XHR, status, error) {
+	alert('There was an error retrieving config data!');
+});
+
+$("#update").on('click', function(e) {
+	var json = {};
+	$("form#form1 :input[type=text]").each(function() {
+		var $input = $(this);
+		json[$input.attr('name')] = $input.val();
+	});
+	$.ajax("/configuration.json", {
+		cache: false,
+		dataType: 'json',
+		method: 'POST',
+		contentType: "application/json",
+		data: JSON.stringify(json)
+	}).fail(function (XHR, status, error) {
+		alert('There was an error updating config data!');
+	});
+});
+</script>
+</body>
+</html>
