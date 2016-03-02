@@ -42,7 +42,7 @@ import dataGS.ChannelDescription.Modes;
 public class DataGS implements ChannelData, JSONData {
 	private final boolean debug=false;
 
-	private final static String FIRMWARE_DATE = "2015-03-17";
+	private final static String FIRMWARE_DATE = "2016-03-02";
 	
 	protected WorldDataSerialReader ser;
 	protected boolean listening = false;
@@ -87,6 +87,9 @@ public class DataGS implements ChannelData, JSONData {
 
 	/* web server */
 	protected File documentRoot;
+	protected String configFilename;
+	protected String configLockFilename;
+	protected ConfigData configData;
 
 	/* history data */
 	protected DataRecent dataRecent;
@@ -640,11 +643,19 @@ public class DataGS implements ChannelData, JSONData {
 
 		/* loglocal */
 		options.addOption("w", "loglocal-directory", true, "directory for logging csv files");
+		
+		/* config */
+		options.addOption(null, "configFile", true, "file for configuration data.");
+		options.addOption(null, "configLockFile", true, "file to allow configuration data changes.");
 
 		/* parse command line */
 		CommandLineParser parser = new PosixParser();
 		try {
 			CommandLine line = parser.parse( options, args );
+			
+			/* Config */
+			if ( line.hasOption("configFile")) configFilename = line.getOptionValue("configFile");
+			if ( line.hasOption("configLockFile")) configLockFilename = line.getOptionValue("configLockFile");
 
 			/* MySQL */
 			if ( line.hasOption("host") ) myHost=line.getOptionValue("host");
@@ -858,7 +869,8 @@ public class DataGS implements ChannelData, JSONData {
 			} else {
 				System.err.println("# HTTP server listening on port " + httpPort + " with document root absolute path " + documentRoot.getAbsolutePath());
 				System.err.flush();
-				HTTPServerJSON httpd = new HTTPServerJSON(httpPort, this, channelMapFile, logLocalDir, documentRoot);
+				configData = new ConfigData(configFilename, configLockFilename);
+				HTTPServerJSON httpd = new HTTPServerJSON(httpPort, this, channelMapFile, logLocalDir, documentRoot, configData);
 				httpd.start();
 			}
 		} else {
@@ -1050,7 +1062,7 @@ public class DataGS implements ChannelData, JSONData {
 
 	/* Main method */
 	public static void main(String[] args) throws IOException {
-		System.err.println("# Major version: " + FIRMWARE_DATE + " (ian-Precision-M4600)");
+		System.err.println("# Major version: " + FIRMWARE_DATE + " (White)");
 		System.err.println("# java.library.path: " + System.getProperty( "java.library.path" ));
 
 		Thread.setDefaultUncaughtExceptionHandler(

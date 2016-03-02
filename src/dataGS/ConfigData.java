@@ -22,6 +22,9 @@ public class ConfigData {
 	}
 	
 	public JsonObject getJSON() {
+		if (config_filename == null) {
+			return new JsonObject();
+		}
 		try {
 			byte[] encoded = Files.readAllBytes(Paths.get(config_filename));
 			String json_string = new String(encoded, Charset.forName("UTF-8"));
@@ -41,8 +44,7 @@ public class ConfigData {
 	}
 	
 	public boolean setValue (String name, String value) {
-		File lock = new File(lock_filename);
-		if (!lock.exists()) {
+		if (config_filename == null || (lock_filename != null && !(new File(lock_filename)).exists())) {
 			return false;
 		}
 		JsonObject json = getJSON();

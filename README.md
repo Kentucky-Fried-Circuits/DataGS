@@ -22,6 +22,7 @@
    * [Serial port data source arguments](#serialarg)
    * [Data output (JSON) arguments](#outputarg)
    * [Local Logging arguments](#logarg)
+   * [Configuration File arguments] (#configarg)
  
 5. ###[Website](#website)
    * [Current Conditions](#conditions)
@@ -402,6 +403,14 @@ The Historical Data page allows the user to view data by month. The user may sel
 | Argument | Title | Require Argument | Description |
 |---|---|---|---|
 | w | loglocal-directory | true | directory for logging csv files |
+
+<a name="configarg"></a>
+### Configuration File arguments
+
+| Argument | Title | Required Argumentd | Description |
+|---|---|---|---|
+| | configFile | false | File to use for JSON configuration. |
+| | configLockFile | false | File to require existence to modify JSON configutation. | 
 
 <a name="startsoft"></a>
 ## Starting the software

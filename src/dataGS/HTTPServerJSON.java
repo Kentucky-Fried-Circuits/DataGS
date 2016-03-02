@@ -42,13 +42,13 @@ public class HTTPServerJSON extends NanoHTTPD {
 	protected File documentRoot;
 	protected ConfigData config;
 
-	public HTTPServerJSON(int port, JSONData s, String c, String logLocalDirectory, File  w) {
+	public HTTPServerJSON(int port, JSONData s, String c, String logLocalDirectory, File  w, ConfigData config) {
 		super( port );
 		data = s;
 		channelMapFile = c;
 		this.logLocalDirectory = logLocalDirectory;
 		documentRoot=w;
-		config = new ConfigData("/tmp/config", "/tmp/lock");
+		this.config = config;
 	}
 
 
