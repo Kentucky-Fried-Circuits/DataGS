@@ -21,7 +21,7 @@ public class ConfigData {
 		lock_filename = lockFile;		
 	}
 	
-	protected JsonObject getJSON() {
+	public JsonObject getJSON() {
 		try {
 			byte[] encoded = Files.readAllBytes(Paths.get(config_filename));
 			String json_string = new String(encoded, Charset.forName("UTF-8"));

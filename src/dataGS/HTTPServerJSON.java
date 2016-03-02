@@ -1,11 +1,23 @@
 package dataGS;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSerializer;
 
 public class HTTPServerJSON extends NanoHTTPD {
 
@@ -28,6 +40,7 @@ public class HTTPServerJSON extends NanoHTTPD {
 	protected String channelMapFile;
 	protected String logLocalDirectory;
 	protected File documentRoot;
+	protected ConfigData config;
 
 	public HTTPServerJSON(int port, JSONData s, String c, String logLocalDirectory, File  w) {
 		super( port );
@@ -35,7 +48,7 @@ public class HTTPServerJSON extends NanoHTTPD {
 		channelMapFile = c;
 		this.logLocalDirectory = logLocalDirectory;
 		documentRoot=w;
-		
+		config = new ConfigData("/tmp/config", "/tmp/lock");
 	}
 
 
@@ -183,6 +196,48 @@ public class HTTPServerJSON extends NanoHTTPD {
 			}
 		} 
 
+		/* configuration */
+		else if ( uri.endsWith("/configuration.json") ) {
+			if (method == Method.POST) {
+				try {
+					Integer contentLength = Integer.parseInt(session.getHeaders().get("content-length"));
+					byte[] buffer = new byte[contentLength];
+					session.getInputStream().read(buffer, 0, contentLength);
+					
+					String json_string = new String(buffer, Charset.forName("UTF-8"));
+					JsonParser parser = new JsonParser();
+					JsonObject jsonObject = parser.parse(json_string).getAsJsonObject();
+					
+					Set<Entry<String, JsonElement>> set = jsonObject.entrySet();
+					boolean error = false;
+					for (Entry<String, JsonElement> entry : set) {
+						if (!config.setValue(entry.getKey(), entry.getValue().getAsString())) {
+							error = true;
+						}
+					}
+					Response.Status status = Response.Status.OK;
+					if (error) {
+						status = Response.Status.FORBIDDEN;
+					}
+					JsonObject json = config.getJSON();
+					if (json == null) {
+						response = new NanoHTTPD.Response(Response.Status.INTERNAL_ERROR, MIME_PLAINTEXT, "", gzipAllowed);
+					} else {
+						response = new NanoHTTPD.Response( status, MIME_PLAINTEXT, config.getJSON().toString(), gzipAllowed );
+					}
+				} catch (Exception e) {
+					response = new NanoHTTPD.Response( Response.Status.BAD_REQUEST, MIME_PLAINTEXT, "", gzipAllowed );
+				}
+			} else {
+				JsonObject json = config.getJSON();
+				if (json == null) {
+					response = new NanoHTTPD.Response(Response.Status.OK, MIME_PLAINTEXT, "{}", gzipAllowed);
+				} else {
+					response = new NanoHTTPD.Response(Response.Status.OK, MIME_PLAINTEXT, json.toString(), gzipAllowed );
+				}
+			}
+		}
+		
 		/* dynamically generated */
 		else if ( uri.endsWith( "/data/now.json" ) ) {
 			/* interval averaged or sampled */
