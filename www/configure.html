@@ -1,32 +1,124 @@
 <html>
 <head>
-<title>Configure</title>
+<title>AGS Configuration</title>
 <script src="res/js/jquery.js"></script>
 </head>
+
 <body>
-<h1>Configure</h1>
-<form id="form1">
-Sample Val1: <input type="text" name="Val1" /><br />
-Sample Val2: <input type="text" name="Val2" /><br />
-<input type="button" id="update" value="Update!" />
+<form>
+<h3>System Voltage</h3>
+<h4>Enable:</h4>
+<input type="radio" name="ags_system_voltage_enable" value="0"> No<br />
+<input type="radio" name="ags_system_voltage_enable" value="1"> Yes
+
+<h4>Start Voltage:</h4>
+<!-- fixed point with two digits to the left of decimal and one to the right-->
+<input type="text" name="ags_system_voltage_start_voltage" />
+<h4>Stop Voltage:</h4>
+<!-- fixed point with two digits to the left of decimal and one to the right, and > start voltage -->
+<input type="text" name="ags_system_voltage_stop" />
+
+<h3>System Time</h3>
+<h4>Enable:</h4>
+<input type="radio" name="ags_system_time_enable" value="0"> No<br />
+<input type="radio" name="ags_system_time_enable" value="1"> Yes
+
+<h4>Start Hour:</h4>
+<!-- integer >= 0 <= 23 -->
+<input type="text" name="ags_system_time_start_hour" />
+<h4>Duration, minutes:</h4>
+<!-- integer greater > 0, < 1400 -->
+<input type="text" name="ags_system_time_duration_minutes" />
+
+<h3>System SOC</h3>
+<h4>Enable:</h4>
+<input type="radio" name="ags_system_soc_enable" value="0"> No<br />
+<input type="radio" name="ags_system_soc_enable" value="1"> Yes
+
+<h4>Start SOC:</h4>
+<!-- integer > 0 and < 100 -->
+<input type="text" name="ags_system_soc_start_soc" />
+<h4>Stop SOC:</h4>
+<!-- integer greater than start SOC, <= 100 -->
+<input type="text" name="ags_system_soc_stop_soc" />
+
+<h3>System amps</h3>
+<h4>Enable:</h4>
+<input type="radio" name="ags_system_amps_enable" value="0"> No<br />
+<input type="radio" name="ags_system_amps_enable" value="1"> Yes
+
+<h4>Start amps:</h4>
+<!-- integer < 0 and > -400 -->
+<input type="text" name="ags_system_amps_start_amps" />
+<h4>Duration, minutes:</h4>
+<!-- integer greater > 0, < 1400 -->
+<input type="text" name="ags_system_amps_duration_minutes" />
+
+
+<h3>Transformer Temperature exceeds set point</h3>
+<h4>Enable:</h4>
+<input type="radio" name="ags_system_transformer_temperature_enable" value="0"> No<br />
+<input type="radio" name="ags_system_transformer_temperature_enable" value="1"> Yes
+
+<h4>Start when transformer temperature exceeds:</h4>
+<!-- integer > 10 and < 200 -->
+<input type="text" name="ags_system_transformer_temperature_exceeds" />
+<h4>Duration, minutes:</h4>
+<!-- integer greater > 0, < 1400 -->
+<input type="text" name="ags_system_transformer_duration_minutes" />
+
+
+<h3>Battery Temperature exceeds set point</h3>
+<h4>Enable:</h4>
+<input type="radio" name="ags_system_battery_temperature_enable" value="0"> No<br />
+<input type="radio" name="ags_system_battery_temperature_enable" value="1"> Yes
+
+<h4>Start when battery temperature exceeds:</h4>
+<!-- integer > 10 and < 200 -->
+<input type="text" name="ags_system_battery_temperature_exceeds" />
+<h4>Duration, minutes:</h4>
+<!-- integer greater > 0, < 1400 -->
+<input type="text" name="ags_system_transformer_duration_minutes" />
+
+
+<h3>Daily Maintenance Schedule</h3>
+<h4>Enable:</h4>
+<input type="radio" name="ags_system_exercise_enable" value="0"> No<br />
+<input type="radio" name="ags_system_exercise_enable" value="1"> Yes
+
+<h4>Days between runs:</h4>
+<!-- integer > 0 <= 30 -->
+<input type="text" name="ags_system_exercise_days_between_runs" />
+<h4>Start Hour:</h4>
+<!-- integer >= 0 <= 23 -->
+<input type="text" name="ags_system_exercise_start_hour" />
+<h4>Duration, minutes:</h4>
+<!-- integer greater > 0, < 1400 -->
+<input type="text" name="ags_system_exercise_duration_minutes" />
+
+<br /><hr />
+<input type="button" id="update" value="Update All!" />
 </form>
 <script>
 $.ajax("/configuration.json", {
-	cache:	false,
-	dataType: 'json'
-	//method:  'POST',
-	//data:    "{}"
+	cache: false,
+	dataType: 'json',
 }).done(function (data, status, XHR) {
 	for (p in data) {
-		$("input[name=" + p + "]").val(data[p]);
+		$("input[type=text][name=" + p + "]").val(data[p]);
+		$("input[type=radio][name=" + p + "]" + "[value=" + data[p] + "]").prop("checked", true);
 	}
 }).fail(function (XHR, status, error) {
 	alert('There was an error retrieving config data!');
 });
 
-$("#update").on('click', function(e) {
+$('#update').on('click', function(e) {
 	var json = {};
-	$("form#form1 :input[type=text]").each(function() {
+	$('form :input[type=text]').each(function () {
+		var $input = $(this);
+		json[$input.attr('name')] = $input.val();
+	});
+	$('form :input[type=radio]:checked').each(function () {
 		var $input = $(this);
 		json[$input.attr('name')] = $input.val();
 	});
@@ -34,12 +126,13 @@ $("#update").on('click', function(e) {
 		cache: false,
 		dataType: 'json',
 		method: 'POST',
-		contentType: "application/json",
+		contentType: 'application/json',
 		data: JSON.stringify(json)
 	}).fail(function (XHR, status, error) {
-		alert('There was an error updating config data!');
+		alert('There was an error updating configuration data!');
 	});
 });
 </script>
 </body>
+
 </html>
