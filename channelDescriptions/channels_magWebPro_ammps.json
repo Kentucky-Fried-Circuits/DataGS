@@ -1,0 +1,1191 @@
+{
+
+    "data": [
+        {
+            "id": "maxAgeCurrent",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "sequenceNumber",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "firmware_year",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "firmware_month",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "firmware_day",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "age_inverter",
+            "title": "Inverter Age (255 indicates old data)",
+            "description": "Inverter Age (255 indicates old data)",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 240,
+            "mode": "SAMPLE",
+            "log": "true"
+        },
+        {
+            "id": "length_inverter",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "age_remote",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "age_remote_0xA0",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "age_remote_0xA1",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "age_remote_0xA2",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "age_remote_0xA3",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "age_remote_0xA4",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "age_remote_0x80",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "age_ags_0xA1",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "age_ags_0xA2",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "age_rtr",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "age_bmk",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "i_status",
+            "title": "",
+            "description": "Inverter Status",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 170,
+            "dayStats": "true",
+            "mode": "SAMPLE",
+            "log": "true"
+        },
+        {
+            "id": "i_fault",
+            "title": "",
+            "description": "Fault Code",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 180,
+            "mode": "SAMPLE",
+            "log": "true"
+        },
+        {
+            "id": "i_dc_volts",
+            "title": "DC Volts",
+            "description": "VDC (Inveter)",
+            "units": "volts",
+            "precision": 1,
+            "sortOrder": 100,
+            "mode": "AVERAGE",
+            "log": "true",
+            "historyByDay": "true"
+        },
+        {
+            "id": "i_dc_amps",
+            "title": "",
+            "description": "DC Amps (Inverter)",
+            "units": "",
+            "precision": 0,
+            "sortOrder": 110,
+            "mode": "AVERAGE",
+            "log": "true"
+        },
+        {
+            "id": "i_ac_volts_out",
+            "title": "VAC Out (Inverter)",
+            "description": "VAC Out (Inverter)",
+            "units": "",
+            "precision": 0,
+            "sortOrder": 120,
+            "dayStats": "true",
+            "mode": "AVERAGE",
+            "log": "true"
+        },
+        {
+            "id": "i_ac_volts_in",
+            "title": "",
+            "description": "VAC In (Inverter)",
+            "units": "volts",
+            "precision": 2,
+            "sortOrder": 70,
+            "mode": "AVERAGE",
+            "log": "true"
+        },
+        {
+            "id": "i_led_invert",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "i_led_charge",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "i_temp_battery",
+            "title": "Battery Temperature",
+            "description": "Battery Temp (C )",
+            "units": "C",
+            "precision": 2,
+            "sortOrder": 210,
+            "dayStats": "true",
+            "mode": "AVERAGE",
+            "historyByDay": "true",
+            "log": "true"
+        },
+        {
+            "id": "i_temp_transformer",
+            "title": "",
+            "description": "Transformer Temp (C )",
+            "units": "C",
+            "precision": 2,
+            "sortOrder": 190,
+            "dayStats": "true",
+            "mode": "AVERAGE",
+            "log": "true"
+        },
+        {
+            "id": "i_temp_fet",
+            "title": "",
+            "description": "FET Temp (C )",
+            "units": "C",
+            "precision": 2,
+            "sortOrder": 200,
+            "dayStats": "true",
+            "mode": "AVERAGE",
+            "log": "true"
+        },
+        {
+            "id": "i_amps_in",
+            "title": "",
+            "description": "AC Amps IN",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 140,
+            "dayStats": "true",
+            "mode": "AVERAGE",
+            "log": "true"
+        },
+        {
+            "id": "i_amps_out",
+            "title": "",
+            "description": "AC Amps Out",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 130,
+            "dayStats": "true",
+            "mode": "AVERAGE",
+            "log": "true"
+        },
+        {
+            "id": "i_ac_hz",
+            "title": "",
+            "description": "AC Out Hz",
+            "units": "",
+            "precision": 1,
+            "sortOrder": 160,
+            "dayStats": "true",
+            "mode": "AVERAGE",
+            "log": "true"
+        },
+        {
+            "id": "i_stack_mode",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "i_revision",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "i_model",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "r_search_watts",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "r_battery_size",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "r_battery_type",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "r_absorb_volts",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "r_charger_amps",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "r_input_amps",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "r_revision",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "r_parallel_threshold",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "r_force_charge",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "r_auto_genstart",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "r_low_batt_cut_out",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "r_vac_cut_out",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "r_float_volts",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "r_eq_volts",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "r_absorb_time_minutes",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "r_hours",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "r_minutes",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "r_ags_gen_run_time_minutes",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "r_ags_start_tempF",
+            "title": "",
+            "description": "",
+            "units": "F",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "r_ags_start_vdc",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "r_ags_quiet_time",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "r_ags_start_time_hour",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "r_ags_start_time_minute",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "r_ags_stop_time_hour",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "r_ags_stop_time_minute",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "r_ags_stop_vdc",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "r_ags_start_delay_seconds",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "r_ags_stop_delay_seconds",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "r_ags_max_run_time_minutes",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "r_ags_start_soc",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "r_ags_stop_soc",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "r_ags_start_amps",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "r_ags_start_amps_delay_seconds",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "r_ags_stop_amps",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "r_ags_stop_amps_delay_seconds",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "r_ags_quiet_time_begin_hour",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "r_ags_quiet_time_begin_minute",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "r_ags_quiet_time_end_hour",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "r_ags_quiet_time_end_minute",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "r_ags_exercise_days",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "r_ags_exercise_start_hour",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "r_ags_exercise_start_minute",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "r_ags_exercise_run_time_minutes",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "r_ags_top_off_minutes",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "r_ags_warm_up_seconds",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "r_ags_cool_down_seconds",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "r_bmk_efficiency",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "r_bmk_battery_size",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "a_status",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "a_temperature",
+            "title": "",
+            "description": "AGS Temp (C )",
+            "units": "C",
+            "precision": 2,
+            "sortOrder": 250,
+            "dayStats": "true",
+            "mode": "AVERAGE",
+            "log": "true"
+        },
+        {
+            "id": "a_gen_runtime_minutes",
+            "title": "",
+            "description": "Generator Runtime (Current Cycle)",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 230,
+            "mode": "SAMPLE",
+            "log": "true"
+        },
+        {
+            "id": "a_voltage",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "dayStats": "true",
+            "mode": "AVERAGE"
+        },
+        {
+            "id": "a_revision",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "a_days_since_last",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },       
+        {
+            "id": "a_days_since_last_full",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "a_gen_run_hours_since_boot",
+            "title": "",
+            "description": "Total Generator Runtime (Since AGS Boot)",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 220,
+            "mode": "SAMPLE",
+            "log": "true"
+        },
+        {
+            "id": "b_state_of_charge",
+            "title": "Battery SOC",
+            "description": "SOC (BMK)",
+            "units": "%",
+            "precision": 0,
+            "sortOrder": 90,
+            "mode": "AVERAGE",
+            "dayStats": "true",
+            "log": "true",
+            "historyByDay": "true",
+            "recent": "true"
+        },
+        {
+            "id": "b_dc_volts",
+            "title": "",
+            "description": "VDC (BMK)",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 60,
+            "mode": "AVERAGE",
+			"dayStats": "true",
+            "log": "true"
+        },
+        {
+            "id": "b_dc_amps",
+            "title": "",
+            "description": "DC Amps (BMK)",
+            "units": "",
+            "precision":1,
+            "sortOrder": 70,
+            "mode": "AVERAGE",
+            "dayStats": "true",
+            "log": "true"
+        },
+        {
+            "id": "b_dc_min_volts",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "b_dc_max_volts",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "b_amph_in_out",
+            "title": "",
+            "description": "Ah In/Out (BMK)",
+            "units": "",
+            "precision": 0,
+            "sortOrder": 80,
+            "dayStats": "true",
+            "mode": "SAMPLE",
+            "log": "true",
+            "recent": "true"
+        },
+        {
+            "id": "b_amph_trip",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "b_amph_cumulative",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "b_fault",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "b_revision",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "rtr_revision",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "SAMPLE"
+        },
+        {
+            "id": "b_dc_watts",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 0,
+            "sortOrder": 0,
+            "dayStats": "true",
+            "mode": "AVERAGE",
+            "recent": "true"
+        },
+        {
+            "id": "i_ac_volts_out_over_80",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 0,
+            "sortOrder": 0,
+            "dayStats": "true",
+            "mode": "AVERAGE"
+        },
+        {
+            "id": "i_amps_out_inverting",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 0,
+            "sortOrder": 0,
+            "dayStats": "true",
+            "mode": "AVERAGE"
+        },
+        {
+            "id": "i_amps_out_charging",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 0,
+            "sortOrder": 0,
+            "dayStats": "true",
+            "mode": "AVERAGE"
+        },
+        {
+            "id": "b_state_of_charge_clean",
+            "title": "Battery SOC",
+            "description": "SOC (BMK)",
+            "units": "%",
+            "precision": 0,
+            "sortOrder": 0,
+            "mode": "AVERAGE",
+            "dayStats": "true"
+        },
+        {
+            "id": "b_dc_volts_clean",
+            "title": "",
+            "description": "VDC (BMK)",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "mode": "AVERAGE",
+			"dayStats": "true"
+        },
+        {
+            "id": "b_dc_amps_clean",
+            "title": "",
+            "description": "DC Amps (BMK)",
+            "units": "",
+            "precision":1,
+            "sortOrder": 0,
+            "mode": "AVERAGE",
+			"dayStats": "true"
+        },
+        {
+            "id": "i_ac_volts_out_clean",
+            "title": "VAC Out (Inverter)",
+            "description": "",
+            "units": "",
+            "precision": 0,
+            "sortOrder": 0,
+            "dayStats": "true",
+            "mode": "AVERAGE"
+        },
+        {
+            "id": "i_temp_battery_clean",
+            "title": "Battery Temperature",
+            "description": "Battery Temp (C )",
+            "units": "C",
+            "precision": 2,
+            "sortOrder": 0,
+            "dayStats": "true",
+            "mode": "AVERAGE"
+        },
+        {
+            "id": "i_temp_transformer_clean",
+            "title": "",
+            "description": "Tranformer Temp (C )",
+            "units": "C",
+            "precision": 2,
+            "sortOrder": 0,
+            "dayStats": "true",
+            "mode": "AVERAGE"
+        },
+        {
+            "id": "i_temp_fet_clean",
+            "title": "",
+            "description": "FET Temp (C )",
+            "units": "C",
+            "precision": 2,
+            "sortOrder": 0,
+            "dayStats": "true",
+            "mode": "AVERAGE"
+        },
+        {
+            "id": "i_amps_in_clean",
+            "title": "",
+            "description": "AC Amps IN",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "dayStats": "true",
+            "mode": "AVERAGE"
+        },
+        {
+            "id": "i_amps_out_clean",
+            "title": "",
+            "description": "AC Amps Out",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "dayStats": "true",
+            "mode": "AVERAGE"
+        },
+        {
+            "id": "i_ac_hz_clean",
+            "title": "",
+            "description": "AC Out Hz",
+            "units": "",
+            "precision": 1,
+            "sortOrder": 0,
+            "dayStats": "true",
+            "mode": "AVERAGE"
+        },
+        {
+            "id": "a_temperature_clean",
+            "title": "",
+            "description": "AGS Temp (C )",
+            "units": "C",
+            "precision": 2,
+            "sortOrder": 0,
+            "dayStats": "true",
+            "mode": "AVERAGE"
+        },
+        {
+            "id": "a_voltage_clean",
+            "title": "",
+            "description": "",
+            "units": "",
+            "precision": 2,
+            "sortOrder": 0,
+            "dayStats": "true",
+            "mode": "AVERAGE"
+        },
+        {
+            "id": "b_dc_power",
+            "title": "Battery Watts",
+            "description": "DC Power (RMK)",
+            "units": "watts",
+            "precision": 0,
+            "sortOrder": 10,
+            "mode": "AVERAGE",
+            "historyByDay": "false",
+            "log": "true"
+        },
+        {
+            "id": "i_dc_power",
+            "title": "Load Watts",
+            "description": "DC Power (Inverter)",
+            "units": "watts",
+            "precision": 0,
+            "sortOrder": 20,
+            "mode": "AVERAGE",
+            "log": "true",
+            "historyByDay": "false",
+            "recent": "true"
+        },
+        {
+            "id": "calc_add_power",
+            "title": "Renewable Watts",
+            "description": "Calculated Renewable Power",
+            "units": "watts",
+            "precision": 0,
+            "sortOrder": 30,
+            "mode": "AVERAGE",
+            "dayStats": "false",
+            "log": "true",
+            "historyByDay": "false",
+            "recent": "true"            
+        },
+        {
+            "id": "gen_power",
+            "title": "Generator Watts",
+            "description": "AC In Power",
+            "units": "watts",
+            "precision": 0,
+            "sortOrder": 40,
+            "mode": "AVERAGE",
+            "historyByDay": "false",
+            "log": "true"
+        },
+        {
+            "id": "load_power",
+            "title": "",
+            "description": "AC Out Power",
+            "units": "",
+            "precision": 0,
+            "sortOrder": 50,
+            "mode": "AVERAGE",
+            "log": "true"
+        },
+        {
+            "id": "gen_runtime",
+            "title": "",
+            "description": "Generator Runtime, hours",
+            "units": "",
+            "precision": 1,
+            "sortOrder": 100,
+            "mode": "SAMPLE",
+            "log": "true"
+        }
+    ]
+
+}
