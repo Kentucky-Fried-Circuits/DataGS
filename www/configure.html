@@ -117,7 +117,14 @@
 </form>
 <script>
 
-$.ajax("/configuration.json", {
+var agent = window.navigator.userAgent;
+var url = "/data/configuration";
+var ie_hack = '.json';
+if (agent.search('MSIE') >= 0 || agent.search('Trident') >= 0) {
+	ie_hack = '.dat';
+}
+
+$.ajax(url + ie_hack, {
 	cache: false,
 	dataType: 'json',
 }).done(function (data, status, XHR) {
@@ -240,8 +247,8 @@ $('#update').on('click', function(e) {
 		json[$input.attr('name')] = $input.val();
 	});
 	if(validateForms()){
-		//may not work in internet explorer - consult david
-		$.ajax("/configuration.json", {
+
+		$.ajax(url + ie_hack, {
 			cache: false,
 			dataType: 'json',
 			method: 'POST',
