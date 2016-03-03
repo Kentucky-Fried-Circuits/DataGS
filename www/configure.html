@@ -136,7 +136,80 @@ $.ajax(url + ie_hack, {
 	alert('There was an error retrieving config data!');
 });
 
-
+function toggleSection(name, value){
+	if(name == 'ags_system_voltage_enable'){
+		if(value == 1){
+			$('input[name="ags_system_voltage_start_voltage"]').removeAttr('disabled');
+			$('input[name="ags_system_voltage_stop"]').removeAttr('disabled');
+		}
+		else{
+			$('input[name="ags_system_voltage_start_voltage"]').attr('disabled','disabled');
+			$('input[name="ags_system_voltage_stop"]').attr('disabled','disabled');
+		}
+	}
+	else if(name == 'ags_system_time_enable'){
+		if(value == 1){
+			$('input[name="ags_system_time_start_hour"]').removeAttr('disabled');
+			$('input[name="ags_system_time_duration_minutes"]').removeAttr('disabled');
+		}
+		else{
+			$('input[name="ags_system_time_start_hour"]').attr('disabled','disabled');
+			$('input[name="ags_system_time_duration_minutes"]').attr('disabled','disabled');
+		}
+	}
+	else if(name == 'ags_system_amps_enable'){
+		if(value == 1){
+			$('input[name="ags_system_amps_start_amps"]').removeAttr('disabled');
+			$('input[name="ags_system_amps_duration_minutes"]').removeAttr('disabled');
+		}
+		else{
+			$('input[name="ags_system_amps_start_amps"]').attr('disabled','disabled');
+			$('input[name="ags_system_amps_duration_minutes"]').attr('disabled','disabled');
+		}
+	}
+	else if(name == 'ags_system_soc_enable'){
+		if(value == 1){
+			$('input[name="ags_system_soc_start_soc"]').removeAttr('disabled');
+			$('input[name="ags_system_soc_stop_soc"]').removeAttr('disabled');
+		}
+		else{
+			$('input[name="ags_system_soc_start_soc"]').attr('disabled','disabled');
+			$('input[name="ags_system_soc_stop_soc"]').attr('disabled','disabled');
+		}
+	}
+	else if(name == 'ags_system_transformer_temperature_enable'){
+		if(value == 1){
+			$('input[name="ags_system_transformer_temperature_exceeds"]').removeAttr('disabled');
+			$('input[name="ags_system_transformer_duration_minutes"]').removeAttr('disabled');
+		}
+		else{
+			$('input[name="ags_system_transformer_temperature_exceeds"]').attr('disabled','disabled');
+			$('input[name="ags_system_transformer_duration_minutes"]').attr('disabled','disabled');
+		}
+	}
+	else if(name == 'ags_system_battery_temperature_enable'){
+		if(value == 1){
+			$('input[name="ags_system_battery_temperature_exceeds"]').removeAttr('disabled');
+			$('input[name="ags_system_battery_duration_minutes"]').removeAttr('disabled');
+		}
+		else{
+			$('input[name="ags_system_battery_temperature_exceeds"]').attr('disabled','disabled');
+			$('input[name="ags_system_battery_duration_minutes"]').attr('disabled','disabled');
+		}
+	}
+	else if(name == 'ags_system_exercise_enable'){
+		if(value == 1){
+			$('input[name="ags_system_exercise_days_between_runs"]').removeAttr('disabled');
+			$('input[name="ags_system_exercise_start_hour"]').removeAttr('disabled');
+			$('input[name="ags_system_exercise_duration_minutes"]').removeAttr('disabled');
+		}
+		else{
+			$('input[name="ags_system_exercise_days_between_runs"]').attr('disabled','disabled');
+			$('input[name="ags_system_exercise_start_hour"]').attr('disabled','disabled');
+			$('input[name="ags_system_exercise_duration_minutes"]').attr('disabled','disabled');
+		}
+	}
+}
 	
 function validateForms(){
 	//variables that will represent values in our form
@@ -259,83 +332,20 @@ $('#update').on('click', function(e) {
 });
 	
 $( document ).ready(function() {
+	//loops through checked radio buttons once document is ready and disabled sections based on the radio button value
+	$("form input[type='radio']:checked").each(function(){
+		var radio = $(this);
+		var name = radio.attr('name');
+		var value = radio.val();
+		toggleSection(name, value);
+	});
+	
+	//handlers for when radios are changed - will disabled sectiosn of form when changed
 	$( "input[type='radio']" ).change(function() {
 		var radio = $(this);
 		var name = radio.attr('name');
 		var value = radio.val();
-		if(name == 'ags_system_voltage_enable'){
-			if(value == 1){
-				$('input[name="ags_system_voltage_start_voltage"]').removeAttr('disabled');
-				$('input[name="ags_system_voltage_stop"]').removeAttr('disabled');
-			}
-			else{
-				$('input[name="ags_system_voltage_start_voltage"]').attr('disabled','disabled');
-				$('input[name="ags_system_voltage_stop"]').attr('disabled','disabled');
-			}
-		}
-		else if(name == 'ags_system_time_enable'){
-			if(value == 1){
-				$('input[name="ags_system_time_start_hour"]').removeAttr('disabled');
-				$('input[name="ags_system_time_duration_minutes"]').removeAttr('disabled');
-			}
-			else{
-				$('input[name="ags_system_time_start_hour"]').attr('disabled','disabled');
-				$('input[name="ags_system_time_duration_minutes"]').attr('disabled','disabled');
-			}
-		}
-		else if(name == 'ags_system_amps_enable'){
-			if(value == 1){
-				$('input[name="ags_system_amps_start_amps"]').removeAttr('disabled');
-				$('input[name="ags_system_amps_duration_minutes"]').removeAttr('disabled');
-			}
-			else{
-				$('input[name="ags_system_amps_start_amps"]').attr('disabled','disabled');
-				$('input[name="ags_system_amps_duration_minutes"]').attr('disabled','disabled');
-			}
-		}
-		else if(name == 'ags_system_soc_enable'){
-			if(value == 1){
-				$('input[name="ags_system_soc_start_soc"]').removeAttr('disabled');
-				$('input[name="ags_system_soc_stop_soc"]').removeAttr('disabled');
-			}
-			else{
-				$('input[name="ags_system_soc_start_soc"]').attr('disabled','disabled');
-				$('input[name="ags_system_soc_stop_soc"]').attr('disabled','disabled');
-			}
-		}
-		else if(name == 'ags_system_transformer_temperature_enable'){
-			if(value == 1){
-				$('input[name="ags_system_transformer_temperature_exceeds"]').removeAttr('disabled');
-				$('input[name="ags_system_transformer_duration_minutes"]').removeAttr('disabled');
-			}
-			else{
-				$('input[name="ags_system_transformer_temperature_exceeds"]').attr('disabled','disabled');
-				$('input[name="ags_system_transformer_duration_minutes"]').attr('disabled','disabled');
-			}
-		}
-		else if(name == 'ags_system_battery_temperature_enable'){
-			if(value == 1){
-				$('input[name="ags_system_battery_temperature_exceeds"]').removeAttr('disabled');
-				$('input[name="ags_system_battery_duration_minutes"]').removeAttr('disabled');
-			}
-			else{
-				$('input[name="ags_system_battery_temperature_exceeds"]').attr('disabled','disabled');
-				$('input[name="ags_system_battery_duration_minutes"]').attr('disabled','disabled');
-			}
-		}
-		else if(name == 'ags_system_exercise_enable'){
-			if(value == 1){
-				$('input[name="ags_system_exercise_days_between_runs"]').removeAttr('disabled');
-				$('input[name="ags_system_exercise_start_hour"]').removeAttr('disabled');
-				$('input[name="ags_system_exercise_duration_minutes"]').removeAttr('disabled');
-			}
-			else{
-				$('input[name="ags_system_exercise_days_between_runs"]').attr('disabled','disabled');
-				$('input[name="ags_system_exercise_start_hour"]').attr('disabled','disabled');
-				$('input[name="ags_system_exercise_duration_minutes"]').attr('disabled','disabled');
-			}
-		}
-		
+		toggleSection(name, value);		
 	});
 });	
 </script>
