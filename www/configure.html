@@ -9,116 +9,116 @@
 
 <body>
 <form id="agsConfigurationForm">
-<h3>System Voltage</h3>
-<h4>Enable:</h4>
-<input type="radio" name="ags_system_voltage_enable" value="0"> No<br />
-<input type="radio" name="ags_system_voltage_enable" value="1" checked> Yes
+	<h3>System Voltage</h3>
+	<h4>Enable:</h4>
+	<input type="radio" name="ags_system_voltage_enable" value="0"> No<br />
+	<input type="radio" name="ags_system_voltage_enable" value="1" checked> Yes
 
-<h4>Start Voltage:</h4>
-<!-- fixed point with two digits to the left of decimal and one to the right-->
-<input id='ags_system_voltage_start_voltage' type="text" name="ags_system_voltage_start_voltage" />
-<h4>Stop Voltage:</h4>
-<!-- fixed point with two digits to the left of decimal and one to the right, and > start voltage -->
-<input id='ags_system_voltage_stop' type="text" name="ags_system_voltage_stop" />
+	<h4>Start Voltage:</h4>
+	<!-- fixed point with two digits to the left of decimal and one to the right-->
+	<input id='ags_system_voltage_start_voltage' type="text" name="ags_system_voltage_start_voltage" title="Start Voltage"/>
+	<h4>Stop Voltage:</h4>
+	<!-- fixed point with two digits to the left of decimal and one to the right, and > start voltage -->
+	<input id='ags_system_voltage_stop' type="text" name="ags_system_voltage_stop"  title="Stop Voltage"/>
 
-<h3>System Time</h3>
-<h4>Enable:</h4>
-<input type="radio" name="ags_system_time_enable" value="0"> No<br />
-<input type="radio" name="ags_system_time_enable" value="1" checked> Yes
+	<h3>System Time</h3>
+	<h4>Enable:</h4>
+	<input type="radio" name="ags_system_time_enable" value="0"> No<br />
+	<input type="radio" name="ags_system_time_enable" value="1" checked> Yes
 
-<h4>Start Hour:</h4>
-	
-<!-- integer >= 0 <= 23 -->
-<input type="text" name="ags_system_time_start_hour" />
-<h4>Duration, minutes:</h4>
-	
-<!-- integer greater > 0, < 1400 -->
-<input type="text" name="ags_system_time_duration_minutes" />
+	<h4>Start Hour:</h4>
 
-<h3>System SOC</h3>
-<h4>Enable:</h4>
-<input type="radio" name="ags_system_soc_enable" value="0"> No<br />
-<input type="radio" name="ags_system_soc_enable" value="1" checked> Yes
+	<!-- integer >= 0 <= 23 -->
+	<input type="text" name="ags_system_time_start_hour"  title="Start Hour"/>
+	<h4>Duration, minutes:</h4>
 
-<h4>Start SOC:</h4>
-	
-<!-- integer > 0 and < 100 -->
-<input type="text" name="ags_system_soc_start_soc" />
-<h4>Stop SOC:</h4>
-	
-<!-- integer greater than start SOC, <= 100 -->
-<input type="text" name="ags_system_soc_stop_soc" />
+	<!-- integer greater > 0, < 1400 -->
+	<input type="text" name="ags_system_time_duration_minutes"  title="Duration, minutes"/>
 
-<h3>System amps</h3>
-<h4>Enable:</h4>
-<input type="radio" name="ags_system_amps_enable" value="0"> No<br />
-<input type="radio" name="ags_system_amps_enable" value="1" checked> Yes
+	<h3>System SOC</h3>
+	<h4>Enable:</h4>
+	<input type="radio" name="ags_system_soc_enable" value="0"> No<br />
+	<input type="radio" name="ags_system_soc_enable" value="1" checked> Yes
 
-<h4>Start amps:</h4>
-	
-<!-- integer < 0 and > -400 -->
-<input type="text" name="ags_system_amps_start_amps" />
-<h4>Duration, minutes:</h4>
-	
-<!-- integer greater > 0, < 1400 -->
-<input type="text" name="ags_system_amps_duration_minutes" />
+	<h4>Start SOC:</h4>
 
+	<!-- integer > 0 and < 100 -->
+	<input type="text" name="ags_system_soc_start_soc"  title="Start SOC"/>
+	<h4>Stop SOC:</h4>
 
-<h3>Transformer Temperature exceeds set point</h3>
-<h4>Enable:</h4>
-<input type="radio" name="ags_system_transformer_temperature_enable" value="0"> No<br />
-<input type="radio" name="ags_system_transformer_temperature_enable" value="1" checked> Yes
+	<!-- integer greater than start SOC, <= 100 -->
+	<input type="text" name="ags_system_soc_stop_soc"  title="Stop SOC"/>
 
-<h4>Start when transformer temperature exceeds:</h4>
-<!-- integer > 10 and < 200 -->
-	
-<input type="text" name="ags_system_transformer_temperature_exceeds" />
-<h4>Duration, minutes:</h4>
-	
-<!-- integer greater > 0, < 1400 -->
-<input type="text" name="ags_system_transformer_duration_minutes" />
+	<h3>System amps</h3>
+	<h4>Enable:</h4>
+	<input type="radio" name="ags_system_amps_enable" value="0"> No<br />
+	<input type="radio" name="ags_system_amps_enable" value="1" checked> Yes
+
+	<h4>Start amps:</h4>
+
+	<!-- integer < 0 and > -400 -->
+	<input type="text" name="ags_system_amps_start_amps" title="Start Amps"/>
+	<h4>Duration, minutes:</h4>
+
+	<!-- integer greater > 0, < 1400 -->
+	<input type="text" name="ags_system_amps_duration_minutes" title="Duration, Minutes"/>
 
 
-<h3>Battery Temperature exceeds set point</h3>
-<h4>Enable:</h4>
-<input type="radio" name="ags_system_battery_temperature_enable" value="0"> No<br />
-<input type="radio" name="ags_system_battery_temperature_enable" value="1" checked> Yes
+	<h3>Transformer Temperature exceeds set point</h3>
+	<h4>Enable:</h4>
+	<input type="radio" name="ags_system_transformer_temperature_enable" value="0"> No<br />
+	<input type="radio" name="ags_system_transformer_temperature_enable" value="1" checked> Yes
 
-<h4>Start when battery temperature exceeds:</h4>
-	
-<!-- integer > 10 and < 200 -->
-<input type="text" name="ags_system_battery_temperature_exceeds" />
-<h4>Duration, minutes:</h4>
-	
-<!-- integer greater > 0, < 1400 -->
-<input type="text" name="ags_system_battery_duration_minutes" />
+	<h4>Start when transformer temperature exceeds:</h4>
+	<!-- integer > 10 and < 200 -->
+
+	<input type="text" name="ags_system_transformer_temperature_exceeds" title="Transformer Temperature Exceeds"/>
+	<h4>Duration, minutes:</h4>
+
+	<!-- integer greater > 0, < 1400 -->
+	<input type="text" name="ags_system_transformer_duration_minutes" title="Duration, minutes"/>
 
 
-<h3>Daily Maintenance Schedule</h3>
-<h4>Enable:</h4>
-<input type="radio" name="ags_system_exercise_enable" value="0"> No<br />
-<input type="radio" name="ags_system_exercise_enable" value="1" checked> Yes
+	<h3>Battery Temperature exceeds set point</h3>
+	<h4>Enable:</h4>
+	<input type="radio" name="ags_system_battery_temperature_enable" value="0"> No<br />
+	<input type="radio" name="ags_system_battery_temperature_enable" value="1" checked> Yes
 
-<h4>Days between runs:</h4>
-	
-<!-- integer > 0 <= 30 -->
-<input type="text" name="ags_system_exercise_days_between_runs" />
-<h4>Start Hour:</h4>
-	
-<!-- integer >= 0 <= 23 -->
-<input type="text" name="ags_system_exercise_start_hour" />
-<h4>Duration, minutes:</h4>
-	
-<!-- integer greater > 0, < 1400 -->
-<input type="text" name="ags_system_exercise_duration_minutes" />
+	<h4>Start when battery temperature exceeds:</h4>
 
-<br /><hr />
-<input type="button" id="update" value="Update All!" />
+	<!-- integer > 10 and < 200 -->
+	<input type="text" name="ags_system_battery_temperature_exceeds" title="Battery Temperature Exceeds"/>
+	<h4>Duration, minutes:</h4>
+
+	<!-- integer greater > 0, < 1400 -->
+	<input type="text" name="ags_system_battery_duration_minutes" title="Duration, minutes"/>
+
+
+	<h3>Daily Maintenance Schedule</h3>
+	<h4>Enable:</h4>
+	<input type="radio" name="ags_system_exercise_enable" value="0"> No<br />
+	<input type="radio" name="ags_system_exercise_enable" value="1" checked> Yes
+
+	<h4>Days between runs:</h4>
+
+	<!-- integer > 0 <= 30 -->
+	<input type="text" name="ags_system_exercise_days_between_runs" title="Days Between Runs"/>
+	<h4>Start Hour:</h4>
+
+	<!-- integer >= 0 <= 23 -->
+	<input type="text" name="ags_system_exercise_start_hour" title="Start Hour"/>
+	<h4>Duration, minutes:</h4>
+
+	<!-- integer greater > 0, < 1400 -->
+	<input type="text" name="ags_system_exercise_duration_minutes" title="Duration, Minutes"/>
+
+	<br /><hr />
+	<input type="button" id="update" value="Update All!" />
 </form>
 <script>
 
 var agent = window.navigator.userAgent;
-var url = "http://192.168.10.229:8080/data/configuration";
+var url = "/data/configuration";
 var ie_hack = '.json';
 if (agent.search('MSIE') >= 0 || agent.search('Trident') >= 0) {
 	ie_hack = '.dat';
@@ -136,6 +136,7 @@ $.ajax(url + ie_hack, {
 	alert('There was an error retrieving config data!');
 });
 
+//disables sections of the form when the radio button for that section is set to no
 function toggleSection(name, value){
 	if(name == 'ags_system_voltage_enable'){
 		if(value == 1){
@@ -248,6 +249,8 @@ function validateForms(){
 	exercise_duration_minutes = parseInt($('input[name="ags_system_exercise_duration_minutes"]').val(), 10);
 	
 	//initiate form validation
+	$.validity.setup({ outputMode:"modal" });
+
 	$.validity.start();
 	
 	//	
@@ -318,7 +321,7 @@ $('#update').on('click', function(e) {
 		json[$input.attr('name')] = $input.val();
 	});
 	if(validateForms()){
-
+		console.log('validated - posting');
 		$.ajax(url + ie_hack, {
 			cache: false,
 			dataType: 'json',
