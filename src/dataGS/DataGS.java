@@ -42,7 +42,7 @@ import dataGS.ChannelDescription.Modes;
 public class DataGS implements ChannelData, JSONData {
 	private final boolean debug=false;
 
-	private final static String FIRMWARE_DATE = "2016-03-02";
+	private final static String FIRMWARE_DATE = "2016-03-03";
 	
 	protected WorldDataSerialReader ser;
 	protected boolean listening = false;
