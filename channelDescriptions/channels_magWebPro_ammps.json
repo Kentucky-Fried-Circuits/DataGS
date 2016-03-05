@@ -1177,12 +1177,142 @@
             "log": "true"
         },
         {
-            "id": "gen_runtime",
-            "title": "",
-            "description": "Generator Runtime, hours",
+            "id": 65,
+            "title": "AMMPS Command",
+            "description": "AMMPS Command",
             "units": "",
+            "precision": 0,
+            "sortOrder": 1010,
+            "mode": "SAMPLE",
+            "log": "true"
+        },
+        {
+            "id": 66,
+            "title": "AGS Override Switch",
+            "description": "AGS Override Switch",
+            "units": "",
+            "precision": 0,
+            "sortOrder": 1005,
+            "mode": "SAMPLE",
+            "log": "true"
+        },
+        {
+            "id": 67,
+            "title": "AGS Gen Run Cause",
+            "description": "AGS Gen Run Cause",
+            "units": "",
+            "precision": 0,
+            "sortOrder": 1000,
+            "mode": "SAMPLE",
+            "log": "true"
+        },
+        {
+            "id": 68,
+            "title": "AMMPS Warning",
+            "description": "AMMPS Warning",
+            "units": "",
+            "precision": 0,
+            "sortOrder": 1025,
+            "mode": "SAMPLE",
+            "log": "true"
+        },
+        {
+            "id": 69,
+            "title": "AMMPS Fault",
+            "description": "AMMPS Fault",
+            "units": "",
+            "precision": 0,
+            "sortOrder": 1030,
+            "mode": "SAMPLE",
+            "log": "true"
+        },
+        {
+            "id": 71,
+            "title": "AMMPS Status",
+            "description": "AMMPS Status",
+            "units": "",
+            "precision": 0,
+            "sortOrder": 1015,
+            "mode": "SAMPLE",
+            "log": "true"
+        },
+        {
+            "id": 72,
+            "title": "AMMPS Control Position",
+            "description": "AMMPS Control Position",
+            "units": "",
+            "precision": 0,
+            "sortOrder": 1020,
+            "mode": "SAMPLE",
+            "log": "true"
+        },
+        {
+            "id": 76,
+            "title": "AMMPS Fuel Level",
+            "description": "AMMPS Fuel Level",
+            "units": "%",
             "precision": 1,
-            "sortOrder": 100,
+            "sortOrder": 1035,
+            "mode": "SAMPLE",
+            "log": "true"
+        },
+        {
+            "id": 77,
+            "title": "AMMPS Maintenance Countdown",
+            "description": "AMMPS Maintenance Countdown",
+            "units": "hours",
+            "precision": 1,
+            "sortOrder": 1040,
+            "mode": "SAMPLE",
+            "log": "true"
+        },
+        {
+            "id": 78,
+            "title": "AMMPS Run Time",
+            "description": "AMMPS Run Time",
+            "units": "hours",
+            "precision": 1,
+            "sortOrder": 1045,
+            "mode": "SAMPLE",
+            "log": "true"
+        },
+        {
+            "id": 80,
+            "title": "AMMPS E-Stop",
+            "description": "AMMPS E-Stop",
+            "units": "",
+            "precision": 0,
+            "sortOrder": 1050,
+            "mode": "SAMPLE",
+            "log": "true"
+        },
+        {
+            "id": 81,
+            "title": "AMMPS Battleshort",
+            "description": "AMMPS Battleshort",
+            "units": "",
+            "precision": 0,
+            "sortOrder": 1055,
+            "mode": "SAMPLE",
+            "log": "true"
+        },
+        {
+            "id": 82,
+            "title": "AMMPS Dead Bus",
+            "description": "AMMPS Dead Bus",
+            "units": "",
+            "precision": 0,
+            "sortOrder": 1060,
+            "mode": "SAMPLE",
+            "log": "true"
+        },
+        {
+            "id": 83,
+            "title": "AMMPS CB Position",
+            "description": "AMMPS CB Position",
+            "units": "",
+            "precision": 0,
+            "sortOrder": 1065,
             "mode": "SAMPLE",
             "log": "true"
         }

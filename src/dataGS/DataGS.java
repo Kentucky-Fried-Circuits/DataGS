@@ -42,7 +42,7 @@ import dataGS.ChannelDescription.Modes;
 public class DataGS implements ChannelData, JSONData {
 	private final boolean debug=false;
 
-	private final static String FIRMWARE_DATE = "2016-03-03";
+	private final static String FIRMWARE_DATE = "2016-03-04";
 	
 	protected WorldDataSerialReader ser;
 	protected boolean listening = false;
@@ -110,7 +110,7 @@ public class DataGS implements ChannelData, JSONData {
 	public static final int JSON_DAY_STATS      = 4;
 	public static final int JSON_HOST_INFO      = 5;
 
-	
+	protected AMMPS_Control ammps=null;
 
 	/*
 	 * this method is called by our HTTP server to get dynamic data from us
@@ -530,6 +530,11 @@ public class DataGS implements ChannelData, JSONData {
 		try {
 			d=new Double(s);
 			data.get(ch).addValue(d);
+			
+			/* send to AMMPS_Control processor if it is active */
+			if ( null != ammps ) {
+				ammps.ingest(ch, d);
+			}
 		} catch ( NumberFormatException e ) {
 			System.err.println("# error ingesting s=" + s + " as a double. Giving up");
 			return;
@@ -647,11 +652,18 @@ public class DataGS implements ChannelData, JSONData {
 		/* config */
 		options.addOption(null, "configFile", true, "file for configuration data.");
 		options.addOption(null, "configLockFile", true, "file to allow configuration data changes.");
+		
+		/* AMMPS generator */
+		options.addOption(null, "ammps", false, "AMMPS generator AGS");
 
 		/* parse command line */
 		CommandLineParser parser = new PosixParser();
 		try {
 			CommandLine line = parser.parse( options, args );
+			
+			/* AMMPS generator */
+			if ( line.hasOption("ammps") ) ammps=new AMMPS_Control();
+			
 			
 			/* Config */
 			if ( line.hasOption("configFile")) configFilename = line.getOptionValue("configFile");
@@ -821,6 +833,11 @@ public class DataGS implements ChannelData, JSONData {
 			ser.addPacketListener(worldProcessor);
 			
 
+		}
+		
+		if ( null != ammps ) {
+			System.err.println("# AMMPS generator AGS enabled");
+			/* need to get the same channel that come into here */
 		}
 
 
@@ -1062,7 +1079,7 @@ public class DataGS implements ChannelData, JSONData {
 
 	/* Main method */
 	public static void main(String[] args) throws IOException {
-		System.err.println("# Major version: " + FIRMWARE_DATE + " (White)");
+		System.err.println("# Major version: " + FIRMWARE_DATE + " (precision-deb7)");
 		System.err.println("# java.library.path: " + System.getProperty( "java.library.path" ));
 
 		Thread.setDefaultUncaughtExceptionHandler(

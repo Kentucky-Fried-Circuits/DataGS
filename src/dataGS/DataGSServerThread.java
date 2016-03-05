@@ -239,7 +239,7 @@ public class DataGSServerThread extends Thread {
 			b[i]=(byte) (rawBuffer[i] & 0xff);
 		}
 		String line = new String(b);
-		//		System.err.println("# Line: " + line);
+			System.err.println("# Line: " + line);
 
 
 		try {
@@ -248,6 +248,7 @@ public class DataGSServerThread extends Thread {
 			//	System.err.println("# ch=" + ch + " d=" + d + " line.substring(1)=" + line.substring(1));
 
 			for ( int i=0 ; i<channelDataListeners.size() ; i++ ) {
+				System.err.println("# Sending ch=" + ch + " line.substring(1)=" + line.substring(1));
 				channelDataListeners.elementAt(i).ingest(ch, line.substring(1));
 			}
 
@@ -356,8 +357,8 @@ public class DataGSServerThread extends Thread {
 					}
 
 
-					//				} while ( b<'A' && b<'Z' ); 
-				} while ( b != '#' );
+				} while ( b<'A' && b<'Z' ); 
+				//} while ( b != '#' );
 
 				for ( int i=0 ; i<rawBuffer.length ; i++ )
 					rawBuffer[i]=0xff;
@@ -365,8 +366,8 @@ public class DataGSServerThread extends Thread {
 				/* found start of packet */
 				rawBuffer[0]=b;
 
-				//				channelData();
-				binaryData();
+				channelData();
+				//binaryData();
 			}
 
 			shutdown(null,"# Normal shutdown");

@@ -362,9 +362,13 @@ public class RecordMagWeb {
 
 
 		r_absorb_time_minutes=buff[54]*6;
-		r_hours=buff[55]; /* not always (usually?) hours */
-		r_minutes=buff[56]; /* not always (usually?) minutes */
+//		r_hours=buff[55]; /* not always (usually?) hours */
+//		r_minutes=buff[56]; /* not always (usually?) minutes */
 
+		r_hours=buff[57]; /* these bytes coming out of A0 footer */
+		r_minutes=buff[58]; /* these bytes coming out of A1 footer */
+
+		
 		r_ags_gen_run_time_minutes=buff[59]*6;
 		r_ags_start_tempF=buff[60];
 		r_ags_start_vdc=(buff[61]/10.0)*vScale;

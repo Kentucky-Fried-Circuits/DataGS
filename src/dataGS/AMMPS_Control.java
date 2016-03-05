@@ -21,15 +21,8 @@ public class AMMPS_Control {
 		send_killlall_to_ammps_control("SIGURG");
 	}
 
-	public void process_RecordMagWeb(RecordMagWeb r) {
-		System.err.println("# AMPS_Control got RecordMagWeb!");
-		System.err.println("#            r_hours=" + r.r_hours);
-		System.err.println("#          r_minutes=" + r.r_minutes);
-		System.err.println("#          b_dc_amps=" + r.b_dc_amps);
-		System.err.println("#         b_dc_volts=" + r.b_dc_volts);
-		System.err.println("#  b_state_of_charge=" + r.b_state_of_charge);
-		System.err.println("#     i_temp_battery=" + r.i_temp_battery);
-		System.err.println("# i_temp_transformer=" + r.i_temp_transformer);
+	public void ingest(String ch, double d) {
+		System.err.println("# AMMPS_Control ingest(ch=" + ch + " d=" + d);
 	}
 
 }
