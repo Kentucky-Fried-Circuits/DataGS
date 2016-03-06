@@ -481,34 +481,121 @@ public class AMMPS_Control {
 		}
 		return intValue;
 	}
+
+	private final static int AGS_STATE_IDLE=0;
+	private final static int AGS_STATE_WARMUP=1;
+	private final static int AGS_STATE_RUNNING=2;
+	private final static int AGS_STATE_COOLDOWN=3;
+	private int ags_state=AGS_STATE_IDLE;
+	
+
+	private double ags_counter_warmup_seconds;
+	private double ags_counter_cooldown_seconds;
+
+	
+	private static int AGS_RUN_BIT_DC_AMPS=0;
+	private static int AGS_RUN_BIT_HOUR=1;
+	private static int AGS_RUN_BIT_SOC=2;
+	private static int AGS_RUN_BIT_TEMPERATURE_BATTERY=3;
+	private static int AGS_RUN_BIT_TEMPERATURE_TRANSFORMER=4;
+	private static int AGS_RUN_BIT_VDC=5;
+	private static int AGS_RUN_BIT_EXERCISE=6;
+	private static int AGS_RUN_BIT_WARMUP=7;
+	private static int AGS_RUN_BIT_COOLDOWN=8;
 	
 	private void ags() {
 		int ags_run=0;
 
 		System.err.println("### ags() debug AMMPS_Control.toString())\n" + toString());
 
-//		if ( null != config ) {
-//			System.err.println("# ConfigData JSON is " + config.getJSON());
-//		}
+		
+		/* evaluate AGS conditions and set appropriate bits in ags_run to show was is requesting generator run */
+		ags_run = bit_modify( ags_run, AGS_RUN_BIT_DC_AMPS, ags_dc_amps() );
+		ags_run = bit_modify( ags_run, AGS_RUN_BIT_HOUR, ags_hour() );
+		ags_run = bit_modify( ags_run, AGS_RUN_BIT_SOC, ags_soc() );
+		ags_run = bit_modify( ags_run, AGS_RUN_BIT_TEMPERATURE_BATTERY, ags_temperature_battery() );
+		ags_run = bit_modify( ags_run, AGS_RUN_BIT_TEMPERATURE_TRANSFORMER, ags_temperature_transformer() );
+		ags_run = bit_modify( ags_run, AGS_RUN_BIT_VDC, ags_vdc() );
+// FIXME		ags_run = bit_modify( ags_run, AGS_RUN_BIT_EXERCISE, ags_exercise() );
 
-		/* set bitmask with our different AGS algorithms */
 		
-		/* set appropriate bits in ags_run to show was is requesting generator run */
-		ags_run = bit_modify( ags_run, 0, ags_dc_amps() );
-		ags_run = bit_modify( ags_run, 1, ags_hour() );
-		ags_run = bit_modify( ags_run, 2, ags_soc() );
-		ags_run = bit_modify( ags_run, 3, ags_temperature_battery() );
-		ags_run = bit_modify( ags_run, 4, ags_temperature_transformer() );
-		ags_run = bit_modify( ags_run, 5, ags_vdc() );
+		double config_warmup_seconds = Double.parseDouble(config.getValue("ags_system_warmup_seconds"));
+		double config_cooldown_seconds = Double.parseDouble(config.getValue("ags_system_cooldown_seconds"));
 		
-		/* FIXME add warm up and cool down here */
-		if ( ags_run > 0 ) {
-			generator_run_closed_contactor();
-		} else {
+		/* idle, warmup, running, cooldown state machine */
+		if ( ags_state == AGS_STATE_IDLE ) {
+			/* warmup state bit */
+			ags_run = bit_modify( ags_run, AGS_RUN_BIT_WARMUP, false );
+			/* cooldown state bit */
+			ags_run = bit_modify( ags_run, AGS_RUN_BIT_COOLDOWN, false );
+
+			
+			if ( ags_run != 0 ) {
+				/* somebody has requested we run */
+				ags_counter_warmup_seconds=0.0;
+				ags_state=AGS_STATE_WARMUP;
+			}
+			
+			/* nothing calling for run, generator stopped */
 			generator_stop();
-		}
+		} else if ( ags_state == AGS_STATE_WARMUP ) {
+			/* warmup state bit */
+			ags_run = bit_modify( ags_run, AGS_RUN_BIT_WARMUP, true );
+			/* cooldown state bit */
+			ags_run = bit_modify( ags_run, AGS_RUN_BIT_COOLDOWN, false );
 
-		System.err.println("### ags() ags_run=" + ags_run);
+			ags_counter_warmup_seconds += 1.0;
+			
+			if ( ags_counter_warmup_seconds >= config_warmup_seconds ) {
+				ags_state=AGS_STATE_RUNNING;
+			}
+			
+			/* start generator with load contactor open so generator can warm up */
+			generator_run_open_contactor();
+		} else if ( ags_state == AGS_STATE_RUNNING ) {
+			/* warmup state bit */
+			ags_run = bit_modify( ags_run, AGS_RUN_BIT_WARMUP, false );
+			/* cooldown state bit */
+			ags_run = bit_modify( ags_run, AGS_RUN_BIT_COOLDOWN, false );
+			
+			if ( ags_run == 0 ) {
+				/* don't need to run anymore */
+				ags_counter_cooldown_seconds=0.0;
+				ags_state=AGS_STATE_COOLDOWN;
+			}
+			
+			/* deliver power to load */
+			generator_run_closed_contactor();
+		} else if ( ags_state == AGS_STATE_COOLDOWN ) {
+			/* warmup state bit */
+			ags_run = bit_modify( ags_run, AGS_RUN_BIT_WARMUP, false );
+			/* cooldown state bit */
+			ags_run = bit_modify( ags_run, AGS_RUN_BIT_COOLDOWN, true );
+			
+			ags_counter_cooldown_seconds += 1.0;
+			
+			if ( ags_counter_cooldown_seconds >= config_cooldown_seconds ) {
+				ags_state=AGS_STATE_IDLE;
+			}
+			
+			/* turn off load contactor so generator can cool down */
+			generator_run_open_contactor();			
+		}
+		
+		
+		
+		
+		System.err.println("### ags()                ags_run=" + ags_run);
+		System.err.print  ("###                    ags_state=");
+		if ( AGS_STATE_IDLE == ags_state ) System.err.println("AGS_STATE_IDLE");
+		if ( AGS_STATE_WARMUP == ags_state ) System.err.println("AGS_STATE_WARMUP");
+		if ( AGS_STATE_RUNNING == ags_state ) System.err.println("AGS_STATE_RUNNING");
+		if ( AGS_STATE_COOLDOWN == ags_state ) System.err.println("AGS_STATE_COOLDOWN");
+		
+		System.err.println("###   ags_counter_warmup_seconds=" + ags_counter_warmup_seconds);
+		System.err.println("###        config_warmup_seconds=" + config_warmup_seconds);
+		System.err.println("### ags_counter_cooldown_seconds=" + ags_counter_cooldown_seconds);
+		System.err.println("###      config_cooldown_seconds=" + config_cooldown_seconds);
 		
 		/* send AGS GEN RUN CAUSE back into DataGS data stream */
 		datags_out.ingest("67", Integer.toString(ags_run));
