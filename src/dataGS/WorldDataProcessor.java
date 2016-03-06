@@ -6,7 +6,6 @@ import java.util.Vector;
 public class WorldDataProcessor implements WorldDataListener {
 	RecordMagWeb magWeb;
 	RecordPS2Tap ps2tap;
-	RecordAMMPS_CAN_RX ammpsCAN;
 	
 	protected Vector<ChannelData> channelDataListeners;
 
@@ -20,7 +19,6 @@ public class WorldDataProcessor implements WorldDataListener {
 
 		magWeb=null;
 		ps2tap=null;
-		ammpsCAN=null;
 
 	}
 
@@ -82,18 +80,6 @@ public class WorldDataProcessor implements WorldDataListener {
 			if ( magWeb.isValid() ) {
 				/* use reflection to send all public variables off to DataGS */
 				reflectToDataGS( (Object) magWeb);
-				
-			}
-			break;
-		case 34:
-			System.err.println("(AMMPS CAN packet) ");
-			if ( null == ammpsCAN ) {
-				ammpsCAN = new RecordAMMPS_CAN_RX();
-			}
-			ammpsCAN.parseRecord(rawBuffer);
-			if ( ammpsCAN.isValid() ) {
-				/* use reflection to send all public variables off to DataGS */
-				reflectToDataGS( (Object) ammpsCAN);
 				
 			}
 			break;

@@ -1,7 +1,7 @@
 package dataGS;
-import java.util.Date;
 
 public class RecordPS2Tap {
+	@SuppressWarnings("unused")
 	private String serialNumber;
 	public int sequenceNumber;
 	public int packetLength;

@@ -42,7 +42,7 @@ import dataGS.ChannelDescription.Modes;
 public class DataGS implements ChannelData, JSONData {
 	private final boolean debug=false;
 
-	private final static String FIRMWARE_DATE = "2016-03-04";
+	private final static String FIRMWARE_DATE = "2016-03-07";
 	
 	protected WorldDataSerialReader ser;
 	protected boolean listening = false;
@@ -503,6 +503,9 @@ public class DataGS implements ChannelData, JSONData {
 			return;
 		}
 
+		if ( 0==ch.compareTo("C") ) {
+			System.err.println(")))))))))))) ingest got ch=" + ch + " s=" + s);
+		}
 
 
 		/* we don't need to do anything if we aren't using the channel */
@@ -611,6 +614,8 @@ public class DataGS implements ChannelData, JSONData {
 		int dataHistoryJSONHours=24;
 		String documentRootName="www/";
 
+		boolean ammps_enable=false;
+		
 		logLocalDir=null;
 		processAllData=false;
 		intervalSummary = 1000;
@@ -662,7 +667,7 @@ public class DataGS implements ChannelData, JSONData {
 			CommandLine line = parser.parse( options, args );
 			
 			/* AMMPS generator */
-			if ( line.hasOption("ammps") ) ammps=new AMMPS_Control();
+			if ( line.hasOption("ammps") ) ammps_enable=true;
 			
 			
 			/* Config */
@@ -731,6 +736,9 @@ public class DataGS implements ChannelData, JSONData {
 			System.err.println("# Error parsing command line: " + e);
 		}
 
+		
+		/* setup our configData engine. If parameters are null, it just returns empty JSON */
+		configData = new ConfigData(configFilename, configLockFilename);
 
 		/* load channels.json and de-serialize it into a hashmap */
 		channelDesc = new HashMap<String, ChannelDescription>();
@@ -835,10 +843,6 @@ public class DataGS implements ChannelData, JSONData {
 
 		}
 		
-		if ( null != ammps ) {
-			System.err.println("# AMMPS generator AGS enabled");
-			/* need to get the same channel that come into here */
-		}
 
 
 		/* attempt to load history from files if logLocalDir is set */
@@ -873,7 +877,12 @@ public class DataGS implements ChannelData, JSONData {
 		dataTimer.start();
 
 
-
+		/* AMMPS generator control */
+		if ( ammps_enable ) {
+			ammps=new AMMPS_Control(configData,this);
+			System.err.println("# AMMPS generator AGS enabled");
+			/* need to get the same channel that come into here */
+		}
 
 
 		/* built in http server to provide data */
@@ -886,7 +895,6 @@ public class DataGS implements ChannelData, JSONData {
 			} else {
 				System.err.println("# HTTP server listening on port " + httpPort + " with document root absolute path " + documentRoot.getAbsolutePath());
 				System.err.flush();
-				configData = new ConfigData(configFilename, configLockFilename);
 				HTTPServerJSON httpd = new HTTPServerJSON(httpPort, this, channelMapFile, logLocalDir, documentRoot, configData);
 				httpd.start();
 			}
@@ -920,8 +928,6 @@ public class DataGS implements ChannelData, JSONData {
 			System.err.println("# DataGS socket disabled because portNumber=0");
 			System.err.flush();
 		}
-
-
 	
 		
 		/* spin through and accept new connections as quickly as we can ... in DataGS format. */
