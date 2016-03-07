@@ -373,7 +373,8 @@
 	}
 	div.navBarCon li {
 		float:left;
-		width: 33%;
+		width: 24.9%;
+		max-height: 29px;
 	}
 	div.navBarCon a {
 		display:block;		
@@ -383,6 +384,8 @@
 		color: white;
 		padding: 5px;
 		border: none;
+		max-height: 19px;
+
 	}
 	div.navBarCon a:link,div.navBarCon a:visited {
 	
@@ -409,3 +412,44 @@
 
 	}
 
+	.settings_section{
+		width: 48%;
+		margin: 10px auto;
+		padding: 10px;
+		height: auto;
+		float: left;
+	}
+	.section_center{
+		width: 50%;
+		margin-left: auto;
+		margin-right: auto;
+	}
+	.clear_both{
+		clear: both;	
+	}
+	#update{
+		position: fixed;
+		bottom: 10px;
+		left: 30px;
+		width: 10%;
+		height: 8%;
+		min-height: 30px;
+		min-width: 75px;
+		font-size: 20px;
+	}
+	#agsConfigurationForm{
+		width: 80%;
+		height: auto;
+		margin-left: auto;
+		margin-right: auto;
+	}
+	#agsConfigurationForm h3{
+		border-bottom: 1px black solid;
+		color: black;
+		text-transform: capitalize;
+	}
+	#agsConfigurationForm h4{
+		text-transform: capitalize;
+	}
+	
+	
