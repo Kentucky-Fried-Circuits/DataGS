@@ -2,6 +2,8 @@ package dataGS;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileInputStream;
+import java.util.Scanner;
 
 import javax.swing.Timer;
 
@@ -375,6 +377,95 @@ public class AMMPS_Control {
 		return true;
 	}
 	
+
+	private double getHostUptimeSeconds() {
+		double hostUptimeSeconds=-1.0;
+		
+		try { 
+			FileInputStream f = new FileInputStream("/proc/uptime"); /* can replace with static file to simulate */
+			Scanner s = new Scanner(f);
+			String procUptime = s.next();
+			s.close();
+			f.close();
+			
+			System.err.println("@@@@@@ string procUptime='" + procUptime + "'" );
+			hostUptimeSeconds = Double.parseDouble(procUptime);
+			System.err.println("@@@@@@ double procUptime='" + hostUptimeSeconds + "'" );
+		} catch ( Exception e ) {
+			System.err.println("# Caught exception while trying to scan /proc/uptime:");
+			System.err.println(e);
+		}
+		
+		return hostUptimeSeconds;
+	}
+	
+	private final static int EXERCISE_STATE_WAIT_FOR_START=0;
+	private final static int EXERCISE_STATE_RUNNING=1;
+	private int exercise_state=EXERCISE_STATE_WAIT_FOR_START;
+	
+	private double exercise_run_counter_seconds;
+	private final static int EXERCISE_SECONDS_IN_DAY=60*60*24; /* can make smaller for testing purposes */
+//	private final static int EXERCISE_SECONDS_IN_DAY=600; /* can make smaller for testing purposes */
+	
+	private boolean ags_exercise() {
+		/* check if enabled */
+		if ( 0 != config.getValue("ags_system_exercise_enable").compareTo("1")  )
+			return false;
+		
+		double config_interval_days = Double.parseDouble(config.getValue("ags_system_exercise_days_between_runs"));
+		double config_interval_seconds = config_interval_days*EXERCISE_SECONDS_IN_DAY;
+		double config_start_hour = Double.parseDouble(config.getValue("ags_system_exercise_start_hour"));
+		double config_duration_seconds = Double.parseDouble(config.getValue("ags_system_exercise_duration_hours"))*3600.0;
+
+		System.err.println("");
+		System.err.println("@@@@ ags_exercise()");
+		/* state */
+		System.err.print  ("@@@@               exercise_state=");
+		if ( EXERCISE_STATE_WAIT_FOR_START == exercise_state )  System.err.println("EXERCISE_STATE_WAIT_FOR_DAY");
+		if ( EXERCISE_STATE_RUNNING == exercise_state ) System.err.println("RUNNING");
+		System.err.println("@@@@ exercise_run_counter_seconds=" + exercise_run_counter_seconds);
+		/* config */
+		System.err.println("@@@@     config_interval_days=" + config_interval_days);
+		System.err.println("@@@@  config_interval_seconds=" + config_interval_seconds);
+		System.err.println("@@@@        config_start_hour=" + config_start_hour);
+		System.err.println("@@@@  config_duration_seconds=" + config_duration_seconds);
+		System.err.println("");
+
+	
+		
+		if ( EXERCISE_STATE_WAIT_FOR_START == exercise_state ) {
+			if ( magnum_r_hours == config_start_hour && magnum_r_minutes == 0.0 ) {
+				/* matched on first minute of start hour, now check if we are the right modulo day */
+				double uptime_seconds = getHostUptimeSeconds();				
+				double floored = Math.floor(uptime_seconds/EXERCISE_SECONDS_IN_DAY);
+				System.err.println("@@@@ uptime_seconds=" + uptime_seconds + " floored=" + floored);
+				System.err.println("@@@@ floored % config_interval days =" + floored % config_interval_days );
+				
+				if ( floored > 0.0 && 0.0 == (floored % config_interval_days) ) {
+					/* first minute in start_hour */
+					exercise_run_counter_seconds=0.0;
+					exercise_state = EXERCISE_STATE_RUNNING;
+					return true;	
+				}
+			}
+			return false;
+		}
+		
+		if ( EXERCISE_STATE_RUNNING == exercise_state ) {
+			exercise_run_counter_seconds += 1.0;
+			
+			if ( exercise_run_counter_seconds >= config_duration_seconds ) {
+				exercise_state = EXERCISE_STATE_WAIT_FOR_START;
+				return false;
+			}
+			return true;
+		}
+		
+		/* shouldn't get here, but java requires the return anyhow */
+		return false;
+
+	}
+	
 	private final static int VDC_STATE_IDLE=0;
 	private final static int VDC_STATE_IN_START_DELAY=1;
 	private final static int VDC_STATE_RUNNING=2;
@@ -482,11 +573,11 @@ public class AMMPS_Control {
 		return intValue;
 	}
 
-	private final static int AGS_STATE_IDLE=0;
+	private final static int AGS_STATE_NOT_RUNNING=0;
 	private final static int AGS_STATE_WARMUP=1;
 	private final static int AGS_STATE_RUNNING=2;
 	private final static int AGS_STATE_COOLDOWN=3;
-	private int ags_state=AGS_STATE_IDLE;
+	private int ags_state=AGS_STATE_NOT_RUNNING;
 	
 
 	private double ags_counter_warmup_seconds;
@@ -516,14 +607,14 @@ public class AMMPS_Control {
 		ags_run = bit_modify( ags_run, AGS_RUN_BIT_TEMPERATURE_BATTERY, ags_temperature_battery() );
 		ags_run = bit_modify( ags_run, AGS_RUN_BIT_TEMPERATURE_TRANSFORMER, ags_temperature_transformer() );
 		ags_run = bit_modify( ags_run, AGS_RUN_BIT_VDC, ags_vdc() );
-// FIXME		ags_run = bit_modify( ags_run, AGS_RUN_BIT_EXERCISE, ags_exercise() );
+		ags_run = bit_modify( ags_run, AGS_RUN_BIT_EXERCISE, ags_exercise() );
 
 		
 		double config_warmup_seconds = Double.parseDouble(config.getValue("ags_system_warmup_seconds"));
 		double config_cooldown_seconds = Double.parseDouble(config.getValue("ags_system_cooldown_seconds"));
 		
 		/* idle, warmup, running, cooldown state machine */
-		if ( ags_state == AGS_STATE_IDLE ) {
+		if ( ags_state == AGS_STATE_NOT_RUNNING ) {
 			/* warmup state bit */
 			ags_run = bit_modify( ags_run, AGS_RUN_BIT_WARMUP, false );
 			/* cooldown state bit */
@@ -575,7 +666,7 @@ public class AMMPS_Control {
 			ags_counter_cooldown_seconds += 1.0;
 			
 			if ( ags_counter_cooldown_seconds >= config_cooldown_seconds ) {
-				ags_state=AGS_STATE_IDLE;
+				ags_state=AGS_STATE_NOT_RUNNING;
 			}
 			
 			/* turn off load contactor so generator can cool down */
@@ -587,7 +678,7 @@ public class AMMPS_Control {
 		
 		System.err.println("### ags()                ags_run=" + ags_run);
 		System.err.print  ("###                    ags_state=");
-		if ( AGS_STATE_IDLE == ags_state ) System.err.println("AGS_STATE_IDLE");
+		if ( AGS_STATE_NOT_RUNNING == ags_state ) System.err.println("AGS_STATE_NOT_RUNNING");
 		if ( AGS_STATE_WARMUP == ags_state ) System.err.println("AGS_STATE_WARMUP");
 		if ( AGS_STATE_RUNNING == ags_state ) System.err.println("AGS_STATE_RUNNING");
 		if ( AGS_STATE_COOLDOWN == ags_state ) System.err.println("AGS_STATE_COOLDOWN");

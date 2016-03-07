@@ -162,7 +162,7 @@ public class DataGS implements ChannelData, JSONData {
 		}
 	}
 	
-	/* take are accumulating samples and publish them */
+	/* take our accumulating samples and publish them */
 	private void dataMaintenanceTimer()  {
 		long now = System.currentTimeMillis();
 		
@@ -184,7 +184,10 @@ public class DataGS implements ChannelData, JSONData {
 			while (it.hasNext()) {
 				Map.Entry<String, SynchronizedSummaryData> pairs = (Map.Entry<String, SynchronizedSummaryData>)it.next();
 				String channel = pairs.getKey();
-				//System.out.println("channel="+channel);
+				
+				if ( 2==channel.length() ) {
+					System.out.println("(2 character) channel="+channel);
+				}
 
 				if ( channelDesc.containsKey( channel ) ) {
 					dataNow.put(channel,new DataPoint(channel,now,pairs.getValue()));
@@ -503,9 +506,9 @@ public class DataGS implements ChannelData, JSONData {
 			return;
 		}
 
-		if ( 0==ch.compareTo("C") ) {
-			System.err.println(")))))))))))) ingest got ch=" + ch + " s=" + s);
-		}
+//		if ( 0==ch.compareTo("71") || 0==ch.compareTo("72") ) {
+//			System.err.println(")))))))))))) ingest got ch=" + ch + " s=" + s);
+//		}
 
 
 		/* we don't need to do anything if we aren't using the channel */
