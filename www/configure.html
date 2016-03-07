@@ -7,7 +7,7 @@
 	<title>AGS Configuration</title>
 	<link rel="Stylesheet" href="res/css/jquery.validity.css" />
 	<link rel="Stylesheet" href="res/css/solar.css" />
-	<script src="res/js/jquery.js"></script>
+	<script src="res/js/jquery-1.11.1.min.js"></script>
 	<!-- Validity URL http://validity.thatscaptaintoyou.com/Demos/#Introduction -->
 	<script src="res/js/jquery.validity.min.js"></script>
 </head>
@@ -61,7 +61,7 @@
 			<h3>System Voltage</h3>
 			<h4>Enable:</h4>
 			<input type="radio" name="ags_system_voltage_enable" value="0"> No<br />
-			<input type="radio" name="ags_system_voltage_enable" value="1" checked> Yes
+			<input type="radio" name="ags_system_voltage_enable" value="1"> Yes
 
 			<h4>Start Voltage:</h4>
 			<!-- fixed point with two digits to the left of decimal and one to the right-->
@@ -77,7 +77,7 @@
 		<h3>System Time</h3>
 		<h4>Enable:</h4>
 		<input type="radio" name="ags_system_time_enable" value="0"> No<br />
-		<input type="radio" name="ags_system_time_enable" value="1" checked> Yes
+		<input type="radio" name="ags_system_time_enable" value="1"> Yes
 
 		<h4>Start Hour:</h4>
 
@@ -94,7 +94,7 @@
 		<h3>System SOC</h3>
 		<h4>Enable:</h4>
 		<input type="radio" name="ags_system_soc_enable" value="0"> No<br />
-		<input type="radio" name="ags_system_soc_enable" value="1" checked> Yes
+		<input type="radio" name="ags_system_soc_enable" value="1"> Yes
 
 		<h4>Start SOC:</h4>
 
@@ -111,7 +111,7 @@
 		<h3>System amps</h3>
 		<h4>Enable:</h4>
 		<input type="radio" name="ags_system_amps_enable" value="0"> No<br />
-		<input type="radio" name="ags_system_amps_enable" value="1" checked> Yes
+		<input type="radio" name="ags_system_amps_enable" value="1"> Yes
 
 		<h4>Start amps:</h4>
 
@@ -128,7 +128,7 @@
 		<h3>Transformer Temperature exceeds set point</h3>
 		<h4>Enable:</h4>
 		<input type="radio" name="ags_system_transformer_temperature_enable" value="0"> No<br />
-		<input type="radio" name="ags_system_transformer_temperature_enable" value="1" checked> Yes
+		<input type="radio" name="ags_system_transformer_temperature_enable" value="1"> Yes
 
 		<h4>Start when transformer temperature exceeds:</h4>
 		<!-- integer > 10 and < 200 -->
@@ -145,7 +145,7 @@
 		<h3>Battery Temperature Exceeds Set Point</h3>
 		<h4>Enable:</h4>
 		<input type="radio" name="ags_system_battery_temperature_enable" value="0"> No<br />
-		<input type="radio" name="ags_system_battery_temperature_enable" value="1" checked> Yes
+		<input type="radio" name="ags_system_battery_temperature_enable" value="1"> Yes
 
 		<h4>Start When Battery Temperature Exceeds:</h4>
 
@@ -162,7 +162,7 @@
 		<h3>Daily Maintenance Schedule</h3>
 		<h4>Enable:</h4>
 		<input type="radio" name="ags_system_exercise_enable" value="0"> No<br />
-		<input type="radio" name="ags_system_exercise_enable" value="1" checked> Yes
+		<input type="radio" name="ags_system_exercise_enable" value="1"> Yes
 
 		<h4>Days Between Runs:</h4>
 
@@ -198,7 +198,7 @@ $.ajax(url + ie_hack, {
 }).done(function (data, status, XHR) {
 	for (p in data) {
 		$("input[type=text][name=" + p + "]").val(data[p]);
-		$("input[type=radio][name=" + p + "]" + "[value=" + data[p] + "]").prop("checked", true);
+		$("input[type=radio][name=" + p + "]" + "[value='" + data[p] + "']").prop("checked", true);
 	}
 }).fail(function (XHR, status, error) {
 	alert('There was an error retrieving config data!');
