@@ -7,7 +7,7 @@
 	<title>AGS Configuration</title>
 	<link rel="Stylesheet" href="res/css/jquery.validity.css" />
 	<link rel="Stylesheet" href="res/css/solar.css" />
-	<script src="res/js/jquery-1.11.1.min.js"></script>
+	<script src="res/js/jquery.js"></script>
 	<!-- Validity URL http://validity.thatscaptaintoyou.com/Demos/#Introduction -->
 	<script src="res/js/jquery.validity.min.js"></script>
 </head>
@@ -36,13 +36,16 @@
 					<a  href="/">Current Conditions</a>
 				</li>
 				<li>
-					<a  href="currentSettings.html">Current Settings</a>
+					<a  href="/currentAMMPS.html">Current AMMPS</a>
 				</li>
 				<li>
-					<a  href="historical.html">Historical Data</a>
+					<a  href="/currentSettings.html">Current Settings</a>
 				</li>
 				<li>
-					<a  href="configure.html">Generator Configuration</a>
+					<a  href="/historical.html">Historical Data</a>
+				</li>
+				<li>
+					<a  href="/configure.html">AMMPS Start Settings</a>
 				</li>
 			</ul>
 	</div>
@@ -58,17 +61,22 @@
 <form id="agsConfigurationForm">
 	<div class="settings_section">
 		<div class="section_center">
-			<h3>System Voltage</h3>
+			<h3>Gen Run VDC</h3>
 			<h4>Enable:</h4>
-			<input type="radio" name="ags_system_voltage_enable" value="0"> No<br />
-			<input type="radio" name="ags_system_voltage_enable" value="1"> Yes
+			<input type="radio" name="ags_system_voltage_enable" value="0"> Off<br />
+			<input type="radio" name="ags_system_voltage_enable" value="1" checked> On
 
-			<h4>Start Voltage:</h4>
-			<!-- fixed point with two digits to the left of decimal and one to the right-->
-			<input id='ags_system_voltage_start_voltage' type="text" name="ags_system_voltage_start_voltage" title="Start Voltage " placeholder="Format: xx.x"/>
-			<h4>Stop Voltage:</h4>
-			<!-- fixed point with two digits to the left of decimal and one to the right, and > start voltage -->
-			<input id='ags_system_voltage_stop' type="text" name="ags_system_voltage_stop"  title="Stop Voltage" placeholder="Format: xx.x"/>
+			<h4>Start Voltage, volts DC:</h4>
+			<input id='ags_system_voltage_start_voltage_vdc' type="text" name="ags_system_voltage_start_voltage_vdc" title="Start Voltage " placeholder="Format: xx.x"/>
+
+			<h4>Set Start Volts Delay, seconds</h4>
+			<input type="text" name="ags_system_voltage_start_delay_seconds"  title="Start Delay" placeholder="Between 0 and 3600"/>
+
+			<h4>Stop Voltage, volts DC:</h4>
+			<input id='ags_system_voltage_stop_vdc' type="text" name="ags_system_voltage_stop_vdc"  title="Stop Voltage" placeholder="Format: xx.x"/>
+
+			<h4>Set Stop Volts Delay, minutes</h4>
+			<input type="text" name="ags_system_voltage_stop_delay_minutes"  title="Stop Delay" placeholder="Between 0 and 60"/>
 		</div>
 	</div>
 	
@@ -76,106 +84,104 @@
 		<div class="section_center">
 		<h3>System Time</h3>
 		<h4>Enable:</h4>
-		<input type="radio" name="ags_system_time_enable" value="0"> No<br />
-		<input type="radio" name="ags_system_time_enable" value="1"> Yes
+		<input type="radio" name="ags_system_time_enable" value="0"> Off<br />
+		<input type="radio" name="ags_system_time_enable" value="1" checked> On
 
 		<h4>Start Hour:</h4>
-
 		<!-- integer >= 0 <= 23 -->
-		<input type="text" name="ags_system_time_start_hour"  title="Start Hour" placeholder="Number between 0 and 23"/>
-		<h4>Duration, minutes:</h4>
+		<input type="text" name="ags_system_time_start_hour"  title="Start Hour" placeholder="Between 0 and 23"/>
 
-		<!-- integer greater > 0, < 1400 -->
-		<input type="text" name="ags_system_time_duration_minutes"  title="Duration, minutes" placeholder="Number between 0 and 1400"/>
+		<h4>Duration, hours:</h4>
+		<input type="text" name="ags_system_time_duration_hours"  title="Duration, hours" placeholder="Between 0.1 and 23.9"/>
 		</div>
 	</div>
+
 	<div class="settings_section">
 		<div class="section_center">
-		<h3>System SOC</h3>
+		<h3>Gen Run SOC</h3>
 		<h4>Enable:</h4>
-		<input type="radio" name="ags_system_soc_enable" value="0"> No<br />
-		<input type="radio" name="ags_system_soc_enable" value="1"> Yes
+		<input type="radio" name="ags_system_soc_enable" value="0"> Off<br />
+		<input type="radio" name="ags_system_soc_enable" value="1" checked> On
 
-		<h4>Start SOC:</h4>
+		<h4>Start SOC, %:</h4>
+		<input type="text" name="ags_system_soc_start_soc"  title="Start SOC" placeholder="Between 0 and 100"/>
 
-		<!-- integer > 0 and < 100 -->
-		<input type="text" name="ags_system_soc_start_soc"  title="Start SOC" placeholder="Number between 0 and 100"/>
-		<h4>Stop SOC:</h4>
-
-		<!-- integer greater than start SOC, <= 100 -->
-		<input type="text" name="ags_system_soc_stop_soc"  title="Stop SOC" placeholder="Number between 0 and 100"/>
+		<h4>Stop SOC, %:</h4>
+		<input type="text" name="ags_system_soc_stop_soc"  title="Stop SOC" placeholder="Between 0 and 100"/>
 		</div>
 	</div>
+
 	<div class="settings_section">
 		<div class="section_center">
-		<h3>System amps</h3>
+		<h3>System Amps DC</h3>
 		<h4>Enable:</h4>
-		<input type="radio" name="ags_system_amps_enable" value="0"> No<br />
-		<input type="radio" name="ags_system_amps_enable" value="1"> Yes
+		<input type="radio" name="ags_system_amps_enable" value="0"> Off<br />
+		<input type="radio" name="ags_system_amps_enable" value="1" checked> On
 
-		<h4>Start amps:</h4>
+		<h4>Start Amps, amps DC:</h4>
+		<input type="text" name="ags_system_amps_start_amps" title="Start amps" placeholder="Between -400 and -25"/>
 
-		<!-- integer < 0 and > -400 -->
-		<input type="text" name="ags_system_amps_start_amps" title="Start Amps" placeholder="Number between -400 and 0"/>
-		<h4>Duration, minutes:</h4>
-
-		<!-- integer greater > 0, < 1400 -->
-		<input type="text" name="ags_system_amps_duration_minutes" title="Duration, Minutes"  placeholder="Number between 0 and 1400"/>
+		<h4>Duration, hours:</h4>
+		<input type="text" name="ags_system_amps_duration_hours" title="Duration, Hours"  placeholder="Between 0.1 and 23.9"/>
 		</div>
 	</div>
+
 	<div class="settings_section">
 		<div class="section_center">
 		<h3>Transformer Temperature exceeds set point</h3>
 		<h4>Enable:</h4>
-		<input type="radio" name="ags_system_transformer_temperature_enable" value="0"> No<br />
-		<input type="radio" name="ags_system_transformer_temperature_enable" value="1"> Yes
+		<input type="radio" name="ags_system_transformer_temperature_enable" value="0"> Off<br />
+		<input type="radio" name="ags_system_transformer_temperature_enable" value="1" checked> On
 
-		<h4>Start when transformer temperature exceeds:</h4>
-		<!-- integer > 10 and < 200 -->
+		<h4>Start when transformer temperature exceeds, &deg;F:</h4>
+		<input type="text" name="ags_system_transformer_temperature_exceeds_degrees_f" title="Transformer Temperature Exceeds"  placeholder="Between 100 and 235"/>
 
-		<input type="text" name="ags_system_transformer_temperature_exceeds" title="Transformer Temperature Exceeds"  placeholder="Number between 10 and 200"/>
-		<h4>Duration, minutes:</h4>
+		<h4>Duration, hours:</h4>
+		<input type="text" name="ags_system_transformer_duration_hours" title="Duration, hours" placeholder="Between 0.1 and 23.9"/>
+		</div>
+	</div>
 
-		<!-- integer greater > 0, < 1400 -->
-		<input type="text" name="ags_system_transformer_duration_minutes" title="Duration, minutes" placeholder="Number between 0 and 1400"/>
+	<div class="settings_section">
+		<div class="section_center">
+		<h3>PRO-Verter Air Temperature Exceeds Set Point</h3>
+		<h4>Enable:</h4>
+		<input type="radio" name="ags_system_battery_temperature_enable" value="0"> Off<br />
+		<input type="radio" name="ags_system_battery_temperature_enable" value="1" checked> On
+
+		<h4>Start When PRO-Verter Air Temperature Exceeds, &deg;F:</h4>
+		<input type="text" name="ags_system_battery_temperature_exceeds_degrees_f" title="Battery Temperature Exceeds" placeholder="Between 32 and 250"/>
+
+		<h4>Duration, Hours:</h4>
+		<input type="text" name="ags_system_battery_duration_hours" title="Duration, hours" placeholder="Between 0.1 and 23.9"/>
 		</div>
 	</div>
 	<div class="settings_section">
 		<div class="section_center">
-		<h3>Battery Temperature Exceeds Set Point</h3>
+		<h3>Gen Exercise</h3>
 		<h4>Enable:</h4>
-		<input type="radio" name="ags_system_battery_temperature_enable" value="0"> No<br />
-		<input type="radio" name="ags_system_battery_temperature_enable" value="1"> Yes
-
-		<h4>Start When Battery Temperature Exceeds:</h4>
-
-		<!-- integer > 10 and < 200 -->
-		<input type="text" name="ags_system_battery_temperature_exceeds" title="Battery Temperature Exceeds" placeholder="Number between 10 and 200"/>
-		<h4>Duration, Minutes:</h4>
-
-		<!-- integer greater > 0, < 1400 -->
-		<input type="text" name="ags_system_battery_duration_minutes" title="Duration, minutes" placeholder="Number between 0 and 1400"/>
-		</div>
-	</div>
-	<div class="settings_section">
-		<div class="section_center">
-		<h3>Daily Maintenance Schedule</h3>
-		<h4>Enable:</h4>
-		<input type="radio" name="ags_system_exercise_enable" value="0"> No<br />
-		<input type="radio" name="ags_system_exercise_enable" value="1"> Yes
+		<input type="radio" name="ags_system_exercise_enable" value="0"> Off<br />
+		<input type="radio" name="ags_system_exercise_enable" value="1" checked> On
 
 		<h4>Days Between Runs:</h4>
+		<input type="text" name="ags_system_exercise_days_between_runs" title="Days Between Runs" placeholder="Between 0 and 31"/>
 
-		<!-- integer > 0 <= 30 -->
-		<input type="text" name="ags_system_exercise_days_between_runs" title="Days Between Runs" placeholder="Number between 0 and 30"/>
 		<h4>Start Hour:</h4>
+		<input type="text" name="ags_system_exercise_start_hour" title="Start Hour" placeholder="Between 0 and 23"/>
 
-		<!-- integer >= 0 <= 23 -->
-		<input type="text" name="ags_system_exercise_start_hour" title="Start Hour" placeholder="Number between 0 and 23"/>
-		<h4>Duration, minutes:</h4>
+		<h4>Duration, hours:</h4>
+		<input type="text" name="ags_system_exercise_duration_hours" title="Duration, hours" placeholder="Between 0.1 and 23.9"/>
+		</div>
+	</div>
 
-		<!-- integer greater > 0, < 1400 -->
-		<input type="text" name="ags_system_exercise_duration_minutes" title="Duration, Minutes" placeholder="Number between 0 and 1400"/>
+	<div class="settings_section">
+		<div class="section_center">
+		<h3>Gen Warmup and Cooldown</h3>
+
+		<h4>Warmup delay, seconds</h4>
+		<input type="text" name="ags_system_warmup_seconds"  title="Warmup Delay" placeholder="Between 0 and 3600"/>
+
+		<h4>Cooldown delay, seconds</h4>
+		<input type="text" name="ags_system_cooldown_seconds"  title="Cooldown Delay" placeholder="Between 0 and 3600"/>
 		</div>
 	</div>
 	
@@ -189,6 +195,7 @@ var agent = window.navigator.userAgent;
 var url = "/data/configuration";
 var ie_hack = '.json';
 if (agent.search('MSIE') >= 0 || agent.search('Trident') >= 0) {
+	alert('Using IE');
 	ie_hack = '.dat';
 }
 
@@ -198,8 +205,15 @@ $.ajax(url + ie_hack, {
 }).done(function (data, status, XHR) {
 	for (p in data) {
 		$("input[type=text][name=" + p + "]").val(data[p]);
-		$("input[type=radio][name=" + p + "]" + "[value='" + data[p] + "']").prop("checked", true);
+
+		/* checked can only be applied to radio buttons, apparently */
+		if ( -1 != p.toString().indexOf('enable') ) {
+			console.log('Setting checked for: ' + p.toString());
+			$("input[type=radio][name=" + p + "]" + "[value=" + data[p] + "]").prop("checked", true);
+		}
 	}
+
+	enableDisableUpdate();
 }).fail(function (XHR, status, error) {
 	alert('There was an error retrieving config data!');
 });
@@ -208,32 +222,36 @@ $.ajax(url + ie_hack, {
 function toggleSection(name, value){
 	if(name == 'ags_system_voltage_enable'){
 		if(value == 1){
-			$('input[name="ags_system_voltage_start_voltage"]').removeAttr('disabled');
-			$('input[name="ags_system_voltage_stop"]').removeAttr('disabled');
+			$('input[name="ags_system_voltage_start_voltage_vdc"]').removeAttr('disabled');
+			$('input[name="ags_system_voltage_stop_vdc"]').removeAttr('disabled');
+			$('input[name="ags_system_voltage_start_delay_seconds"]').removeAttr('disabled');
+			$('input[name="ags_system_voltage_stop_delay_minutes"]').removeAttr('disabled');
 		}
 		else{
-			$('input[name="ags_system_voltage_start_voltage"]').attr('disabled','disabled');
-			$('input[name="ags_system_voltage_stop"]').attr('disabled','disabled');
+			$('input[name="ags_system_voltage_start_voltage_vdc"]').attr('disabled','disabled');
+			$('input[name="ags_system_voltage_stop_vdc"]').attr('disabled','disabled');
+			$('input[name="ags_system_voltage_start_delay_seconds"]').attr('disabled','disabled');
+			$('input[name="ags_system_voltage_stop_delay_minutes"]').attr('disabled','disabled');
 		}
 	}
 	else if(name == 'ags_system_time_enable'){
 		if(value == 1){
 			$('input[name="ags_system_time_start_hour"]').removeAttr('disabled');
-			$('input[name="ags_system_time_duration_minutes"]').removeAttr('disabled');
+			$('input[name="ags_system_time_duration_hours"]').removeAttr('disabled');
 		}
 		else{
 			$('input[name="ags_system_time_start_hour"]').attr('disabled','disabled');
-			$('input[name="ags_system_time_duration_minutes"]').attr('disabled','disabled');
+			$('input[name="ags_system_time_duration_hours"]').attr('disabled','disabled');
 		}
 	}
 	else if(name == 'ags_system_amps_enable'){
 		if(value == 1){
 			$('input[name="ags_system_amps_start_amps"]').removeAttr('disabled');
-			$('input[name="ags_system_amps_duration_minutes"]').removeAttr('disabled');
+			$('input[name="ags_system_amps_duration_hours"]').removeAttr('disabled');
 		}
 		else{
 			$('input[name="ags_system_amps_start_amps"]').attr('disabled','disabled');
-			$('input[name="ags_system_amps_duration_minutes"]').attr('disabled','disabled');
+			$('input[name="ags_system_amps_duration_hours"]').attr('disabled','disabled');
 		}
 	}
 	else if(name == 'ags_system_soc_enable'){
@@ -248,43 +266,43 @@ function toggleSection(name, value){
 	}
 	else if(name == 'ags_system_transformer_temperature_enable'){
 		if(value == 1){
-			$('input[name="ags_system_transformer_temperature_exceeds"]').removeAttr('disabled');
-			$('input[name="ags_system_transformer_duration_minutes"]').removeAttr('disabled');
+			$('input[name="ags_system_transformer_temperature_exceeds_degrees_f"]').removeAttr('disabled');
+			$('input[name="ags_system_transformer_duration_hours"]').removeAttr('disabled');
 		}
 		else{
-			$('input[name="ags_system_transformer_temperature_exceeds"]').attr('disabled','disabled');
-			$('input[name="ags_system_transformer_duration_minutes"]').attr('disabled','disabled');
+			$('input[name="ags_system_transformer_temperature_exceeds_degrees_f"]').attr('disabled','disabled');
+			$('input[name="ags_system_transformer_duration_hours"]').attr('disabled','disabled');
 		}
 	}
 	else if(name == 'ags_system_battery_temperature_enable'){
 		if(value == 1){
-			$('input[name="ags_system_battery_temperature_exceeds"]').removeAttr('disabled');
-			$('input[name="ags_system_battery_duration_minutes"]').removeAttr('disabled');
+			$('input[name="ags_system_battery_temperature_exceeds_degrees_f"]').removeAttr('disabled');
+			$('input[name="ags_system_battery_duration_hours"]').removeAttr('disabled');
 		}
 		else{
-			$('input[name="ags_system_battery_temperature_exceeds"]').attr('disabled','disabled');
-			$('input[name="ags_system_battery_duration_minutes"]').attr('disabled','disabled');
+			$('input[name="ags_system_battery_temperature_exceeds_degrees_f"]').attr('disabled','disabled');
+			$('input[name="ags_system_battery_duration_hours"]').attr('disabled','disabled');
 		}
 	}
 	else if(name == 'ags_system_exercise_enable'){
 		if(value == 1){
 			$('input[name="ags_system_exercise_days_between_runs"]').removeAttr('disabled');
 			$('input[name="ags_system_exercise_start_hour"]').removeAttr('disabled');
-			$('input[name="ags_system_exercise_duration_minutes"]').removeAttr('disabled');
+			$('input[name="ags_system_exercise_duration_hours"]').removeAttr('disabled');
 		}
 		else{
 			$('input[name="ags_system_exercise_days_between_runs"]').attr('disabled','disabled');
 			$('input[name="ags_system_exercise_start_hour"]').attr('disabled','disabled');
-			$('input[name="ags_system_exercise_duration_minutes"]').attr('disabled','disabled');
+			$('input[name="ags_system_exercise_duration_hours"]').attr('disabled','disabled');
 		}
 	}
 }
 	
 function validateForms(){
 	//variables that will represent values in our form
-	var start_voltage, voltage_stop, time_start_hour, time_duration_minutes, start_soc, stop_soc, start_amps, amps_duration_minutes, 
-		transformer_temperature_exceeds, transformer_duration_minutes, excercise_days_between_runs, excercise_start_hour, 
-		battery_temperature_exceeds, exercise_duration_minutes, battery_duration_minutes,sysVoltageEnabled, sysTimeEnabled, sysSOCEnabled,
+	var start_voltage, voltage_stop, time_start_hour, time_duration_hours, start_soc, stop_soc, start_amps, amps_duration_hours, 
+		transformer_temperature_exceeds, transformer_duration_hours, excercise_days_between_runs, excercise_start_hour, 
+		battery_temperature_exceeds, exercise_duration_hours, battery_duration_hours,sysVoltageEnabled, sysTimeEnabled, sysSOCEnabled,
 		sysAmpsEnabled,transformerTempEnabled, batteryTempEnabled, maintenanceScheduleEnabled;
 	
 	//decimal format regex
@@ -300,21 +318,23 @@ function validateForms(){
 	batteryTempEnabled = $("input[name='ags_system_battery_temperature_enable']:checked").val();	
 	maintenanceScheduleEnabled = $("input[name='ags_system_exercise_enable']:checked").val();	
 	
-	start_voltage = parseInt($('input[name="ags_system_voltage_start_voltage"]').val(), 10);
-	voltage_stop =  parseInt($('input[name="ags_system_voltage_stop"]').val(), 10);;
+	start_voltage = parseInt($('input[name="ags_system_voltage_start_voltage_vdc"]').val(), 10);
+	voltage_stop =  parseInt($('input[name="ags_system_voltage_stop_vdc"]').val(), 10);;
 	time_start_hour = parseInt($('input[name="ags_system_time_start_hour"]').val(), 10);
-	time_duration_minutes = parseInt($('input[name="ags_system_time_duration_minutes"]').val(), 10);
+	time_duration_hours = parseInt($('input[name="ags_system_time_duration_hours"]').val(), 10);
 	start_soc = parseInt($('input[name="ags_system_soc_start_soc"]').val(), 10);
 	stop_soc = parseInt($('input[name="ags_system_soc_stop_soc"]').val(), 10);
 	start_amps = parseInt($('input[name="ags_system_amps_start_amps"]').val(), 10);
-	amps_duration_minutes = parseInt($('input[name="ags_system_amps_duration_minutes"]').val(), 10);
-	transformer_temperature_exceeds = parseInt($('input[name="ags_system_transformer_temperature_exceeds"]').val(), 10);
-	transformer_duration_minutes = parseInt($('input[name="ags_system_transformer_duration_minutes"]').val(), 10);
-	battery_temperature_exceeds = parseInt($('input[name="ags_system_battery_temperature_exceeds"]').val(), 10);
-	battery_duration_minutes = parseInt($('input[name="ags_system_battery_duration_minutes"]').val(), 10);
+	amps_duration_hours = parseInt($('input[name="ags_system_amps_duration_hours"]').val(), 10);
+	transformer_temperature_exceeds = parseInt($('input[name="ags_system_transformer_temperature_exceeds_degrees_f"]').val(), 10);
+	transformer_duration_hours = parseInt($('input[name="ags_system_transformer_duration_hours"]').val(), 10);
+	battery_temperature_exceeds = parseInt($('input[name="ags_system_battery_temperature_exceeds_degrees_f"]').val(), 10);
+	battery_duration_hours = parseInt($('input[name="ags_system_battery_duration_hours"]').val(), 10);
 	excercise_days_between_runs = parseInt($('input[name="ags_system_exercise_days_between_runs"]').val(), 10);
 	excercise_start_hour = parseInt($('input[name="ags_system_exercise_start_hour"]').val(), 10);
-	exercise_duration_minutes = parseInt($('input[name="ags_system_exercise_duration_minutes"]').val(), 10);
+	exercise_duration_hours = parseInt($('input[name="ags_system_exercise_duration_hours"]').val(), 10);
+
+	
 	
 	//initiate form validation
 	$.validity.setup({  scrollTo: true });
@@ -324,49 +344,46 @@ function validateForms(){
 	//	
 	//validation rules
 	//
+
+	/* always need valid warmup and cooldown */
+	$('input[name="ags_system_warmup_seconds"]').require().match("integer").range(0,3600);
+	$('input[name="ags_system_cooldown_seconds"]').require().match("integer").range(0,3600);
+
 	if(sysVoltageEnabled == 1){
 		//must be in format xx.x
-		$('input[name="ags_system_voltage_start_voltage"]').require().match(reg, '#{field} must be in the form XX.X');
+		$('input[name="ags_system_voltage_start_voltage_vdc"]').require().match(reg, '#{field} must be in the form XX.X');
 		//must be in format xx.x
-		$('input[name="ags_system_voltage_stop"]').require().match(reg, '#{field} must be in the form XX.X').greaterThan( start_voltage, "must be greater than start voltage");
+		$('input[name="ags_system_voltage_stop_vdc"]').require().match(reg, '#{field} must be in the form XX.X').greaterThan( start_voltage, "must be greater than start voltage");
+		$('input[name="ags_system_voltage_start_delay_seconds"]').require().match("integer").range(0,3600);
+		$('input[name="ags_system_voltage_stop_delay_minutes"]').require().match("integer").range(0,60);
 	}
+
 	if(sysTimeEnabled == 1){
-		//must be integer between 0 and 23
 		$('input[name="ags_system_time_start_hour"]').require().match("integer").range(0,23);
-		//must be integer between 1 and 1399
-		$('input[name="ags_system_time_duration_minutes"]').require().match("integer").greaterThan(0, "This field must be between 0 and 1400").lessThan(1400, "This field must be between 0 and 1400");
+		$('input[name="ags_system_time_duration_hours"]').require().match(reg, '#{field} must be in the form XX.X').range(0.1,23.9);
 	}
 	if(sysSOCEnabled == 1){
 		//must be integer between 1 and 99
 		$('input[name="ags_system_soc_start_soc"]').require().match("integer").range(1,99);
 		//must be integer between start_soc value and 100
-		$('input[name="ags_system_soc_stop_soc"]').require().greaterThan(start_soc, "must be greater than Start SOC").lessThan(100);
+		$('input[name="ags_system_soc_stop_soc"]').require().greaterThan(start_soc, "must be greater than Start SOC").lessThan(101);
 	}
 	if(sysAmpsEnabled == 1){
-		//must be integer between 0 and -400
-		$('input[name="ags_system_amps_start_amps"]').require().match(whole, "This field must be an integer").greaterThan(-400, "This field must be between -400 and 0").lessThan(0, "This field must be between -400 and 0");
-		//must be integer between 0 and 1400
-		$('input[name="ags_system_amps_duration_minutes"]').require().match("integer").greaterThan(0, "This field must be between 0 and 1400").lessThan(1400, "This field must be between 0 and 1400");
+		$('input[name="ags_system_amps_start_amps"]').require().range(-400,-25);
+		$('input[name="ags_system_amps_duration_hours"]').require().match(reg, '#{field} must be in the form XX.X').range(0.1,23.9);
 	}
 	if(transformerTempEnabled == 1){
-		//must be integer between 10 and 200
-		$('input[name="ags_system_transformer_temperature_exceeds"]').require().match("integer").greaterThan(10, "This field must be between 10 and 200").lessThan(200, "This field must be between 0 and 200");
-		//must be integer between 0 and 1400
-		$('input[name="ags_system_transformer_duration_minutes"]').require().match("integer").greaterThan(0, "This field must be between 0 and 1400").lessThan(1400, "This field must be between 0 and 1400");
+		$('input[name="ags_system_transformer_temperature_exceeds_degrees_f"]').require().match("integer").range(100,235);
+		$('input[name="ags_system_transformer_duration_hours"]').require().match(reg, '#{field} must be in the form XX.X').range(0.1,23.9);
 	}
 	if(batteryTempEnabled == 1){
-		//must be integer between 0 and 200
-		$('input[name="ags_system_battery_temperature_exceeds"]').require().match("integer").greaterThan(10, "This field must be between 10 and 200").lessThan(200, "This field must be between 0 and 200");
-		//must be integer between 0 and 1400
-		$('input[name="ags_system_battery_duration_minutes"]').require().match("integer").greaterThan(0, "This field must be between 0 and 1400").lessThan(1400, "This field must be between 0 and 1400");
+		$('input[name="ags_system_battery_temperature_exceeds_degrees_f"]').require().match("integer").range(32,250);
+		$('input[name="ags_system_battery_duration_hours"]').require().match(reg, '#{field} must be in the form XX.X').range(0.1,23.9);
 	}
 	if(maintenanceScheduleEnabled == 1){
-		//must be integer between 0 and 30
-		$('input[name="ags_system_exercise_days_between_runs"]').require().match("integer").greaterThan(0, "This field must be between 0 and less than or equal to 30").lessThanOrEqualTo(30, "This field must be between 0 and less than or equal to 30");;
-		//must be integer between 0 and 23
+		$('input[name="ags_system_exercise_days_between_runs"]').require().match("integer").range(1,31);
 		$('input[name="ags_system_exercise_start_hour"]').require().match("integer").range(0,23);
-		//must be integer between 0 and 1400
-		$('input[name="ags_system_exercise_duration_minutes"]').require().match("integer").greaterThan(0, "This field must be between 0 and 1400").lessThan(1400, "This field must be between 0 and 1400");
+		$('input[name="ags_system_exercise_duration_hours"]').require().match(reg, '#{field} must be in the form XX.X').range(0.1,23.9);
 	}
 	//validation result
 	var result = $.validity.end();
@@ -397,12 +414,13 @@ $('#update').on('click', function(e) {
 			contentType: 'application/json',
 			data: JSON.stringify(json)
 		}).fail(function (XHR, status, error) {
-			alert('There was an error updating configuration data!');
+			alert('There was an error updating configuration data! Flash drive with configok.txt must be inserted.');
 		});
 	}
 });
-	
-$( document ).ready(function() {
+
+/* enable / disable function based on enable buttons */
+function enableDisableUpdate() {
 	//loops through checked radio buttons once document is ready and disabled sections based on the radio button value
 	$("form input[type='radio']:checked").each(function(){
 		var radio = $(this);
@@ -418,7 +436,11 @@ $( document ).ready(function() {
 		var value = radio.val();
 		toggleSection(name, value);		
 	});
-});	
+}
+
+	
+$( document ).ready(enableDisableUpdate());
+
 </script>
 </body>
 
