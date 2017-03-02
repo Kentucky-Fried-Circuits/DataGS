@@ -21,28 +21,27 @@ public class DataGSServerThread extends Thread {
 	protected OutputStream outputStream;
 	private int[] rawBuffer;
 	private Log log, threadLog;
+	protected Vector<ChannelData> channelDataListeners;
+	protected Vector<WorldDataListener> packetListeners;
 
 	private final static boolean debug=false;
 
 
 	public DateFormat dateFormat;
 
-	
 
-
-	protected Vector<ChannelData> channelDataListeners;
 
 	public void addChannelDataListener(ChannelData c) {
 		channelDataListeners.add(c);
 
 	}
+	
+	public void addPacketListener(WorldDataListener b) {
+		packetListeners.add(b);
+	}
 
-	public DataGSServerThread(
-			Socket socket, 
-			Log l,
 
-			DateFormat df,
-			int socketTimeout) {
+	public DataGSServerThread( Socket socket, Log l, DateFormat df,	int socketTimeout) {
 		
 		/* set our thread name */
 		super(socket.getInetAddress().getHostAddress() + ":" + socket.getLocalPort());
@@ -57,6 +56,7 @@ public class DataGSServerThread extends Thread {
 		}
 
 		channelDataListeners=new Vector<ChannelData>();
+		packetListeners = new Vector<WorldDataListener>();
 
 		log=l;
 		threadLog=l;
@@ -88,6 +88,92 @@ public class DataGSServerThread extends Thread {
 		System.err.println("# [LOG] " + s);
 	}
 
+	
+	/** Jump here when our packet starts with a '#' */
+	private void binaryData() {
+		int packetLength;
+		boolean valid=false;
+		
+		try {
+
+			/* it possible that a random debugging message got here ... like this PS2Tap message
+			00000310  23 20 4d 49 53 53 49 4e  47 20 31 35 38 0d 0a  |# MISSING 158..
+			           0  1  2  3  4  5  6  7   8  9 10 11 12 13 14
+			 */
+
+
+			/* now read the serial number, packet type, and length */
+			for ( int i=1 ; i<=5 ; i++ ) {
+				rawBuffer[i]=inputStream.read();
+			}
+
+			/* if ' ' is the first character of our serial number, then we read until 0d 0a */
+			if ( 0x20 == rawBuffer[1] ) {
+				//				System.err.println("# first character of serial number is ' '. Probably a debug message."); 
+				for ( int i=6 ; i<rawBuffer.length ; i++ ) {
+					rawBuffer[i]=inputStream.read();
+
+					if ( 0x0a==rawBuffer[i] && 0x0d==rawBuffer[i-1] )
+						return;
+					if ( 0x0d==rawBuffer[i] && 0x0a==rawBuffer[i-1] )
+						return;
+				}
+
+				/* hopefully we would have returned already ... but if not, our buffer is full */
+				return;
+			}
+
+			/* extract serial number and packet length */
+			StringBuilder sb = new StringBuilder();
+
+			/* Serial number */
+			sb.append((char) rawBuffer[1]);
+			int sn = (rawBuffer[2]<<8) + rawBuffer[3];
+			sb.append(sn);
+
+			System.err.print(" @" +  dateFormat.format(new Date()) + " SN=" + sb + " LEN=" + rawBuffer[4] + " TYPE=" + rawBuffer[5] + " ");
+
+			/* packet length */
+			packetLength=rawBuffer[4];
+
+
+			int startPos=6;
+
+			/* check to see if we have a packet length > 255, in which case we use bytes 6 and 7 */
+			if ( 0xff == packetLength ) {
+				rawBuffer[6]=inputStream.read();
+				rawBuffer[7]=inputStream.read();
+				startPos=8;
+
+				packetLength=(rawBuffer[6]<<8) + rawBuffer[7];
+			}
+
+
+			/* read the rest of the packet, now that we know how long it is */
+			for ( int i=startPos ; i<packetLength && i<rawBuffer.length ; i++ ) {
+				rawBuffer[i]=inputStream.read();
+			}
+			
+			for ( int i=0 ; i<channelDataListeners.size() ; i++ ) {
+				packetListeners.elementAt(i).WorldDataPacketReceived(rawBuffer);
+			}
+
+			
+		} catch (SocketTimeoutException set) {
+			System.err.println("# binaryData() SocketTimeoutException from " + socket.getInetAddress().getHostAddress() + ":");
+			System.err.println("# " + set);
+			if ( debug ) 
+				set.printStackTrace();
+			shutdown(set,null);
+		} catch (IOException e) {
+			System.err.println("# binaryData() IOException from " + socket.getInetAddress().getHostAddress() + ":");
+			System.err.println("# " + e);
+			if ( debug ) 
+				e.printStackTrace();
+			shutdown(e,null);
+		}
+	}
+	
 	/** Jump here when our packet starts with an A to Z */
 	private void channelData() {
 
@@ -243,15 +329,20 @@ public class DataGSServerThread extends Thread {
 					}
 
 
-				} while ( b<'A' && b<'Z' ); 
+				} while ( (b<'A' && b<'Z') && b != '#' ); 
 
+				/* not sure why this is needed?!? */
 				for ( int i=0 ; i<rawBuffer.length ; i++ )
 					rawBuffer[i]=0xff;
 
 				/* found start of packet */
 				rawBuffer[0]=b;
 
-				channelData();
+				if ( rawBuffer[0] == '#' ) {
+					binaryData();
+				} else {
+					channelData();
+				}
 			}
 
 			shutdown(null,"# Normal shutdown");

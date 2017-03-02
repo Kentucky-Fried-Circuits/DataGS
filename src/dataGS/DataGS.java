@@ -42,7 +42,7 @@ import dataGS.ChannelDescription.Modes;
 public class DataGS implements ChannelData, JSONData {
 	private final boolean debug=false;
 
-	private final static String FIRMWARE_DATE = "2016-03-03";
+	private final static String FIRMWARE_DATE = "2017-03-02";
 	
 	protected WorldDataSerialReader ser;
 	protected boolean listening = false;
@@ -906,7 +906,6 @@ public class DataGS implements ChannelData, JSONData {
 
 
 	
-		
 		/* spin through and accept new connections as quickly as we can ... in DataGS format. */
 		while ( listening ) {
 		
@@ -917,15 +916,14 @@ public class DataGS implements ChannelData, JSONData {
 				socket.setSoLinger (true, 0);
 		
 		
-				DataGSServerThread conn = new DataGSServerThread(
-						socket,
-						log,
-						dateFormat,
-						socketTimeout
-						);
+				DataGSServerThread conn = new DataGSServerThread(socket,log,dateFormat,socketTimeout);
 				conn.setName("newConnectionThread");
 				connectionThreads.add(conn);
 				conn.addChannelDataListener(this);
+				WorldDataProcessor wdp = new WorldDataProcessor();
+				conn.addPacketListener(wdp);
+				wdp.addChannelDataListener(this);
+
 				conn.start();
 				System.err.println("# connectionThreads.size()=" + connectionThreads.size());
 			} catch (SocketTimeoutException e) {
@@ -1062,7 +1060,7 @@ public class DataGS implements ChannelData, JSONData {
 
 	/* Main method */
 	public static void main(String[] args) throws IOException {
-		System.err.println("# Major version: " + FIRMWARE_DATE + " (White)");
+		System.err.println("# Major version: " + FIRMWARE_DATE + " (wildEverything)");
 		System.err.println("# java.library.path: " + System.getProperty( "java.library.path" ));
 
 		Thread.setDefaultUncaughtExceptionHandler(
