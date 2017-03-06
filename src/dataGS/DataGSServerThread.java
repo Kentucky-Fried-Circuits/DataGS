@@ -92,7 +92,6 @@ public class DataGSServerThread extends Thread {
 	/** Jump here when our packet starts with a '#' */
 	private void binaryData() {
 		int packetLength;
-		boolean valid=false;
 		
 		try {
 
