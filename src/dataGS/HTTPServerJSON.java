@@ -30,6 +30,7 @@ public class HTTPServerJSON extends NanoHTTPD {
 	public static final String MIME_WAV = "audio/x-wav";
 	public static final String MIME_MPEG = "audio/mpeg";
 	public static final String MIME_HTML = "text/html";
+	public static final String MIME_PDF = "application/pdf";
 
 	protected JSONData data;
 	protected String channelMapFile;
@@ -92,6 +93,8 @@ public class HTTPServerJSON extends NanoHTTPD {
 			mime=MIME_MPEG;
 		else if ( luri.endsWith("html") )
 			mime=MIME_HTML;
+		else if ( luri.endsWith("pdf") )
+			mime=MIME_PDF;
 		else
 			mime=MIME_PLAIN;
 
@@ -192,7 +195,11 @@ public class HTTPServerJSON extends NanoHTTPD {
 		} 
 
 		/* configuration */
-		else if ( uri.endsWith("/configuration.json") ) {
+		else if ( uri.endsWith("/data/configuration.json") || uri.endsWith("/data/configuration.dat")) {
+			String mime = MIME_JSON;
+			if (uri.endsWith(".dat")) {
+				mime = MIME_PLAINTEXT;
+			}
 			if (method == Method.POST) {
 				try {
 					Integer contentLength = Integer.parseInt(session.getHeaders().get("content-length"));
@@ -216,19 +223,19 @@ public class HTTPServerJSON extends NanoHTTPD {
 					}
 					JsonObject json = config.getJSON();
 					if (json == null) {
-						response = new NanoHTTPD.Response(Response.Status.INTERNAL_ERROR, MIME_PLAINTEXT, "", gzipAllowed);
+						response = new NanoHTTPD.Response(Response.Status.INTERNAL_ERROR, mime, "", gzipAllowed);
 					} else {
-						response = new NanoHTTPD.Response( status, MIME_PLAINTEXT, config.getJSON().toString(), gzipAllowed );
+						response = new NanoHTTPD.Response( status, mime, config.getJSON().toString(), gzipAllowed );
 					}
 				} catch (Exception e) {
-					response = new NanoHTTPD.Response( Response.Status.BAD_REQUEST, MIME_PLAINTEXT, "", gzipAllowed );
+					response = new NanoHTTPD.Response( Response.Status.BAD_REQUEST, mime, "", gzipAllowed );
 				}
 			} else {
 				JsonObject json = config.getJSON();
 				if (json == null) {
-					response = new NanoHTTPD.Response(Response.Status.OK, MIME_PLAINTEXT, "{}", gzipAllowed);
+					response = new NanoHTTPD.Response(Response.Status.OK, mime, "{}", gzipAllowed);
 				} else {
-					response = new NanoHTTPD.Response(Response.Status.OK, MIME_PLAINTEXT, json.toString(), gzipAllowed );
+					response = new NanoHTTPD.Response(Response.Status.OK, mime, json.toString(), gzipAllowed );
 				}
 			}
 		}

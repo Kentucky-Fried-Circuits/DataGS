@@ -42,7 +42,7 @@ import dataGS.ChannelDescription.Modes;
 public class DataGS implements ChannelData, JSONData {
 	private final boolean debug=false;
 
-	private final static String FIRMWARE_DATE = "2016-03-07";
+	private final static String FIRMWARE_DATE = "2016-03-08";
 	
 	protected WorldDataSerialReader ser;
 	protected boolean listening = false;
@@ -177,17 +177,52 @@ public class DataGS implements ChannelData, JSONData {
 			Map<String, SynchronizedSummaryData> today;
 			date = new Date();
 
-
+	
+			
 			/* last (ie current) data JSON */
 			Iterator<Entry<String, SynchronizedSummaryData>> it = data.entrySet().iterator();
-
+			
+			
+			/* make sure we are logging all the channels we should be */
+			
+			/* FIXME this should not be hardcoded here -- damn */
+			String[] mustLog = {"65","66","67","68","69","71","72","76","77","78","80","81","82","83"};
+			
+			
 			while (it.hasNext()) {
 				Map.Entry<String, SynchronizedSummaryData> pairs = (Map.Entry<String, SynchronizedSummaryData>)it.next();
 				String channel = pairs.getKey();
 				
 				if ( 2==channel.length() ) {
-					System.out.println("(2 character) channel="+channel);
+//					System.out.println("originally found channel="+channel);
+
+					for ( int i=0 ; i< mustLog.length ; i++ ) {
+						if ( 0==channel.compareTo(mustLog[i]) ) {
+							// found it, now clear 
+							mustLog[i]="";
+						}
+					}
+				
 				}
+			}
+						
+			for ( int i=0 ; i<mustLog.length ; i++ ) {
+				if ( mustLog[i].length() > 0 ) {
+					System.err.println("# should log " + mustLog[i] + " but don't have data for it, adding it as -1.0.");
+					data.put(mustLog[i], new SynchronizedSummaryData( Modes.SAMPLE ) );
+					data.get(mustLog[i]).addValue(new Double(-1.0));
+				}
+			}
+			
+			
+			it = data.entrySet().iterator();
+			while (it.hasNext()) {
+				Map.Entry<String, SynchronizedSummaryData> pairs = (Map.Entry<String, SynchronizedSummaryData>)it.next();
+				String channel = pairs.getKey();
+				
+//				if ( 2==channel.length() ) {
+//					System.out.println("gonna log channel="+channel);
+//				}
 
 				if ( channelDesc.containsKey( channel ) ) {
 					dataNow.put(channel,new DataPoint(channel,now,pairs.getValue()));
