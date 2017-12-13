@@ -223,7 +223,7 @@
             "description": "VAC In (Inverter)",
             "units": "volts",
             "precision": 2,
-            "sortOrder": 70,
+            "sortOrder": 75,
             "mode": "AVERAGE",
             "log": "true"
         },
@@ -1017,7 +1017,7 @@
             "precision": 2,
             "sortOrder": 0,
             "mode": "AVERAGE",
-			"dayStats": "true"
+            "dayStats": "true"
         },
         {
             "id": "b_dc_amps_clean",
@@ -1027,7 +1027,7 @@
             "precision":1,
             "sortOrder": 0,
             "mode": "AVERAGE",
-			"dayStats": "true"
+            "dayStats": "true"
         },
         {
             "id": "i_ac_volts_out_clean",
