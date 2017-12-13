@@ -773,9 +773,10 @@ public class RecordMagWeb {
 	private boolean isMSH(int val) {
 		
 		switch ( val ) {
+			case 0x2B: return true; /* MSH3012RV ... added 2017-12-13 based on e-mail from Darren*/
 			case 0x2C: return true; /* MSH3012M */
-			case 0x67: return true; /* MSH4042 */
-			case 0x68: return true; /* MSH4024M */
+			case 0x67: return true; /* MSH4024M */
+			case 0x68: return true; /* MSH4024RE */
 			default: return false;
 		}
 		
@@ -791,13 +792,13 @@ public class RecordMagWeb {
 		switch ( val ) {
 			case 0x0A: return true; /* MM1012E */
 			case 0x0C: return true; /* MMS912E */
-			case 0x0D: return true; /* MMA1012 */
+//			case 0x0D: return true; /* MMA1012 ... according to 2017-12-13 e-mail from Darren, this is not an export */
 			case 0x24: return true; /* MS1512E */
 			case 0x28: return true; /* MS2012E */
 			case 0x2F: return true; /* MS2712E */
 			case 0x35: return true; /* MM1324E */
 			case 0x3B: return true; /* RD2624E */
-			case 0x45: return true; /* RS4024E */
+			case 0x45: return true; /* RD4024E */
 			case 0x59: return true; /* MS4124PE */
 			case 0x5A: return true; /* MS4124E */
 			default: return false;
