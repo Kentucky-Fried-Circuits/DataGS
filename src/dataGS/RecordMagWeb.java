@@ -370,6 +370,13 @@ public class RecordMagWeb {
 			r_low_batt_cut_out *= 2;
 
 		r_vac_cut_out=buff[51];
+		/* prior to 2017-12-13 release we logged raw r_vac_cut_out. Now we are scaling here which
+		 * will propogate to logged data and web page
+		 */
+		if ( isExport(i_model) ) {
+			r_vac_cut_out = (r_vac_cut_out - 5) * 2;
+			
+		}
 
 		r_float_volts=buff[52]/10.0;
 		r_float_volts *= vScale;
