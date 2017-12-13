@@ -251,6 +251,9 @@ public class RecordMagWeb {
 		
 		i_ac_volts_out=buff[26];
 		i_ac_volts_in=buff[27];
+		
+		
+		
 		/* 28 inverter led */
 		/* 29 charger led */
 		i_revision=buff[30]/10.0;
@@ -268,6 +271,19 @@ public class RecordMagWeb {
 		else
 			vScale=1;
 
+	
+		/* if inverter is an export inverter, we need to scale (voltage-5) * 2. 
+		 * example: i_ac_volts_out=120 over the wire scales to (120-5)*2=230
+		 * 
+		 * prior to 2017-12-13 release we logged raw i_ac_volts_out and then scaled export inverters for
+		 * live display page. Now we are scaling here so logged values are correct. And we have removed
+		 * scaling on the web page.
+		 */
+		if ( isExport(i_model) ) {
+			i_ac_volts_out = (i_ac_volts_out - 5) * 2;
+			
+		}
+		
 		
 		i_stack_mode=buff[35];		
 		
@@ -748,15 +764,43 @@ public class RecordMagWeb {
 		return ibuf;
 	}
 	
-	/* determines if inverter is an MSH inverter */
+	/* determines if inverter is an MSH inverter 
+	 * 
+	 * this this will need to be kept up to date.
+	 * Asked Darren Massey and Mike Dixon to verify list is accurate on 2017-12-13
+	 * 
+	 * */
 	private boolean isMSH(int val) {
 		
 		switch ( val ) {
-			case 0x2C: return true;
-			case 0x67: return true;
-			case 0x68: return true;
+			case 0x2C: return true; /* MSH3012M */
+			case 0x67: return true; /* MSH4042 */
+			case 0x68: return true; /* MSH4024M */
 			default: return false;
 		}
 		
+	}
+	
+	/* determine if inverter is an export inverter 
+	 *  
+	 * this this will need to be kept up to date.
+	 * Asked Darren Massey and Mike Dixon to verify list is accurate on 2017-12-13
+	 * 
+	 * */
+	private boolean isExport(int val) {
+		switch ( val ) {
+			case 0x0A: return true; /* MM1012E */
+			case 0x0C: return true; /* MMS912E */
+			case 0x0D: return true; /* MMA1012 */
+			case 0x24: return true; /* MS1512E */
+			case 0x28: return true; /* MS2012E */
+			case 0x2F: return true; /* MS2712E */
+			case 0x35: return true; /* MM1324E */
+			case 0x3B: return true; /* RD2624E */
+			case 0x45: return true; /* RS4024E */
+			case 0x59: return true; /* MS4124PE */
+			case 0x5A: return true; /* MS4124E */
+			default: return false;
+		}
 	}
 }
