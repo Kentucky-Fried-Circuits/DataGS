@@ -1,6 +1,10 @@
 # DataGS
 
-## Contents
+This is the data collection and web server software for the PRO-Verter RMK.
+
+Here is the source code for the web server:
+
+https:blob/master/src/dataGS/HTTPServerJSON.java## Contents
 
 1. ###[Summary](#sum)
 
