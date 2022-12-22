@@ -6,11 +6,13 @@ Source code for the web server: src/dataGS/HTTPServerJSON.java
 
 ## Contents
 
-1. ###[Summary](#sum)
+1. [Summary](#sum)
 
-2. ###[Channel Description File Format](#chanDescFileFormat)
+2. [Channel Description File Format](#chanDescFileFormat)
 
-3. ###[Data served via HTTP](#dataServed)
+2. [Data read from Magnum Network](#dataRead)
+
+3. [Data served via HTTP](#dataServed)
    * [/data/json.html](#jsonhtml)
    * [/data/history/YYYYMMDD.csv or /data/history/YYYYMMDD.txt](#yyyyjson)
    * [/data/channels.json or /data/channels.dat](#channeljson)
@@ -21,30 +23,30 @@ Source code for the web server: src/dataGS/HTTPServerJSON.java
    * [/data/dayStats.json or /data/dayStats.dat](#daystatjson)
    * [/data/hostinfo.json or /data/hostinfo.dat](#hostjson)
 
-4. ###[Command line arguments](#cmdarg)
+4. [Command line arguments](#cmdarg)
    * [DataGSCollector related arguments](#collectorarg)
    * [Serial port data source arguments](#serialarg)
    * [Data output (JSON) arguments](#outputarg)
    * [Local Logging arguments](#logarg)
    * [Configuration File arguments] (#configarg)
  
-5. ###[Website](#website)
+5. [Website](#website)
    * [Current Conditions](#conditions)
    * [Current Settings](#settings)
    * [Historical Data](#historical)
 
-6. ###[Starting the software](#startsoft)
+6. [Starting the software](#startsoft)
    * [Examples](#startex)
    * [Enable remote profile via JMXREMOTE](#jmx)
    * [Specifying available serial ports under non-Windows operating systems](#serialnonwindows)
    * [Setting the classpath](#classpath)
    * [Jar file](#jarfile)
 
-7. ###[Compiling the software](#compsoft)
+7. [Compiling the software](#compsoft)
 
 <a name="sum"></a>
 ## Summary
-Gather data from TCP/IP (simple ASCII format) or serial port (WorldData format) and process and make available
+Gather data from TCP/IP (simple ASCII format) or serial port (MagWeb format using the WorldData framework) and process and make available
 
 <a name="chanDescFileFormat"></a>
 ## Channel Description File Format
@@ -103,6 +105,9 @@ ex:
 Note that channel id's will be single character letters for data received via TCP/IP / ASCII. Longer channel
 names are possible for data that comes in via WorldDataProcessor via reflection.
 
+<a name="dataRead"></a>
+## Data read from Magnum Network
+Data is read over an RS485 serial interface. The serial port and speed are set in the command line arguments serialPortWorldData and serialPortWorldDataSpeed. Characters are read and accumlated into a buffer by WorldDataSerialReader.serialEvent(), which hands off packets WorldDataProcessor.WorldDataPacketReceived for identification and handling. It calls MagWeb.parseRecord() and magWebVariable.parseRecord() to parse Magnum packets.
 
 <a name="dataServed"></a>
 ## Data served via HTTP
