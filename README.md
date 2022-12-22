@@ -2,9 +2,9 @@
 
 This is the data collection and web server software for the PRO-Verter RMK.
 
-Here is the source code for the web server:
+Source code for the web server: src/dataGS/HTTPServerJSON.java
 
-[https:src/dataGS/HTTPServerJSON.java##](Contents)
+## Contents
 
 1. ###[Summary](#sum)
 
